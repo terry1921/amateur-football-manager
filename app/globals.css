@@ -1,0 +1,155 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #071a36;
+  --ink: #071a36;
+  --muted: #607086;
+  --pitch: #00a331;
+  --line: #cce2cf;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-pitch: var(--pitch);
+  --color-line: var(--line);
+  --font-sans: Arial, Helvetica, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.brand-wordmark {
+  color: var(--ink);
+  font-size: 1.75rem;
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: -0.06em;
+}
+
+.display-type {
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-stretch: condensed;
+  font-weight: 900;
+}
+
+.field-markings {
+  position: absolute;
+  inset: 5.25rem 0 auto 50%;
+  width: min(42rem, 92vw);
+  height: min(42rem, 92vw);
+  border: 1px solid color-mix(in srgb, var(--line) 65%, transparent);
+  border-radius: 50%;
+  opacity: 0.52;
+  transform: translate(-50%, -72%);
+}
+
+.field-markings::before,
+.field-markings::after {
+  position: absolute;
+  content: "";
+}
+
+.field-markings::before {
+  inset: 50% 0 auto;
+  border-top: 1px solid var(--line);
+}
+
+.field-markings::after {
+  top: 50%;
+  left: 50%;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: var(--line);
+  transform: translate(-50%, -50%);
+}
+
+.workflow-line::before {
+  position: absolute;
+  z-index: -1;
+  top: 1.5rem;
+  right: 10%;
+  left: 10%;
+  height: 1px;
+  background: var(--line);
+  content: "";
+}
+
+.pitch-outline {
+  position: relative;
+  margin-top: 3.5rem;
+  width: min(100%, 48rem);
+  height: 10rem;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: 1.5rem 1.5rem 0 0;
+  opacity: 0.72;
+}
+
+.pitch-outline::before,
+.pitch-outline::after,
+.pitch-outline span {
+  position: absolute;
+  content: "";
+}
+
+.pitch-outline::before {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  border-left: 1px solid var(--line);
+}
+
+.pitch-outline::after {
+  top: 50%;
+  left: 50%;
+  width: 8rem;
+  height: 8rem;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.pitch-outline span {
+  top: -1px;
+  left: 50%;
+  width: 8rem;
+  height: 3.5rem;
+  border: 1px solid var(--line);
+  transform: translateX(-50%);
+}
+
+@media (min-width: 640px) {
+  .workflow-line::before {
+    top: 1.75rem;
+  }
+
+  .pitch-outline {
+    height: 12rem;
+  }
+}
+
+::selection {
+  color: white;
+  background: var(--pitch);
+}

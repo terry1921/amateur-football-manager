@@ -1,0 +1,28 @@
+{
+  "Metadata": {
+    "title": "Matchday",
+    "description": "Gestión de equipos de fútbol amateur, desde la convocatoria hasta el resultado final."
+  },
+  "Home": {
+    "heading": "Tu equipo. Listo para el partido.",
+    "headingFirstLine": "Tu equipo.",
+    "headingSecondLine": "Listo para",
+    "headingAccentLine": "el partido.",
+    "description": "Jugadores, convocatorias, resultados y estadísticas en un solo lugar.",
+    "action": "Empieza con tu equipo",
+    "tagline": "Hecho para el fútbol amateur.",
+    "workflowLabel": "Flujo del día de partido",
+    "workflow": {
+      "squad": "Plantel",
+      "match": "Partido",
+      "callup": "Convocatoria",
+      "result": "Resultado",
+      "stats": "Estadísticas"
+    }
+  },
+  "LocaleSwitcher": {
+    "label": "Cambiar idioma",
+    "english": "Inglés",
+    "spanish": "Español"
+  }
+}

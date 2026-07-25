@@ -1,0 +1,28 @@
+{
+  "Metadata": {
+    "title": "Matchday",
+    "description": "Amateur football team management, from call-up to final result."
+  },
+  "Home": {
+    "heading": "Your team. Ready for matchday.",
+    "headingFirstLine": "Your team.",
+    "headingSecondLine": "Ready for",
+    "headingAccentLine": "matchday.",
+    "description": "One place for players, call-ups, results and statistics.",
+    "action": "Start with your team",
+    "tagline": "Built for amateur football.",
+    "workflowLabel": "Matchday workflow",
+    "workflow": {
+      "squad": "Squad",
+      "match": "Match",
+      "callup": "Call-up",
+      "result": "Result",
+      "stats": "Stats"
+    }
+  },
+  "LocaleSwitcher": {
+    "label": "Change language",
+    "english": "English",
+    "spanish": "Spanish"
+  }
+}
