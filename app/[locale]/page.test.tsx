@@ -11,9 +11,13 @@ vi.mock("@/i18n/navigation", () => ({
     locale,
     href,
     ...props
-  }: AnchorHTMLAttributes<HTMLAnchorElement> & { locale: string }) => (
-    <a href={`/${locale}${href === "/" ? "" : (href ?? "")}`} {...props} />
+  }: AnchorHTMLAttributes<HTMLAnchorElement> & { locale?: string }) => (
+    <a
+      href={`${locale ? `/${locale}` : ""}${href === "/" ? "" : (href ?? "")}`}
+      {...props}
+    />
   ),
+  usePathname: () => "/",
 }));
 
 describe("HomeContent", () => {
@@ -45,7 +49,10 @@ describe("HomeContent", () => {
         screen.getByRole("heading", { name: heading }),
       ).toBeInTheDocument();
       expect(screen.getByRole("list")).toHaveTextContent(workflow);
-      expect(screen.getByRole("button", { name: action })).toBeDisabled();
+      expect(screen.getByRole("link", { name: action })).toHaveAttribute(
+        "href",
+        "/register",
+      );
       expect(
         screen.getByRole("link", {
           name: locale === "en" ? "English" : "Español",

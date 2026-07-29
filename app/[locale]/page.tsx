@@ -9,6 +9,7 @@ import {
 import { useTranslations } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 
 const workflow = [
@@ -54,10 +55,9 @@ export function HomeContent({ locale }: { locale: AppLocale }) {
             {t("description")}
           </p>
 
-          <button
-            type="button"
-            disabled
-            className="mx-auto mt-7 flex min-h-14 w-full max-w-md cursor-not-allowed items-center justify-center gap-3 rounded-xl bg-pitch px-6 text-base font-bold text-white opacity-90 shadow-[0_12px_28px_rgba(0,159,45,0.18)] sm:mt-9 sm:text-lg"
+          <Link
+            href="/register"
+            className="mx-auto mt-7 flex min-h-14 w-full max-w-md items-center justify-center gap-3 rounded-xl bg-pitch px-6 text-base font-bold text-white shadow-[0_12px_28px_rgba(0,159,45,0.18)] transition hover:bg-[#008f2b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch sm:mt-9 sm:text-lg"
           >
             {t("action")}
             <ArrowRight
@@ -65,7 +65,7 @@ export function HomeContent({ locale }: { locale: AppLocale }) {
               className="size-5"
               strokeWidth={2.5}
             />
-          </button>
+          </Link>
 
           <p className="mt-4 text-sm font-medium text-muted">{t("tagline")}</p>
         </div>

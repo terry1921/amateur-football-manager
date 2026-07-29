@@ -1,0 +1,2 @@
+-- Development seed placeholder.
+-- Application data will be added after the database schema is introduced.

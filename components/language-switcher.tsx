@@ -1,5 +1,7 @@
+"use client";
+
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 
 type LanguageSwitcherProps = {
@@ -13,6 +15,7 @@ const localeOptions = [
 
 export function LanguageSwitcher({ locale }: LanguageSwitcherProps) {
   const t = useTranslations("LocaleSwitcher");
+  const pathname = usePathname();
 
   return (
     <nav aria-label={t("label")} className="flex items-center gap-1">
@@ -22,7 +25,7 @@ export function LanguageSwitcher({ locale }: LanguageSwitcherProps) {
         return (
           <Link
             key={option.locale}
-            href="/"
+            href={pathname}
             locale={option.locale}
             aria-current={isCurrent ? "page" : undefined}
             aria-label={t(option.messageKey)}

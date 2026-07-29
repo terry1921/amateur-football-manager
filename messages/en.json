@@ -20,6 +20,95 @@
       "stats": "Stats"
     }
   },
+  "Auth": {
+    "fields": {
+      "email": "Email address",
+      "password": "Password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password"
+    },
+    "validation": {
+      "required": "This field is required.",
+      "invalidEmail": "Enter a valid email address.",
+      "weakPassword": "Use at least 8 characters.",
+      "passwordMismatch": "Passwords do not match."
+    },
+    "errors": {
+      "invalidCredentials": "The email or password is incorrect.",
+      "emailNotConfirmed": "Confirm your email before signing in.",
+      "accountExists": "An account with this email may already exist. Try signing in or resetting your password.",
+      "weakPassword": "Choose a stronger password and try again.",
+      "rateLimited": "Too many attempts. Wait a moment and try again.",
+      "expiredResetLink": "This password reset link is invalid or has expired. Request a new one.",
+      "unexpected": "We could not complete that request. Please try again."
+    },
+    "login": {
+      "title": "Welcome back",
+      "description": "Sign in to manage your team and get ready for matchday.",
+      "submit": "Sign in",
+      "forgotLink": "Forgot your password?",
+      "registerPrompt": "New to Matchday?",
+      "registerLink": "Create an account",
+      "passwordUpdated": "Your password has been updated. Sign in with your new password.",
+      "callbackError": "This sign-in link is invalid or has expired. Please try again."
+    },
+    "register": {
+      "title": "Create your account",
+      "description": "Start organizing your amateur football team in one place.",
+      "submit": "Create account",
+      "loginPrompt": "Already have an account?",
+      "loginLink": "Sign in",
+      "checkEmail": "Check your email to confirm your account, then sign in."
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "description": "Enter your email and we will send instructions to choose a new password.",
+      "submit": "Send reset instructions",
+      "confirmation": "If an account exists for this email, password reset instructions have been sent.",
+      "backToLogin": "Back to sign in"
+    },
+    "resetPassword": {
+      "title": "Choose a new password",
+      "description": "Use at least 8 characters and keep your account secure.",
+      "submit": "Update password"
+    }
+  },
+  "DashboardShell": {
+    "navigationLabel": "Application navigation",
+    "dashboard": "Dashboard",
+    "team": "Team",
+    "players": "Players",
+    "matches": "Matches",
+    "statistics": "Statistics",
+    "content": "Content",
+    "logout": "Sign out"
+  },
+  "ProtectedPages": {
+    "dashboard": {
+      "title": "Dashboard",
+      "description": "Your team overview will arrive in Task 011. This protected page confirms your authenticated session is active."
+    },
+    "team": {
+      "title": "Team",
+      "description": "Team onboarding and settings remain part of Task 006."
+    },
+    "players": {
+      "title": "Players",
+      "description": "Player management remains part of Task 008."
+    },
+    "matches": {
+      "title": "Matches",
+      "description": "Match management remains part of Task 009."
+    },
+    "statistics": {
+      "title": "Statistics",
+      "description": "Team and player statistics remain part of later MVP tasks."
+    },
+    "content": {
+      "title": "Content",
+      "description": "Social content templates remain part of Task 017."
+    }
+  },
   "LocaleSwitcher": {
     "label": "Change language",
     "english": "English",
