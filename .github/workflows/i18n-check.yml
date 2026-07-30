@@ -1,0 +1,92 @@
+name: i18n Key Parity Check
+
+on:
+  pull_request:
+    paths:
+      - "messages/**"
+      - "i18n/**"
+      - ".github/workflows/i18n-check.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "messages/**"
+      - "i18n/**"
+      - ".github/workflows/i18n-check.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-i18n:
+    name: Verify Translation Key Parity
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify JSON formatting
+        run: npx prettier --check "messages/*.json"
+
+      - name: Compare English and Spanish key parity
+        run: |
+          node -e '
+            const fs = require("fs");
+            const path = require("path");
+
+            function getKeys(obj, prefix = "") {
+              let keys = [];
+              for (const key in obj) {
+                const fullKey = prefix ? `${prefix}.${key}` : key;
+                if (typeof obj[key] === "object" && obj[key] !== null && !Array.isArray(obj[key])) {
+                  keys = keys.concat(getKeys(obj[key], fullKey));
+                } else {
+                  keys.push(fullKey);
+                }
+              }
+              return keys.sort();
+            }
+
+            const enPath = path.join(process.cwd(), "messages/en.json");
+            const esPath = path.join(process.cwd(), "messages/es.json");
+
+            const en = JSON.parse(fs.readFileSync(enPath, "utf8"));
+            const es = JSON.parse(fs.readFileSync(esPath, "utf8"));
+
+            const enKeys = getKeys(en);
+            const esKeys = getKeys(es);
+
+            const missingInEs = enKeys.filter(k => !esKeys.includes(k));
+            const missingInEn = esKeys.filter(k => !enKeys.includes(k));
+
+            let failed = false;
+
+            if (missingInEs.length > 0) {
+              console.error("❌ Missing keys in Spanish (messages/es.json):");
+              missingInEs.forEach(key => console.error(`  - ${key}`));
+              failed = true;
+            }
+
+            if (missingInEn.length > 0) {
+              console.error("❌ Missing keys in English (messages/en.json):");
+              missingInEn.forEach(key => console.error(`  - ${key}`));
+              failed = true;
+            }
+
+            if (failed) {
+              process.exit(1);
+            }
+
+            console.log(`✅ All ${enKeys.length} translation keys are in sync across en.json and es.json.`);
+          '
