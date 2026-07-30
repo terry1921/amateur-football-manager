@@ -271,9 +271,9 @@ select throws_ok(
 
 select throws_ok(
   $$insert into public.callups (team_id, match_id, player_id) values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000003')$$,
-  '23503',
+  '22023',
   null,
-  'call-ups cannot use another team''s player'
+  'call-ups reject another team''s player as ineligible without revealing ownership'
 );
 
 select throws_ok(
