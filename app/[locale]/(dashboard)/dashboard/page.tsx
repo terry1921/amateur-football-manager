@@ -1,18 +1,13 @@
-import { getTranslations } from "next-intl/server";
-import { ProtectedPlaceholder } from "@/components/protected-placeholder";
-import type { AppLocale } from "@/i18n/routing";
+import {
+  DashboardExperience,
+  DashboardLoadError,
+} from "@/features/dashboard/dashboard-experience";
+import { getDashboardData } from "@/features/dashboard/data";
 
-export default async function DashboardPage({
-  params,
-}: {
-  params: Promise<{ locale: AppLocale }>;
-}) {
-  const { locale } = await params;
-  const t = await getTranslations({
-    locale,
-    namespace: "ProtectedPages.dashboard",
-  });
-  return (
-    <ProtectedPlaceholder title={t("title")} description={t("description")} />
-  );
+export default async function DashboardPage() {
+  const data = await getDashboardData();
+
+  if (data.status === "error") return <DashboardLoadError />;
+
+  return <DashboardExperience data={data} />;
 }

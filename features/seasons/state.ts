@@ -1,0 +1,20 @@
+export type SeasonField = "name" | "startDate" | "endDate";
+
+export type SeasonFormActionState = {
+  status: "idle" | "error";
+  message?: string;
+  fieldErrors?: Partial<Record<SeasonField, string>>;
+};
+
+export type SeasonLifecycleActionState = {
+  status: "idle" | "success" | "error";
+  message?: string;
+};
+
+export const initialSeasonFormState: SeasonFormActionState = {
+  status: "idle",
+};
+
+export const initialSeasonLifecycleState: SeasonLifecycleActionState = {
+  status: "idle",
+};

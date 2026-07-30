@@ -77,16 +77,262 @@
     "navigationLabel": "Application navigation",
     "dashboard": "Dashboard",
     "team": "Team",
+    "seasons": "Seasons",
     "players": "Players",
     "matches": "Matches",
     "statistics": "Statistics",
     "content": "Content",
     "logout": "Sign out"
   },
+  "Onboarding": {
+    "progress": "Step 1 of 1",
+    "stepName": "Create team",
+    "title": "Create your team",
+    "description": "Start with the basics. You can update these details later.",
+    "submit": "Create team",
+    "creating": "Creating team…",
+    "fields": {
+      "name": "Team name",
+      "shortName": "Short name (optional)",
+      "city": "City (optional)",
+      "country": "Country (optional)",
+      "primaryColor": "Primary color (optional)",
+      "secondaryColor": "Secondary color (optional)"
+    },
+    "validation": {
+      "required": "Enter your team name.",
+      "tooShort": "Use at least 2 characters.",
+      "tooLong": "This value is too long.",
+      "invalidColor": "Use a 6-digit hex color such as #00A331."
+    },
+    "errors": {
+      "sessionExpired": "Your session has expired. Sign in and try again.",
+      "unexpected": "We could not create your team. Check your connection and try again."
+    }
+  },
+  "FirstTimeDashboard": {
+    "welcome": {
+      "title": "Welcome to Matchday",
+      "description": "Let’s get {teamName} ready for matchday.",
+      "operational": "{teamName} is ready for matchday.",
+      "operationalDescription": "Your core setup is in place. Finish the remaining steps when you’re ready.",
+      "completeDescription": "Your setup is complete. Operational team information now comes first."
+    },
+    "progress": {
+      "label": "Team setup progress",
+      "count": "{completed} of {total} completed",
+      "percentage": "{percentage}% setup complete"
+    },
+    "setup": {
+      "title": "Team setup",
+      "compact": "View remaining setup steps",
+      "complete": "Setup complete"
+    },
+    "status": {
+      "completed": "Completed",
+      "blocked": "Blocked by a prerequisite"
+    },
+    "steps": {
+      "team": {
+        "title": "Create your team",
+        "description": "Add the identity that anchors every Matchday workflow.",
+        "blocked": "Create your team first.",
+        "action": "View your team",
+        "availability": "Available"
+      },
+      "season": {
+        "title": "Create your first season",
+        "description": "Organize matches and statistics under a competition period.",
+        "blocked": "Create your team first.",
+        "action": "Create your first season",
+        "availability": "Available"
+      },
+      "players": {
+        "title": "Add your first players",
+        "description": "Build the squad you’ll use for call-ups and statistics.",
+        "blocked": "Create your team first.",
+        "action": "Add players",
+        "availability": "Coming in Task 008"
+      },
+      "match": {
+        "title": "Schedule your first match",
+        "description": "Put the first fixture on your team calendar.",
+        "blocked": "Create a season first to organize the match.",
+        "action": "Schedule a match",
+        "availability": "Coming in Task 009"
+      },
+      "callup": {
+        "title": "Create your first call-up",
+        "description": "Select available players for an upcoming fixture.",
+        "blocked": "Add a player and schedule a match first.",
+        "action": "Create a call-up",
+        "availability": "Coming in Task 010"
+      },
+      "result": {
+        "title": "Record your first result",
+        "description": "Complete a match with both teams’ scores.",
+        "blocked": "Schedule a match before recording its result.",
+        "action": "Record a result",
+        "availability": "Coming in Task 012"
+      }
+    },
+    "team": {
+      "title": "Team summary",
+      "primaryColor": "Primary color",
+      "secondaryColor": "Secondary color"
+    },
+    "modules": {
+      "season": {
+        "title": "Season",
+        "active": "Active season"
+      },
+      "squad": {
+        "title": "Squad",
+        "description": "Players registered for this team",
+        "count": "{count, plural, one {# player} other {# players}}"
+      },
+      "upcoming": {
+        "title": "Upcoming match"
+      },
+      "result": {
+        "title": "Recent result",
+        "score": "{teamName} {teamScore}–{opponentScore} {opponent}"
+      },
+      "activity": {
+        "title": "Recent activity",
+        "scheduled": "Match against {opponent} scheduled",
+        "result": "Result against {opponent} recorded"
+      }
+    },
+    "empty": {
+      "season": {
+        "title": "No active season",
+        "description": "Create a season to organize fixtures and statistics.",
+        "inactiveDescription": "A season exists, but none is active yet. Activate one when season management is available."
+      },
+      "players": {
+        "title": "No players yet",
+        "description": "Add players to prepare call-ups and track match statistics."
+      },
+      "upcoming": {
+        "title": "No upcoming match",
+        "description": "Schedule a fixture so your team knows what comes next."
+      },
+      "results": {
+        "title": "No completed matches",
+        "description": "Completed scores will appear here after your first result is recorded."
+      },
+      "activity": {
+        "title": "No recent activity",
+        "description": "Scheduled matches and recorded results will create a useful timeline here."
+      }
+    },
+    "error": {
+      "title": "We couldn’t load your dashboard",
+      "description": "Your data was not treated as empty. Refresh to try loading it again.",
+      "action": "Refresh dashboard"
+    },
+    "loading": {
+      "label": "Loading dashboard"
+    }
+  },
+  "Seasons": {
+    "title": "Seasons",
+    "description": "Organize matches, statistics, and team history.",
+    "create": "Create season",
+    "activeSeason": "Active season",
+    "history": "Season history",
+    "matches": "{count, plural, one {# match} other {# matches}}",
+    "columns": {
+      "season": "Season",
+      "dates": "Dates",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "draft": "Draft",
+      "active": "Active",
+      "completed": "Completed"
+    },
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "activate": "Activate",
+      "complete": "Mark completed",
+      "archive": "Archive"
+    },
+    "empty": {
+      "title": "Create your first season",
+      "description": "Seasons keep fixtures, results, and statistics organized by competition period.",
+      "action": "Create season"
+    },
+    "new": {
+      "eyebrow": "Season management",
+      "title": "Create season",
+      "description": "Add a competition period now. You can activate it when your dates are ready."
+    },
+    "edit": {
+      "eyebrow": "Season management",
+      "title": "Edit season",
+      "description": "Update the name or dates before match history is attached.",
+      "protectedTitle": "This season is read-only",
+      "protectedDescription": "Completed seasons and seasons with match history cannot be edited. Your historical records remain unchanged."
+    },
+    "form": {
+      "name": "Season name",
+      "namePlaceholder": "e.g. Apertura 2026",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "dateHelp": "The end date must be the same as or later than the start date.",
+      "create": "Create season",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "cancel": "Cancel"
+    },
+    "validation": {
+      "required": "This field is required.",
+      "tooLong": "Use 80 characters or fewer.",
+      "invalidDate": "Enter a valid date.",
+      "endBeforeStart": "The end date cannot be before the start date."
+    },
+    "errors": {
+      "sessionExpired": "Your session has expired. Sign in and try again.",
+      "duplicate": "A season with this name already exists for your team.",
+      "historyProtected": "This season is protected because it is part of your team history.",
+      "hasMatches": "This season cannot be edited because matches already use it.",
+      "cannotActivate": "A completed season cannot be activated again.",
+      "notFound": "We could not find this season for your team.",
+      "unexpected": "We could not save this season. Check your connection and try again."
+    },
+    "details": {
+      "back": "Back to seasons",
+      "edit": "Edit season",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "matches": "Matches",
+      "protected": "This season is read-only to preserve completed or match-linked history.",
+      "status": {
+        "draft": "Draft season",
+        "active": "Active season",
+        "completed": "Completed season"
+      }
+    },
+    "error": {
+      "title": "We couldn’t load seasons",
+      "description": "Your season data was not changed. Try loading it again.",
+      "action": "Try again"
+    }
+  },
+  "ApplicationError": {
+    "title": "Something went wrong",
+    "description": "We couldn’t load this part of Matchday. Try again without losing your setup data.",
+    "action": "Try again"
+  },
   "ProtectedPages": {
     "dashboard": {
-      "title": "Dashboard",
-      "description": "Your team overview will arrive in Task 011. This protected page confirms your authenticated session is active."
+      "title": "Welcome to Matchday",
+      "description": "Your team is ready. More features are coming soon.",
+      "teamLabel": "Team"
     },
     "team": {
       "title": "Team",

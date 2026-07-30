@@ -113,6 +113,41 @@ select {
   content: "";
 }
 
+.onboarding-field {
+  position: absolute;
+  right: -5rem;
+  bottom: -8rem;
+  width: 25rem;
+  height: 19rem;
+  border: 2px solid color-mix(in srgb, var(--line) 80%, transparent);
+  border-radius: 2rem;
+  opacity: 0.55;
+  transform: rotate(-28deg);
+}
+
+.onboarding-field::before,
+.onboarding-field::after {
+  position: absolute;
+  content: "";
+}
+
+.onboarding-field::before {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  border-left: 2px solid var(--line);
+}
+
+.onboarding-field::after {
+  top: 50%;
+  left: 50%;
+  width: 7rem;
+  height: 7rem;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .pitch-outline::before {
   top: 0;
   bottom: 0;

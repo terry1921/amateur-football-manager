@@ -43,7 +43,7 @@ select results_eq(
         ('match_events', 'DELETE'), ('match_events', 'INSERT'), ('match_events', 'SELECT'), ('match_events', 'UPDATE'),
         ('matches', 'DELETE'), ('matches', 'INSERT'), ('matches', 'SELECT'), ('matches', 'UPDATE'),
         ('players', 'DELETE'), ('players', 'INSERT'), ('players', 'SELECT'), ('players', 'UPDATE'),
-        ('seasons', 'DELETE'), ('seasons', 'INSERT'), ('seasons', 'SELECT'), ('seasons', 'UPDATE'),
+        ('seasons', 'INSERT'), ('seasons', 'SELECT'), ('seasons', 'UPDATE'),
         ('teams', 'DELETE'), ('teams', 'INSERT'), ('teams', 'SELECT'), ('teams', 'UPDATE')
     ) as expected(table_name, command)
     order by table_name, command
@@ -73,7 +73,7 @@ select is(
       and tablename in ('teams', 'seasons', 'players', 'matches', 'callups', 'match_events')
       and roles = array['authenticated']::name[]
   ),
-  24::bigint,
+  23::bigint,
   'all application policies target only authenticated users'
 );
 
@@ -101,7 +101,10 @@ select ok(
     where not has_table_privilege(
       'authenticated',
       format('public.%I', table_name),
-      'SELECT, INSERT, UPDATE, DELETE'
+      case
+        when table_name = 'seasons' then 'SELECT, INSERT, UPDATE'
+        else 'SELECT, INSERT, UPDATE, DELETE'
+      end
     )
   ),
   'authenticated users have the Data API privileges required for CRUD'
@@ -362,10 +365,11 @@ select results_eq(
   'cross-tenant team deletes affect no rows'
 );
 
-select results_eq(
-  $$delete from public.seasons where id = '60000000-0000-0000-0000-000000000002' returning id$$,
-  $$select null::uuid where false$$,
-  'cross-tenant season deletes affect no rows'
+select throws_ok(
+  $$delete from public.seasons where id = '60000000-0000-0000-0000-000000000002'$$,
+  '42501',
+  null,
+  'season deletion is unavailable even with a known cross-tenant UUID'
 );
 
 select results_eq(
@@ -401,9 +405,9 @@ select throws_ok(
 
 select throws_ok(
   $$update public.seasons set team_id = '50000000-0000-0000-0000-000000000002' where id = '60000000-0000-0000-0000-000000000001'$$,
-  '42501',
+  '55000',
   null,
-  'an owner cannot move a season to another owner''s team'
+  'season ownership is immutable even when another team UUID is known'
 );
 
 select throws_ok(
@@ -524,10 +528,11 @@ select results_eq(
   'an owner can delete their own player'
 );
 
-select results_eq(
-  $$delete from public.seasons where id = '60000000-0000-0000-0000-000000000003' returning id$$,
-  $$values ('60000000-0000-0000-0000-000000000003'::uuid)$$,
-  'an owner can delete their own season'
+select throws_ok(
+  $$delete from public.seasons where id = '60000000-0000-0000-0000-000000000003'$$,
+  '42501',
+  null,
+  'an owner cannot delete season history'
 );
 
 select results_eq(

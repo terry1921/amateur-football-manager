@@ -24,7 +24,7 @@ describe("seasons RLS through Supabase JS", () => {
     ]);
   });
 
-  it("allows own-tenant season insert, update, and eligible delete", async () => {
+  it("allows own-tenant season insert and update but preserves it from deletion", async () => {
     const seasonId = securityUuid(context.namespace, "owned-season");
     const insert = await context.userAClient
       .from("seasons")
@@ -51,8 +51,66 @@ describe("seasons RLS through Supabase JS", () => {
       .delete()
       .eq("id", seasonId)
       .select("id");
-    expect(remove.error).toBeNull();
-    expect(remove.data).toEqual([{ id: seasonId }]);
+    expectRlsDenied(remove);
+  });
+
+  it("enforces case-insensitive season names inside one team", async () => {
+    const first = await context.userAClient.from("seasons").insert({
+      team_id: context.ids.teamA,
+      name: "Apertura 2027",
+    });
+    const duplicate = await context.userAClient.from("seasons").insert({
+      team_id: context.ids.teamA,
+      name: "  APERTURA 2027  ",
+    });
+
+    expect(first.error).toBeNull();
+    expect(duplicate.error?.code).toBe("23505");
+  });
+
+  it("atomically activates an owned draft and completes the previous active season", async () => {
+    const previousId = securityUuid(context.namespace, "previous-active");
+    const nextId = securityUuid(context.namespace, "next-active");
+    await context.userAClient.from("seasons").insert([
+      {
+        id: previousId,
+        team_id: context.ids.teamA,
+        name: "Previous Active",
+        status: "active",
+      },
+      {
+        id: nextId,
+        team_id: context.ids.teamA,
+        name: "Next Active",
+        status: "draft",
+      },
+    ]);
+
+    const activation = await context.userAClient.rpc("activate_season", {
+      target_season_id: nextId,
+    });
+    const seasons = await context.userAClient
+      .from("seasons")
+      .select("id, status")
+      .in("id", [previousId, nextId])
+      .order("id");
+
+    expect(activation.error).toBeNull();
+    expect(seasons.error).toBeNull();
+    expect(seasons.data).toEqual(
+      [
+        { id: previousId, status: "completed" },
+        { id: nextId, status: "active" },
+      ].sort((a, b) => a.id.localeCompare(b.id)),
+    );
+  });
+
+  it("cannot activate another tenant's known season UUID", async () => {
+    const result = await context.userAClient.rpc("activate_season", {
+      target_season_id: context.ids.seasonB,
+    });
+
+    expect(result.error?.code).toBe("P0002");
   });
 
   it("blocks foreign inserts, updates, and deletes using known UUIDs", async () => {
@@ -73,7 +131,7 @@ describe("seasons RLS through Supabase JS", () => {
 
     expectRlsDenied(insert);
     expectNoRowsAffected(update);
-    expectNoRowsAffected(remove);
+    expectRlsDenied(remove);
   });
 
   it("rejects moving an owned season into the foreign team", async () => {
@@ -83,6 +141,7 @@ describe("seasons RLS through Supabase JS", () => {
       .eq("id", context.ids.seasonA)
       .select("id");
 
-    expectRlsDenied(result);
+    expect(result.data).toBeNull();
+    expect(result.error?.code).toBe("55000");
   });
 });

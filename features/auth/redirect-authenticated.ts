@@ -1,12 +1,9 @@
 import { redirect } from "next/navigation";
 import type { AppLocale } from "@/i18n/routing";
-import { createClient } from "@/lib/supabase/server";
+import { getTeamAccess } from "@/features/teams/access";
 
 export async function redirectAuthenticated(locale: AppLocale) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, team } = await getTeamAccess();
 
-  if (user) redirect(`/${locale}/dashboard`);
+  if (user) redirect(`/${locale}/${team ? "dashboard" : "onboarding"}`);
 }

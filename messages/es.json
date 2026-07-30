@@ -77,16 +77,262 @@
     "navigationLabel": "Navegación de la aplicación",
     "dashboard": "Inicio",
     "team": "Equipo",
+    "seasons": "Temporadas",
     "players": "Jugadores",
     "matches": "Partidos",
     "statistics": "Estadísticas",
     "content": "Contenido",
     "logout": "Cerrar sesión"
   },
+  "Onboarding": {
+    "progress": "Paso 1 de 1",
+    "stepName": "Crear equipo",
+    "title": "Crea tu equipo",
+    "description": "Empieza con lo básico. Puedes actualizar estos datos después.",
+    "submit": "Crear equipo",
+    "creating": "Creando equipo…",
+    "fields": {
+      "name": "Nombre del equipo",
+      "shortName": "Nombre corto (opcional)",
+      "city": "Ciudad (opcional)",
+      "country": "País (opcional)",
+      "primaryColor": "Color principal (opcional)",
+      "secondaryColor": "Color secundario (opcional)"
+    },
+    "validation": {
+      "required": "Ingresa el nombre de tu equipo.",
+      "tooShort": "Usa al menos 2 caracteres.",
+      "tooLong": "Este valor es demasiado largo.",
+      "invalidColor": "Usa un color hexadecimal de 6 dígitos, como #00A331."
+    },
+    "errors": {
+      "sessionExpired": "Tu sesión caducó. Inicia sesión e inténtalo de nuevo.",
+      "unexpected": "No pudimos crear tu equipo. Revisa tu conexión e inténtalo de nuevo."
+    }
+  },
+  "FirstTimeDashboard": {
+    "welcome": {
+      "title": "Te damos la bienvenida a Matchday",
+      "description": "Preparemos a {teamName} para el partido.",
+      "operational": "{teamName} está listo para el partido.",
+      "operationalDescription": "La configuración principal está lista. Completa los pasos restantes cuando quieras.",
+      "completeDescription": "La configuración está completa. La información operativa del equipo ahora aparece primero."
+    },
+    "progress": {
+      "label": "Progreso de configuración del equipo",
+      "count": "{completed} de {total} completados",
+      "percentage": "{percentage}% de configuración completada"
+    },
+    "setup": {
+      "title": "Configuración del equipo",
+      "compact": "Ver pasos de configuración pendientes",
+      "complete": "Configuración completa"
+    },
+    "status": {
+      "completed": "Completado",
+      "blocked": "Bloqueado por un requisito"
+    },
+    "steps": {
+      "team": {
+        "title": "Crea tu equipo",
+        "description": "Agrega la identidad que conecta todos los flujos de Matchday.",
+        "blocked": "Crea tu equipo primero.",
+        "action": "Ver tu equipo",
+        "availability": "Disponible"
+      },
+      "season": {
+        "title": "Crea tu primera temporada",
+        "description": "Organiza partidos y estadísticas dentro de un periodo de competencia.",
+        "blocked": "Crea tu equipo primero.",
+        "action": "Crear tu primera temporada",
+        "availability": "Disponible"
+      },
+      "players": {
+        "title": "Agrega tus primeros jugadores",
+        "description": "Forma el plantel que usarás para convocatorias y estadísticas.",
+        "blocked": "Crea tu equipo primero.",
+        "action": "Agregar jugadores",
+        "availability": "Disponible en la Tarea 008"
+      },
+      "match": {
+        "title": "Programa tu primer partido",
+        "description": "Agrega el primer encuentro al calendario del equipo.",
+        "blocked": "Crea una temporada para organizar el partido.",
+        "action": "Programar un partido",
+        "availability": "Disponible en la Tarea 009"
+      },
+      "callup": {
+        "title": "Crea tu primera convocatoria",
+        "description": "Selecciona jugadores disponibles para el próximo partido.",
+        "blocked": "Agrega un jugador y programa un partido primero.",
+        "action": "Crear una convocatoria",
+        "availability": "Disponible en la Tarea 010"
+      },
+      "result": {
+        "title": "Registra tu primer resultado",
+        "description": "Completa un partido con los marcadores de ambos equipos.",
+        "blocked": "Programa un partido antes de registrar su resultado.",
+        "action": "Registrar un resultado",
+        "availability": "Disponible en la Tarea 012"
+      }
+    },
+    "team": {
+      "title": "Resumen del equipo",
+      "primaryColor": "Color principal",
+      "secondaryColor": "Color secundario"
+    },
+    "modules": {
+      "season": {
+        "title": "Temporada",
+        "active": "Temporada activa"
+      },
+      "squad": {
+        "title": "Plantel",
+        "description": "Jugadores registrados para este equipo",
+        "count": "{count, plural, one {# jugador} other {# jugadores}}"
+      },
+      "upcoming": {
+        "title": "Próximo partido"
+      },
+      "result": {
+        "title": "Resultado reciente",
+        "score": "{teamName} {teamScore}–{opponentScore} {opponent}"
+      },
+      "activity": {
+        "title": "Actividad reciente",
+        "scheduled": "Partido contra {opponent} programado",
+        "result": "Resultado contra {opponent} registrado"
+      }
+    },
+    "empty": {
+      "season": {
+        "title": "No hay una temporada activa",
+        "description": "Crea una temporada para organizar partidos y estadísticas.",
+        "inactiveDescription": "Existe una temporada, pero ninguna está activa. Podrás activar una cuando la gestión de temporadas esté disponible."
+      },
+      "players": {
+        "title": "Aún no hay jugadores",
+        "description": "Agrega jugadores para preparar convocatorias y registrar estadísticas."
+      },
+      "upcoming": {
+        "title": "No hay un próximo partido",
+        "description": "Programa un encuentro para que tu equipo sepa qué sigue."
+      },
+      "results": {
+        "title": "No hay partidos completados",
+        "description": "Los marcadores aparecerán aquí después de registrar tu primer resultado."
+      },
+      "activity": {
+        "title": "No hay actividad reciente",
+        "description": "Los partidos programados y resultados registrados crearán una cronología útil aquí."
+      }
+    },
+    "error": {
+      "title": "No pudimos cargar tu panel",
+      "description": "Tus datos no se consideraron vacíos. Actualiza para intentar cargarlos de nuevo.",
+      "action": "Actualizar panel"
+    },
+    "loading": {
+      "label": "Cargando panel"
+    }
+  },
+  "Seasons": {
+    "title": "Temporadas",
+    "description": "Organiza partidos, estadísticas e historial del equipo.",
+    "create": "Crear temporada",
+    "activeSeason": "Temporada activa",
+    "history": "Historial de temporadas",
+    "matches": "{count, plural, one {# partido} other {# partidos}}",
+    "columns": {
+      "season": "Temporada",
+      "dates": "Fechas",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "status": {
+      "draft": "Borrador",
+      "active": "Activa",
+      "completed": "Completada"
+    },
+    "actions": {
+      "view": "Ver",
+      "edit": "Editar",
+      "activate": "Activar",
+      "complete": "Marcar completada",
+      "archive": "Archivar"
+    },
+    "empty": {
+      "title": "Crea tu primera temporada",
+      "description": "Las temporadas organizan partidos, resultados y estadísticas por periodo de competencia.",
+      "action": "Crear temporada"
+    },
+    "new": {
+      "eyebrow": "Gestión de temporadas",
+      "title": "Crear temporada",
+      "description": "Agrega un periodo de competencia. Podrás activarlo cuando las fechas estén listas."
+    },
+    "edit": {
+      "eyebrow": "Gestión de temporadas",
+      "title": "Editar temporada",
+      "description": "Actualiza el nombre o las fechas antes de asociar historial de partidos.",
+      "protectedTitle": "Esta temporada es de solo lectura",
+      "protectedDescription": "Las temporadas completadas y las que tienen historial de partidos no se pueden editar. Tus registros históricos permanecen intactos."
+    },
+    "form": {
+      "name": "Nombre de la temporada",
+      "namePlaceholder": "Ej. Apertura 2026",
+      "startDate": "Fecha de inicio",
+      "endDate": "Fecha de fin",
+      "dateHelp": "La fecha de fin debe ser igual o posterior a la fecha de inicio.",
+      "create": "Crear temporada",
+      "save": "Guardar cambios",
+      "saving": "Guardando…",
+      "cancel": "Cancelar"
+    },
+    "validation": {
+      "required": "Este campo es obligatorio.",
+      "tooLong": "Usa 80 caracteres o menos.",
+      "invalidDate": "Ingresa una fecha válida.",
+      "endBeforeStart": "La fecha de fin no puede ser anterior a la de inicio."
+    },
+    "errors": {
+      "sessionExpired": "Tu sesión caducó. Inicia sesión e inténtalo de nuevo.",
+      "duplicate": "Ya existe una temporada con este nombre para tu equipo.",
+      "historyProtected": "Esta temporada está protegida porque forma parte del historial del equipo.",
+      "hasMatches": "Esta temporada no se puede editar porque ya tiene partidos asociados.",
+      "cannotActivate": "Una temporada completada no se puede volver a activar.",
+      "notFound": "No encontramos esta temporada para tu equipo.",
+      "unexpected": "No pudimos guardar esta temporada. Revisa tu conexión e inténtalo de nuevo."
+    },
+    "details": {
+      "back": "Volver a temporadas",
+      "edit": "Editar temporada",
+      "startDate": "Fecha de inicio",
+      "endDate": "Fecha de fin",
+      "matches": "Partidos",
+      "protected": "Esta temporada es de solo lectura para conservar el historial completado o asociado a partidos.",
+      "status": {
+        "draft": "Temporada en borrador",
+        "active": "Temporada activa",
+        "completed": "Temporada completada"
+      }
+    },
+    "error": {
+      "title": "No pudimos cargar las temporadas",
+      "description": "Los datos de tus temporadas no cambiaron. Intenta cargarlos de nuevo.",
+      "action": "Intentar de nuevo"
+    }
+  },
+  "ApplicationError": {
+    "title": "Algo salió mal",
+    "description": "No pudimos cargar esta parte de Matchday. Inténtalo de nuevo sin perder los datos de configuración.",
+    "action": "Intentar de nuevo"
+  },
   "ProtectedPages": {
     "dashboard": {
-      "title": "Inicio",
-      "description": "El resumen del equipo llegará en la Tarea 011. Esta página protegida confirma que tu sesión está activa."
+      "title": "Te damos la bienvenida a Matchday",
+      "description": "Tu equipo está listo. Pronto llegarán más funciones.",
+      "teamLabel": "Equipo"
     },
     "team": {
       "title": "Equipo",

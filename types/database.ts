@@ -347,7 +347,25 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      activate_season: {
+        Args: { target_season_id: string };
+        Returns: {
+          created_at: string;
+          end_date: string | null;
+          id: string;
+          name: string;
+          start_date: string | null;
+          status: string;
+          team_id: string;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "seasons";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
     };
     Enums: {
       [_ in never]: never;
