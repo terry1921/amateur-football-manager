@@ -50,6 +50,9 @@ describe("getTeamSetupProgress", () => {
 
     expect(progress.completedCount).toBe(4);
     expect(progress.nextStep?.id).toBe("callup");
+    expect(progress.nextStep?.status).toBe("available");
+    expect(progress.nextStep?.featureAvailable).toBe(true);
+    expect(progress.nextStep?.href).toBe("/matches");
     expect(progress.isOperational).toBe(true);
   });
 

@@ -50,6 +50,15 @@ evaluation. It checks `auth.uid()` ownership internally and returns only a
 boolean, so calling it with a foreign UUID cannot reveal foreign fixture data.
 Anonymous execution is revoked.
 
+Call-up writes have a separate lifecycle boundary: authenticated clients may
+mutate call-ups only while the referenced match is scheduled. The
+`replace_match_callup` security-invoker function validates the entire submitted
+set before changing rows, rejects duplicates and foreign or newly unavailable
+players, and performs the replacement atomically. RLS still resolves ownership
+through the match, while a database trigger protects the lifecycle and makes
+call-up identity immutable for direct table mutations. Completed and cancelled
+match call-ups are read-only.
+
 `players` and `seasons` intentionally expose no authenticated `DELETE`
 privilege or policy. Player departures use the `inactive` status, and a trigger
 makes `players.team_id` immutable. This preserves attribution for historical
@@ -75,8 +84,10 @@ Ownership predicates use indexed equality lookups:
   normal tenant-filtered queries.
 
 `auth.uid()` is wrapped in a scalar subquery so PostgreSQL can initialize it
-once per statement rather than once per candidate row. No privileged helper
-functions or `security definer` bypasses are used.
+once per statement rather than once per candidate row. The call-up replacement
+function runs as the caller and therefore does not bypass RLS. The only
+security-definer application helper is the narrow boolean match-delete
+predicate described above.
 
 ## Security regression tests
 

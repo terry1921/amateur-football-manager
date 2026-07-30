@@ -148,11 +148,17 @@ message text is intentionally not used.
 
 `public.set_updated_at()` is an invoker-context trigger function with a fixed
 empty search path, and execution is revoked from public API roles.
-`public.can_delete_owned_match(uuid, uuid)` is the sole exposed application
-predicate: it is a stable, read-only `SECURITY DEFINER` function used by the
-match delete policy to avoid recursive RLS evaluation. It checks `auth.uid()`
-ownership internally, returns only a boolean, and is unavailable to anonymous
-clients.
+`public.can_delete_owned_match(uuid, uuid)` is a stable, read-only
+`SECURITY DEFINER` predicate used by the match delete policy to avoid recursive
+RLS evaluation. It checks `auth.uid()` ownership internally, returns only a
+boolean, and is unavailable to anonymous clients.
+
+`public.replace_match_callup(uuid, uuid[])` is a `SECURITY INVOKER` mutation
+with a fixed empty search path. It locks the owned match, validates the complete
+selection, and replaces its call-ups in one transaction. Anonymous execution
+is revoked. The focused pgTAP suite in
+`supabase/tests/database/callup_management.test.sql` covers lifecycle,
+eligibility, tenant isolation, duplicates, and rollback behavior.
 
 No Storage bucket or `storage.objects` authorization policy has been created
 for the MVP yet. Storage isolation tests are deferred until the task that

@@ -39,7 +39,7 @@ declarative constraints instead of privileged triggers.
   permits only one active season per team.
 - `players`: team roster records. Position is `GK`, `DEF`, `MID`, or `FWD` and
   status is `active`, `injured`, `suspended`, or `inactive`. Optional shirt
-  numbers use the flexible amateur-football range `0` through `99` and are not
+  numbers use the flexible amateur-football range `0` through `999` and are not
   unique, allowing temporary duplicates and unassigned numbers.
 - `matches`: scheduled, completed, or cancelled fixtures. The home/away value is
   `home`, `away`, or `neutral`. Scores use managed-team/opponent orientation,
@@ -116,6 +116,12 @@ authorize through their referenced match instead of trusting a submitted
 `team_id`. The complete authorization model and regression-test coverage are
 documented in `docs/security.md`.
 
+Call-up inserts, updates, and deletes are limited to scheduled matches. The
+`replace_match_callup` invoker RPC validates an owner's complete selection and
+applies it atomically. Newly selected players must be active and belong to the
+match team; an already-selected player may remain after becoming injured,
+suspended, or inactive so historical context is not silently rewritten.
+
 Completed and cancelled matches are immutable. Match team identity cannot
 change, and status transitions are restricted to future-compatible
 `scheduled -> completed` plus Task 009's `scheduled -> cancelled`.
@@ -125,6 +131,6 @@ change, and status transitions are restricted to future-compatible
 - Authentication flows remain Task 004.
 - The initial beta's one-team-per-owner limit remains an application rule rather
   than a database constraint, preserving the planned path to multi-team plans.
-- Call-up, result, event, and statistics workflows remain later tasks.
+- Result, event, and statistics workflows remain later tasks.
 - Seed data remains separate from schema migrations and will be introduced by a
   dedicated development-data task.

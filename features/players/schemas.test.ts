@@ -22,7 +22,20 @@ describe("playerSchema", () => {
     });
   });
 
-  it.each(["-1", "100", "1.5", "not-a-number"])(
+  it("accepts a three-digit shirt number at the upper limit", () => {
+    expect(
+      playerSchema.parse({
+        firstName: "Diego",
+        lastName: "",
+        nickname: "",
+        shirtNumber: "999",
+        position: "GK",
+        status: "active",
+      }).shirtNumber,
+    ).toBe(999);
+  });
+
+  it.each(["-1", "1000", "1.5", "not-a-number"])(
     "rejects invalid shirt number %s",
     (shirtNumber) => {
       const result = playerSchema.safeParse({

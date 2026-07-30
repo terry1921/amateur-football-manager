@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarDays, Pencil } from "lucide-react";
+import { ArrowLeft, CalendarDays, Pencil, UsersRound } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { MatchActions } from "@/features/matches/match-actions";
@@ -82,15 +82,28 @@ export default async function MatchDetailsPage({
               </h1>
             </div>
           </div>
-          {match.status === "scheduled" ? (
+          <div className="flex flex-col gap-2 min-[430px]:flex-row">
             <Link
-              href={`/matches/${match.id}/edit`}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-pitch px-4 text-sm font-bold text-pitch"
+              href={`/matches/${match.id}/call-up`}
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-pitch px-4 text-sm font-bold text-white"
             >
-              <Pencil aria-hidden="true" className="size-4" />
-              {t("actions.edit")}
+              <UsersRound aria-hidden="true" className="size-4" />
+              {t(
+                match.status === "scheduled"
+                  ? "actions.manageCallup"
+                  : "actions.viewCallup",
+              )}
             </Link>
-          ) : null}
+            {match.status === "scheduled" ? (
+              <Link
+                href={`/matches/${match.id}/edit`}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-pitch px-4 text-sm font-bold text-pitch"
+              >
+                <Pencil aria-hidden="true" className="size-4" />
+                {t("actions.edit")}
+              </Link>
+            ) : null}
+          </div>
         </header>
         <dl className="grid sm:grid-cols-2">
           {fields.map(([label, fieldValue], index) => (

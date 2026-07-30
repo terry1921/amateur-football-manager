@@ -166,7 +166,7 @@
         "description": "Selecciona jugadores disponibles para el próximo partido.",
         "blocked": "Agrega un jugador y programa un partido primero.",
         "action": "Crear una convocatoria",
-        "availability": "Disponible en la Tarea 010"
+        "availability": "Disponible"
       },
       "result": {
         "title": "Registra tu primer resultado",
@@ -193,7 +193,11 @@
         "availability": "{active} disponibles · {unavailable} no disponibles"
       },
       "upcoming": {
-        "title": "Próximo partido"
+        "title": "Próximo partido",
+        "callupReady": "Convocatoria lista · {count, plural, one {# jugador} other {# jugadores}}",
+        "callupIncomplete": "Convocatoria incompleta",
+        "manageCallup": "Gestionar convocatoria",
+        "createCallup": "Crear convocatoria"
       },
       "result": {
         "title": "Resultado reciente",
@@ -394,7 +398,7 @@
       "nickname": "Apodo (opcional)",
       "nicknamePlaceholder": "Ingresa el apodo",
       "shirtNumber": "Dorsal",
-      "shirtNumberPlaceholder": "0–99",
+      "shirtNumberPlaceholder": "0–999",
       "shirtHelp": "Opcional. Las reglas actuales permiten dorsales repetidos.",
       "position": "Posición",
       "selectPosition": "Selecciona una posición",
@@ -408,7 +412,7 @@
     "validation": {
       "required": "Este campo es obligatorio.",
       "tooLong": "Usa 80 caracteres o menos.",
-      "invalidShirtNumber": "Ingresa un número entero del 0 al 99.",
+      "invalidShirtNumber": "Ingresa un número entero del 0 al 999.",
       "invalidPosition": "Selecciona una posición válida.",
       "invalidStatus": "Selecciona un estado válido."
     },
@@ -485,6 +489,8 @@
     "actions": {
       "view": "Ver",
       "edit": "Editar",
+      "manageCallup": "Gestionar convocatoria",
+      "viewCallup": "Ver convocatoria",
       "cancel": "Cancelar partido",
       "delete": "Eliminar partido"
     },
@@ -590,6 +596,82 @@
     },
     "loading": {
       "label": "Cargando partidos"
+    }
+  },
+  "Callups": {
+    "back": "Volver al partido",
+    "title": { "manage": "Gestionar convocatoria", "view": "Ver convocatoria" },
+    "against": "Plantel para el partido contra {opponent}",
+    "selectedCount": "{count, plural, one {# jugador seleccionado} other {# jugadores seleccionados}}",
+    "readOnly": "Esta convocatoria es de solo lectura.",
+    "truncated": "Solo se muestran los primeros 250 registros del plantel. Ajusta el plantel antes de gestionar esta convocatoria.",
+    "matchStatus": {
+      "scheduled": "Programado",
+      "completed": "Completado",
+      "cancelled": "Cancelado"
+    },
+    "playerStatus": {
+      "active": "Activo",
+      "injured": "Lesionado",
+      "suspended": "Suspendido",
+      "inactive": "Inactivo"
+    },
+    "positionGroup": {
+      "GK": "Porteros",
+      "DEF": "Defensas",
+      "MID": "Mediocampistas",
+      "FWD": "Delanteros"
+    },
+    "selected": {
+      "title": "Jugadores seleccionados",
+      "lastUpdated": "Última actualización",
+      "notSaved": "Aún no se ha guardado una convocatoria."
+    },
+    "unavailable": {
+      "title": "Jugadores no disponibles",
+      "reason": "{status} — no puede seleccionarse nuevamente"
+    },
+    "editor": {
+      "title": "Elige el plantel del partido",
+      "readOnlyTitle": "Plantel oficial del partido",
+      "help": "No hay límite de jugadores. Solo los jugadores activos pueden seleccionarse por primera vez."
+    },
+    "bulk": {
+      "selectAll": "Seleccionar todos los activos",
+      "clear": "Limpiar selección"
+    },
+    "filters": {
+      "search": "Buscar jugadores",
+      "position": "Posición",
+      "allPositions": "Todas las posiciones",
+      "status": "Estado del jugador",
+      "allStatuses": "Todos los estados",
+      "selection": "Selección",
+      "allSelections": "Todos los jugadores",
+      "selected": "Seleccionados",
+      "unselected": "No seleccionados",
+      "clear": "Restablecer"
+    },
+    "actions": {
+      "save": "Guardar convocatoria",
+      "saving": "Guardando…",
+      "manage": "Gestionar convocatoria",
+      "view": "Ver convocatoria"
+    },
+    "empty": {
+      "noPlayers": "Agrega jugadores antes de crear una convocatoria.",
+      "noPlayersDescription": "El plantel está vacío. Agrega jugadores y vuelve para preparar este partido.",
+      "playersAction": "Jugadores",
+      "noCallup": "Selecciona jugadores para este partido.",
+      "filtered": "Ningún jugador coincide con estos filtros."
+    },
+    "feedback": { "saved": "Convocatoria guardada." },
+    "errors": {
+      "sessionExpired": "Tu sesión caducó. Inicia sesión e inténtalo de nuevo.",
+      "invalidSelection": "El plantel contiene un jugador no disponible, inexistente, duplicado o de otro equipo.",
+      "notFound": "Este partido no está disponible o ya no existe.",
+      "readOnly": "Las convocatorias de partidos completados o cancelados no se pueden cambiar.",
+      "unexpected": "No pudimos guardar esta convocatoria. Revisa tu conexión e inténtalo de nuevo."
     }
   },
   "ApplicationError": {

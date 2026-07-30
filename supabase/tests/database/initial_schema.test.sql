@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(32);
+select plan(33);
 
 select results_eq(
   $$
@@ -209,10 +209,15 @@ select throws_ok(
 );
 
 select throws_ok(
-  $$insert into public.players (team_id, first_name, position, shirt_number) values ('10000000-0000-0000-0000-000000000001', 'Invalid Shirt', 'DEF', 100)$$,
+  $$insert into public.players (team_id, first_name, position, shirt_number) values ('10000000-0000-0000-0000-000000000001', 'Invalid Shirt', 'DEF', 1000)$$,
   '23514',
   null,
-  'shirt numbers outside 0 through 99 are rejected'
+  'shirt numbers outside 0 through 999 are rejected'
+);
+
+select lives_ok(
+  $$insert into public.players (team_id, first_name, position, shirt_number) values ('10000000-0000-0000-0000-000000000001', 'Three Digit Shirt', 'DEF', 999)$$,
+  'three-digit shirt numbers through 999 are accepted'
 );
 
 select throws_ok(

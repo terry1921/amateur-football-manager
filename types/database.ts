@@ -370,6 +370,24 @@ export type Database = {
         Args: { target_match_id: string; target_team_id: string };
         Returns: boolean;
       };
+      replace_match_callup: {
+        Args: { selected_player_ids: string[]; target_match_id: string };
+        Returns: {
+          created_at: string;
+          id: string;
+          match_id: string;
+          player_id: string;
+          status: string;
+          team_id: string;
+          updated_at: string;
+        }[];
+        SetofOptions: {
+          from: "*";
+          to: "callups";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
     };
     Enums: {
       [_ in never]: never;

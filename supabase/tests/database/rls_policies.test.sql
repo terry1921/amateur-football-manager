@@ -311,7 +311,7 @@ select throws_ok(
 
 select throws_ok(
   $$insert into public.callups (team_id, match_id, player_id) values ('50000000-0000-0000-0000-000000000001', '80000000-0000-0000-0000-000000000002', '70000000-0000-0000-0000-000000000001')$$,
-  '42501',
+  '55000',
   null,
   'a forged own team_id cannot authorize a call-up for another owner''s match'
 );
@@ -427,7 +427,7 @@ select throws_ok(
 
 select throws_ok(
   $$update public.callups set team_id = '50000000-0000-0000-0000-000000000002', match_id = '80000000-0000-0000-0000-000000000002', player_id = '70000000-0000-0000-0000-000000000002' where id = '90000000-0000-0000-0000-000000000001'$$,
-  '42501',
+  '55000',
   null,
   'an owner cannot move a call-up to another owner''s match'
 );

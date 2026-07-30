@@ -111,6 +111,19 @@ export async function getDashboardData(
     const matchCount = matches.count ?? 0;
     const callupCount = callups.count ?? 0;
     const result = recentResult.data as DashboardMatch | null;
+    const upcoming = upcomingMatch.data as DashboardMatch | null;
+    let upcomingCallupCount = 0;
+    if (upcoming) {
+      const upcomingCallups = await supabase
+        .from("callups")
+        .select("id", { count: "exact", head: true })
+        .eq("team_id", teamId)
+        .eq("match_id", upcoming.id);
+      if (upcomingCallups.error) {
+        return { status: "error", reason: "dashboard-query" };
+      }
+      upcomingCallupCount = upcomingCallups.count ?? 0;
+    }
 
     return {
       status: "success",
@@ -128,7 +141,9 @@ export async function getDashboardData(
       playerCount,
       activePlayerCount: activePlayers.count ?? 0,
       unavailablePlayerCount: unavailablePlayers.count ?? 0,
-      upcomingMatch: upcomingMatch.data as DashboardMatch | null,
+      upcomingMatch: upcoming
+        ? { ...upcoming, callup_count: upcomingCallupCount }
+        : null,
       recentResult: result,
     };
   } catch {

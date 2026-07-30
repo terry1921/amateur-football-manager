@@ -58,4 +58,6 @@ local setup.
 
 Authentication setup, routes, email behavior, and production configuration are
 documented in [`docs/authentication.md`](./docs/authentication.md). Team
-onboarding, seasons, players, and matches are documented in `docs/`.
+onboarding, seasons, players, matches, and match call-ups are documented in
+`docs/`, including the call-up lifecycle in
+[`docs/callups.md`](./docs/callups.md).

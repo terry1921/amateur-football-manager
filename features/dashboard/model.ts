@@ -56,7 +56,7 @@ export type DashboardMatch = Pick<
   | "venue"
   | "team_score"
   | "opponent_score"
->;
+> & { callup_count?: number };
 
 export type DashboardSuccessData = {
   status: "success";

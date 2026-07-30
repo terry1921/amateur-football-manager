@@ -148,8 +148,9 @@ to erase those records.
 
 Dashboard progress remains derived from real rows. `match count > 0`
 automatically completes “Schedule your first match”; no onboarding flag is
-written. When player and match prerequisites exist, the next step becomes the
-future call-up task.
+written. When player and match prerequisites exist, the next step links to the
+implemented call-up manager. The upcoming-match card reports whether a squad is
+ready and links directly to that match's call-up.
 
 The dashboard fetches only the nearest future scheduled match and most recent
 valid completed result. When an active season exists, both summaries are
@@ -158,7 +159,8 @@ exists, and real upcoming fixtures link to their detail page.
 
 ## Future integration contract
 
-- Task 010 attaches call-ups to `match_id`.
+- Task 010 attaches call-ups to `match_id`; its lifecycle and eligibility rules
+  are documented in [`callups.md`](./callups.md).
 - Task 011 attaches events and eligible team players to `match_id`.
 - Result entry atomically writes valid scores and transitions scheduled to
   completed.

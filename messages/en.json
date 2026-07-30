@@ -166,7 +166,7 @@
         "description": "Select available players for an upcoming fixture.",
         "blocked": "Add a player and schedule a match first.",
         "action": "Create a call-up",
-        "availability": "Coming in Task 010"
+        "availability": "Available"
       },
       "result": {
         "title": "Record your first result",
@@ -193,7 +193,11 @@
         "availability": "{active} available · {unavailable} unavailable"
       },
       "upcoming": {
-        "title": "Upcoming match"
+        "title": "Upcoming match",
+        "callupReady": "Call-up ready · {count, plural, one {# player} other {# players}}",
+        "callupIncomplete": "Call-up incomplete",
+        "manageCallup": "Manage call-up",
+        "createCallup": "Create call-up"
       },
       "result": {
         "title": "Recent result",
@@ -394,7 +398,7 @@
       "nickname": "Nickname (optional)",
       "nicknamePlaceholder": "Enter nickname",
       "shirtNumber": "Shirt number",
-      "shirtNumberPlaceholder": "0–99",
+      "shirtNumberPlaceholder": "0–999",
       "shirtHelp": "Optional. Shirt numbers may be shared in the current database rules.",
       "position": "Position",
       "selectPosition": "Select position",
@@ -408,7 +412,7 @@
     "validation": {
       "required": "This field is required.",
       "tooLong": "Use 80 characters or fewer.",
-      "invalidShirtNumber": "Enter a whole number from 0 to 99.",
+      "invalidShirtNumber": "Enter a whole number from 0 to 999.",
       "invalidPosition": "Select a valid position.",
       "invalidStatus": "Select a valid status."
     },
@@ -485,6 +489,8 @@
     "actions": {
       "view": "View",
       "edit": "Edit",
+      "manageCallup": "Manage call-up",
+      "viewCallup": "View call-up",
       "cancel": "Cancel match",
       "delete": "Delete match"
     },
@@ -590,6 +596,79 @@
     },
     "loading": {
       "label": "Loading matches"
+    }
+  },
+  "Callups": {
+    "back": "Back to match",
+    "title": { "manage": "Manage call-up", "view": "View call-up" },
+    "against": "Squad for the match against {opponent}",
+    "selectedCount": "{count, plural, one {# player selected} other {# players selected}}",
+    "readOnly": "This call-up is read-only.",
+    "truncated": "Only the first 250 roster records are shown. Refine the roster before managing this call-up.",
+    "matchStatus": {
+      "scheduled": "Scheduled",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "playerStatus": {
+      "active": "Active",
+      "injured": "Injured",
+      "suspended": "Suspended",
+      "inactive": "Inactive"
+    },
+    "positionGroup": {
+      "GK": "Goalkeepers",
+      "DEF": "Defenders",
+      "MID": "Midfielders",
+      "FWD": "Forwards"
+    },
+    "selected": {
+      "title": "Selected players",
+      "lastUpdated": "Last updated",
+      "notSaved": "No call-up has been saved yet."
+    },
+    "unavailable": {
+      "title": "Unavailable players",
+      "reason": "{status} — cannot be newly selected"
+    },
+    "editor": {
+      "title": "Choose the match squad",
+      "readOnlyTitle": "Official match squad",
+      "help": "There is no squad-size limit. Only active players can be newly selected."
+    },
+    "bulk": { "selectAll": "Select all active", "clear": "Clear selection" },
+    "filters": {
+      "search": "Search players",
+      "position": "Position",
+      "allPositions": "All positions",
+      "status": "Player status",
+      "allStatuses": "All statuses",
+      "selection": "Selection",
+      "allSelections": "All players",
+      "selected": "Selected",
+      "unselected": "Unselected",
+      "clear": "Reset"
+    },
+    "actions": {
+      "save": "Save call-up",
+      "saving": "Saving…",
+      "manage": "Manage call-up",
+      "view": "View call-up"
+    },
+    "empty": {
+      "noPlayers": "Add players before creating a call-up.",
+      "noPlayersDescription": "The team roster is empty. Add players, then return to prepare this match squad.",
+      "playersAction": "Players",
+      "noCallup": "Select players for this match.",
+      "filtered": "No players match these filters."
+    },
+    "feedback": { "saved": "Call-up saved." },
+    "errors": {
+      "sessionExpired": "Your session has expired. Sign in and try again.",
+      "invalidSelection": "The squad contains an unavailable, missing, duplicate, or foreign player.",
+      "notFound": "This match is unavailable or no longer exists.",
+      "readOnly": "Completed and cancelled call-ups cannot be changed.",
+      "unexpected": "We couldn’t save this call-up. Check your connection and try again."
     }
   },
   "ApplicationError": {

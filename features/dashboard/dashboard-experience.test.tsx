@@ -128,6 +128,7 @@ describe("DashboardExperience", () => {
           venue: "Torneo del Barrio HG",
           team_score: null,
           opponent_score: null,
+          callup_count: 3,
         },
         recentResult: {
           id: "recent-result",
@@ -153,8 +154,43 @@ describe("DashboardExperience", () => {
       "href",
       "/en/matches/upcoming-match",
     );
+    expect(screen.getByText("Call-up ready · 3 players")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Manage call-up" }),
+    ).toHaveAttribute("href", "/en/matches/upcoming-match/call-up");
     expect(screen.getByText("Setup complete")).toBeInTheDocument();
     expect(container.querySelector("details")).not.toHaveAttribute("open");
+  });
+
+  it("marks an upcoming match without selected players as call-up incomplete", () => {
+    renderDashboard(
+      dashboardData(
+        {
+          ...newTeamFacts,
+          seasonExists: true,
+          playerCount: 4,
+          matchExists: true,
+        },
+        {
+          seasonCount: 1,
+          upcomingMatch: {
+            id: "empty-callup-match",
+            opponent_name: "Halcones",
+            kickoff_at: "2026-08-11T21:10:00.000Z",
+            home_away: "away",
+            venue: null,
+            team_score: null,
+            opponent_score: null,
+            callup_count: 0,
+          },
+        },
+      ),
+    );
+
+    expect(screen.getByText("Call-up incomplete")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Create call-up" }),
+    ).toHaveAttribute("href", "/en/matches/empty-callup-match/call-up");
   });
 
   it("links the now-available season step to season management", () => {

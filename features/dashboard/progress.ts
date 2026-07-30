@@ -47,7 +47,7 @@ const stepDefinitions: StepDefinition[] = [
   {
     id: "callup",
     href: "/matches",
-    featureAvailable: false,
+    featureAvailable: true,
     complete: (facts) => facts.callupExists,
     dependencyMet: (facts) => facts.playerCount > 0 && facts.matchExists,
   },

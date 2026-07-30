@@ -311,6 +311,8 @@ function DashboardModule({
 }
 
 function MatchDetails({ match }: { match: DashboardMatch }) {
+  const t = useTranslations("FirstTimeDashboard");
+  const ready = (match.callup_count ?? 0) > 0;
   return (
     <div className="p-5 sm:p-6">
       <Link
@@ -330,6 +332,27 @@ function MatchDetails({ match }: { match: DashboardMatch }) {
             {match.venue}
           </p>
         ) : null}
+      </div>
+      <div className="mt-5 flex flex-col gap-3 border-t border-line pt-4 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
+        <p
+          className={`text-sm font-bold ${ready ? "text-pitch" : "text-amber-800"}`}
+        >
+          {ready
+            ? t("modules.upcoming.callupReady", {
+                count: match.callup_count ?? 0,
+              })
+            : t("modules.upcoming.callupIncomplete")}
+        </p>
+        <Link
+          href={`/matches/${match.id}/call-up`}
+          className="inline-flex min-h-11 items-center justify-center rounded-lg border border-pitch px-4 text-sm font-bold text-pitch"
+        >
+          {t(
+            ready
+              ? "modules.upcoming.manageCallup"
+              : "modules.upcoming.createCallup",
+          )}
+        </Link>
       </div>
     </div>
   );
