@@ -45,6 +45,8 @@ function dashboardData(
     seasonCount: facts.seasonExists ? 1 : 0,
     activeSeason: null,
     playerCount: facts.playerCount,
+    activePlayerCount: facts.playerCount,
+    unavailablePlayerCount: 0,
     upcomingMatch: null,
     recentResult: null,
     ...overrides,
@@ -143,6 +145,10 @@ describe("DashboardExperience", () => {
       screen.getAllByRole("link", { name: "Create your first season" })[0],
     ).toHaveAttribute("href", "/en/seasons");
     expect(screen.queryByText("Coming in Task 007")).not.toBeInTheDocument();
+    expect(
+      screen.getAllByRole("link", { name: "Add players" })[0],
+    ).toHaveAttribute("href", "/en/players");
+    expect(screen.queryByText("Coming in Task 008")).not.toBeInTheDocument();
   });
 
   it("renders query failure separately from legitimate empty data", () => {

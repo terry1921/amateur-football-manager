@@ -76,6 +76,12 @@ event.
   should set the player's status to `inactive`. Deferral lets a whole-team
   deletion remove the overlapping match/player graph atomically.
 
+Authenticated application users have no `DELETE` privilege or delete policy on
+`players`, including players that do not yet have historical references. A
+player's `team_id` is also immutable. The service role retains deletion only
+for trusted maintenance and full-tenant cleanup; ordinary roster departures
+must use `status = 'inactive'`.
+
 ## Indexes
 
 - `teams_owner_id_idx`: owner-to-team lookup.
@@ -101,7 +107,7 @@ Primary keys and unique constraints also create their required indexes.
 
 ## Row Level Security
 
-RLS is enabled on all six public application tables. Owner-scoped CRUD policies
+RLS is enabled on all six public application tables. Owner-scoped lifecycle policies
 follow each row's relational path to `teams.owner_id`; call-ups and match events
 authorize through their referenced match instead of trusting a submitted
 `team_id`. The complete authorization model and regression-test coverage are
@@ -112,6 +118,6 @@ documented in `docs/security.md`.
 - Authentication flows remain Task 004.
 - The initial beta's one-team-per-owner limit remains an application rule rather
   than a database constraint, preserving the planned path to multi-team plans.
-- Onboarding, season forms, and player CRUD remain Tasks 006 through 008.
+- Match, call-up, result, and statistics workflows remain later tasks.
 - Seed data remains separate from schema migrations and will be introduced by a
   dedicated development-data task.

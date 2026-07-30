@@ -1,18 +1,21 @@
-import { getTranslations } from "next-intl/server";
-import { ProtectedPlaceholder } from "@/components/protected-placeholder";
-import type { AppLocale } from "@/i18n/routing";
+import { getPlayersData } from "@/features/players/data";
+import { PlayerManagement } from "@/features/players/player-management";
 
 export default async function PlayersPage({
-  params,
+  searchParams,
 }: {
-  params: Promise<{ locale: AppLocale }>;
+  searchParams: Promise<{ notice?: string }>;
 }) {
-  const { locale } = await params;
-  const t = await getTranslations({
-    locale,
-    namespace: "ProtectedPages.players",
-  });
-  return (
-    <ProtectedPlaceholder title={t("title")} description={t("description")} />
-  );
+  const [{ players }, query] = await Promise.all([
+    getPlayersData(),
+    searchParams,
+  ]);
+  const notice =
+    query.notice === "created" ||
+    query.notice === "updated" ||
+    query.notice === "deactivated" ||
+    query.notice === "reactivated"
+      ? query.notice
+      : undefined;
+  return <PlayerManagement players={players} notice={notice} />;
 }

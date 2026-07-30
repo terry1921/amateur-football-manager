@@ -152,7 +152,7 @@
         "description": "Forma el plantel que usarás para convocatorias y estadísticas.",
         "blocked": "Crea tu equipo primero.",
         "action": "Agregar jugadores",
-        "availability": "Disponible en la Tarea 008"
+        "availability": "Disponible"
       },
       "match": {
         "title": "Programa tu primer partido",
@@ -189,7 +189,8 @@
       "squad": {
         "title": "Plantel",
         "description": "Jugadores registrados para este equipo",
-        "count": "{count, plural, one {# jugador} other {# jugadores}}"
+        "count": "{count, plural, one {# jugador} other {# jugadores}}",
+        "availability": "{active} disponibles · {unavailable} no disponibles"
       },
       "upcoming": {
         "title": "Próximo partido"
@@ -320,6 +321,118 @@
     "error": {
       "title": "No pudimos cargar las temporadas",
       "description": "Los datos de tus temporadas no cambiaron. Intenta cargarlos de nuevo.",
+      "action": "Intentar de nuevo"
+    }
+  },
+  "Players": {
+    "title": "Jugadores",
+    "description": "Gestiona la disponibilidad sin perder la historia del equipo.",
+    "create": "Agregar jugador",
+    "summary": {
+      "label": "Resumen del plantel",
+      "total": "Total",
+      "available": "Disponibles",
+      "unavailable": "No disponibles"
+    },
+    "columns": {
+      "player": "Jugador",
+      "number": "Núm.",
+      "position": "Posición",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "position": {
+      "GK": "Portero",
+      "DEF": "Defensa",
+      "MID": "Mediocampista",
+      "FWD": "Delantero"
+    },
+    "status": {
+      "active": "Activo",
+      "injured": "Lesionado",
+      "suspended": "Suspendido",
+      "inactive": "Inactivo"
+    },
+    "actions": {
+      "view": "Ver",
+      "edit": "Editar",
+      "deactivate": "Desactivar",
+      "reactivate": "Reactivar"
+    },
+    "filters": {
+      "search": "Buscar nombre o número",
+      "position": "Posición",
+      "status": "Estado",
+      "allPositions": "Todas las posiciones",
+      "current": "Plantel actual",
+      "allStatuses": "Todos los estados",
+      "clear": "Limpiar filtros"
+    },
+    "empty": {
+      "title": "Agrega tu primer jugador",
+      "description": "Forma el plantel para futuras convocatorias y conserva intacta la historia de cada jugador.",
+      "action": "Agregar jugador"
+    },
+    "filteredEmpty": {
+      "title": "Ningún jugador coincide",
+      "description": "Limpia o cambia los filtros para ver el resto del plantel."
+    },
+    "new": {
+      "title": "Agregar jugador",
+      "description": "Registra un jugador con los datos que usa tu equipo día a día."
+    },
+    "edit": {
+      "title": "Editar jugador",
+      "description": "Actualiza identidad, dorsal, posición o disponibilidad actual."
+    },
+    "form": {
+      "firstName": "Nombre",
+      "firstNamePlaceholder": "Ingresa el nombre",
+      "lastName": "Apellido",
+      "lastNamePlaceholder": "Ingresa el apellido",
+      "nickname": "Apodo (opcional)",
+      "nicknamePlaceholder": "Ingresa el apodo",
+      "shirtNumber": "Dorsal",
+      "shirtNumberPlaceholder": "0–99",
+      "shirtHelp": "Opcional. Las reglas actuales permiten dorsales repetidos.",
+      "position": "Posición",
+      "selectPosition": "Selecciona una posición",
+      "status": "Estado",
+      "statusHelp": "Los jugadores inactivos permanecen vinculados a todo su historial.",
+      "create": "Guardar jugador",
+      "save": "Guardar cambios",
+      "saving": "Guardando…",
+      "cancel": "Cancelar"
+    },
+    "validation": {
+      "required": "Este campo es obligatorio.",
+      "tooLong": "Usa 80 caracteres o menos.",
+      "invalidShirtNumber": "Ingresa un número entero del 0 al 99.",
+      "invalidPosition": "Selecciona una posición válida.",
+      "invalidStatus": "Selecciona un estado válido."
+    },
+    "errors": {
+      "sessionExpired": "Tu sesión expiró. Inicia sesión e inténtalo de nuevo.",
+      "notFound": "No encontramos este jugador en tu equipo.",
+      "unexpected": "No pudimos guardar este jugador. Revisa tu conexión e inténtalo de nuevo."
+    },
+    "feedback": {
+      "created": "Jugador agregado correctamente.",
+      "updated": "Jugador actualizado correctamente.",
+      "deactivated": "Jugador desactivado. Su historial permanece intacto.",
+      "reactivated": "Jugador reactivado."
+    },
+    "details": {
+      "back": "Volver a jugadores",
+      "shirtNumber": "Dorsal",
+      "position": "Posición",
+      "status": "Estado",
+      "nickname": "Apodo",
+      "historyProtected": "Salir del equipo solo cambia la disponibilidad. El historial de partidos, convocatorias, goles y tarjetas sigue atribuido a este jugador."
+    },
+    "error": {
+      "title": "No pudimos cargar los jugadores",
+      "description": "Los datos de tus jugadores no cambiaron. Intenta cargarlos de nuevo.",
       "action": "Intentar de nuevo"
     }
   },

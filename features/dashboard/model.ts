@@ -59,6 +59,8 @@ export type DashboardSuccessData = {
   seasonCount: number;
   activeSeason: DashboardSeason | null;
   playerCount: number;
+  activePlayerCount: number;
+  unavailablePlayerCount: number;
   upcomingMatch: DashboardMatch | null;
   recentResult: DashboardMatch | null;
 };

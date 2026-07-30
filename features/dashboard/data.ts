@@ -21,6 +21,8 @@ export async function getDashboardData(
       seasons,
       activeSeason,
       players,
+      activePlayers,
+      unavailablePlayers,
       matches,
       callups,
       upcomingMatch,
@@ -38,6 +40,16 @@ export async function getDashboardData(
         .from("players")
         .select("id", { count: "exact", head: true })
         .eq("team_id", teamId),
+      supabase
+        .from("players")
+        .select("id", { count: "exact", head: true })
+        .eq("team_id", teamId)
+        .eq("status", "active"),
+      supabase
+        .from("players")
+        .select("id", { count: "exact", head: true })
+        .eq("team_id", teamId)
+        .neq("status", "active"),
       supabase
         .from("matches")
         .select("id", { count: "exact", head: true })
@@ -70,6 +82,8 @@ export async function getDashboardData(
     const results = [
       seasons,
       players,
+      activePlayers,
+      unavailablePlayers,
       matches,
       callups,
       upcomingMatch,
@@ -100,6 +114,8 @@ export async function getDashboardData(
       seasonCount,
       activeSeason,
       playerCount,
+      activePlayerCount: activePlayers.count ?? 0,
+      unavailablePlayerCount: unavailablePlayers.count ?? 0,
       upcomingMatch: upcomingMatch.data as DashboardMatch | null,
       recentResult: result,
     };

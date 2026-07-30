@@ -384,6 +384,12 @@ function DashboardModules({ data }: { data: DashboardSuccessData }) {
             <p className="mt-2 text-2xl font-black tracking-[-0.03em] text-ink">
               {t("modules.squad.count", { count: data.playerCount })}
             </p>
+            <p className="mt-2 text-sm text-muted">
+              {t("modules.squad.availability", {
+                active: data.activePlayerCount,
+                unavailable: data.unavailablePlayerCount,
+              })}
+            </p>
           </div>
         ) : (
           <DashboardEmptyState
@@ -391,7 +397,7 @@ function DashboardModules({ data }: { data: DashboardSuccessData }) {
             title={t("empty.players.title")}
             description={t("empty.players.description")}
             actionLabel={t("steps.players.action")}
-            statusLabel={t("steps.players.availability")}
+            actionHref="/players"
           />
         )}
       </DashboardModule>

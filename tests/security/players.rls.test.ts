@@ -28,7 +28,7 @@ describe("players RLS through Supabase JS", () => {
     );
   });
 
-  it("allows own-tenant player insert, update, deactivate, and eligible delete", async () => {
+  it("allows own-tenant player insert, update, and deactivation but never hard deletion", async () => {
     const playerId = securityUuid(context.namespace, "owned-player");
     const insert = await context.userAClient
       .from("players")
@@ -60,8 +60,15 @@ describe("players RLS through Supabase JS", () => {
       .delete()
       .eq("id", playerId)
       .select("id");
-    expect(remove.error).toBeNull();
-    expect(remove.data).toEqual([{ id: playerId }]);
+    expect(remove.error?.code).toBe("42501");
+    expect(remove.data).toBeNull();
+
+    const preserved = await context.userAClient
+      .from("players")
+      .select("id, status")
+      .eq("id", playerId)
+      .single();
+    expect(preserved.data).toEqual({ id: playerId, status: "inactive" });
   });
 
   it("blocks foreign insert, update, deactivation, and delete", async () => {
@@ -83,7 +90,8 @@ describe("players RLS through Supabase JS", () => {
 
     expectRlsDenied(insert);
     expectNoRowsAffected(update);
-    expectNoRowsAffected(remove);
+    expect(remove.data).toBeNull();
+    expect(remove.error?.code).toBe("42501");
 
     const unchanged = await context.userBClient
       .from("players")
@@ -103,6 +111,7 @@ describe("players RLS through Supabase JS", () => {
       .eq("id", context.ids.playerA)
       .select("id");
 
-    expectRlsDenied(result);
+    expect(result.data).toBeNull();
+    expect(result.error?.code).toBe("55000");
   });
 });

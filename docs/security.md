@@ -31,15 +31,22 @@ match, team, and player identifiers describe one consistent tenant.
 
 ## Policy behavior
 
-All six public application tables have Row Level Security enabled and four
-policies restricted to the `authenticated` database role:
+All six public application tables have Row Level Security enabled with
+operation-specific policies restricted to the `authenticated` database role:
 
 - `SELECT` exposes only rows in the signed-in user's ownership graph.
 - `INSERT` uses `WITH CHECK` to reject rows outside that graph.
 - `UPDATE` uses `USING` for the existing row and `WITH CHECK` for the proposed
   row. This blocks changing `teams.owner_id` and moving child rows to another
   user's team or match.
-- `DELETE` can target only rows in the signed-in user's ownership graph.
+- `DELETE` can target only rows in the signed-in user's ownership graph where
+  the feature's lifecycle permits deletion.
+
+`players` and `seasons` intentionally expose no authenticated `DELETE`
+privilege or policy. Player departures use the `inactive` status, and a trigger
+makes `players.team_id` immutable. This preserves attribution for historical
+call-ups, goals, cards, and other match events even if a direct Data API request
+tries to bypass the application UI.
 
 Anonymous table privileges are explicitly revoked. Authenticated clients and
 the service role receive the table privileges required by the Data API.
@@ -71,7 +78,8 @@ checks:
 - each owner can read and mutate their own graph;
 - guessed UUIDs from another tenant do not reveal rows;
 - cross-tenant inserts, owner changes, team swaps, and match swaps fail;
-- cross-tenant updates and deletes affect no rows;
+- cross-tenant updates and permitted deletes affect no rows;
+- player and season hard deletion is denied to authenticated clients;
 - anonymous access has no table privileges;
 - the service role retains full operational access.
 

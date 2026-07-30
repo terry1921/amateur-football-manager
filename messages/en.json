@@ -152,7 +152,7 @@
         "description": "Build the squad you’ll use for call-ups and statistics.",
         "blocked": "Create your team first.",
         "action": "Add players",
-        "availability": "Coming in Task 008"
+        "availability": "Available"
       },
       "match": {
         "title": "Schedule your first match",
@@ -189,7 +189,8 @@
       "squad": {
         "title": "Squad",
         "description": "Players registered for this team",
-        "count": "{count, plural, one {# player} other {# players}}"
+        "count": "{count, plural, one {# player} other {# players}}",
+        "availability": "{active} available · {unavailable} unavailable"
       },
       "upcoming": {
         "title": "Upcoming match"
@@ -320,6 +321,118 @@
     "error": {
       "title": "We couldn’t load seasons",
       "description": "Your season data was not changed. Try loading it again.",
+      "action": "Try again"
+    }
+  },
+  "Players": {
+    "title": "Players",
+    "description": "Manage availability without losing team history.",
+    "create": "Add player",
+    "summary": {
+      "label": "Squad summary",
+      "total": "Total",
+      "available": "Available",
+      "unavailable": "Unavailable"
+    },
+    "columns": {
+      "player": "Player",
+      "number": "No.",
+      "position": "Position",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "position": {
+      "GK": "Goalkeeper",
+      "DEF": "Defender",
+      "MID": "Midfielder",
+      "FWD": "Forward"
+    },
+    "status": {
+      "active": "Active",
+      "injured": "Injured",
+      "suspended": "Suspended",
+      "inactive": "Inactive"
+    },
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate"
+    },
+    "filters": {
+      "search": "Search name or number",
+      "position": "Position",
+      "status": "Status",
+      "allPositions": "All positions",
+      "current": "Current squad",
+      "allStatuses": "All statuses",
+      "clear": "Clear filters"
+    },
+    "empty": {
+      "title": "Add your first player",
+      "description": "Build your squad for future call-ups while keeping every player’s history intact.",
+      "action": "Add player"
+    },
+    "filteredEmpty": {
+      "title": "No players match these filters",
+      "description": "Clear or change the filters to see the rest of your squad."
+    },
+    "new": {
+      "title": "Add player",
+      "description": "Register a player with the details your team uses day to day."
+    },
+    "edit": {
+      "title": "Edit player",
+      "description": "Update identity, shirt, position, or current availability."
+    },
+    "form": {
+      "firstName": "First name",
+      "firstNamePlaceholder": "Enter first name",
+      "lastName": "Last name",
+      "lastNamePlaceholder": "Enter last name",
+      "nickname": "Nickname (optional)",
+      "nicknamePlaceholder": "Enter nickname",
+      "shirtNumber": "Shirt number",
+      "shirtNumberPlaceholder": "0–99",
+      "shirtHelp": "Optional. Shirt numbers may be shared in the current database rules.",
+      "position": "Position",
+      "selectPosition": "Select position",
+      "status": "Status",
+      "statusHelp": "Inactive players stay attached to all historical records.",
+      "create": "Save player",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "cancel": "Cancel"
+    },
+    "validation": {
+      "required": "This field is required.",
+      "tooLong": "Use 80 characters or fewer.",
+      "invalidShirtNumber": "Enter a whole number from 0 to 99.",
+      "invalidPosition": "Select a valid position.",
+      "invalidStatus": "Select a valid status."
+    },
+    "errors": {
+      "sessionExpired": "Your session has expired. Sign in and try again.",
+      "notFound": "We could not find this player for your team.",
+      "unexpected": "We could not save this player. Check your connection and try again."
+    },
+    "feedback": {
+      "created": "Player added successfully.",
+      "updated": "Player updated successfully.",
+      "deactivated": "Player deactivated. Their history remains intact.",
+      "reactivated": "Player reactivated."
+    },
+    "details": {
+      "back": "Back to players",
+      "shirtNumber": "Shirt number",
+      "position": "Position",
+      "status": "Status",
+      "nickname": "Nickname",
+      "historyProtected": "Leaving the team changes availability only. Match history, call-ups, goals, and cards remain attributable to this player."
+    },
+    "error": {
+      "title": "We couldn’t load players",
+      "description": "Your player data was not changed. Try loading it again.",
       "action": "Try again"
     }
   },

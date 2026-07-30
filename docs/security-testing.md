@@ -121,7 +121,7 @@ message text is intentionally not used.
 1. Add its migration, foreign keys, tenant indexes, grants, and RLS policies.
 2. Add deterministic fixture IDs and rows in `tests/security/setup/fixtures.ts`.
 3. Add a focused `*.rls.test.ts` file.
-4. Prove own SELECT/INSERT/UPDATE/eligible DELETE.
+4. Prove own SELECT/INSERT/UPDATE and any feature-eligible DELETE.
 5. Prove foreign SELECT/INSERT/UPDATE/DELETE and row movement are blocked.
 6. Add anonymous and relationship-expansion coverage where applicable.
 7. Extend the pgTAP metadata/runtime assertions.
@@ -137,7 +137,8 @@ message text is intentionally not used.
 - [ ] UPDATE own row succeeds.
 - [ ] UPDATE foreign row fails or affects zero rows.
 - [ ] Moving a row to a foreign tenant fails.
-- [ ] DELETE an own eligible row succeeds.
+- [ ] DELETE follows the feature lifecycle rule (success when eligible, denied
+      for history-preserving records such as players and seasons).
 - [ ] DELETE a foreign row fails or affects zero rows.
 - [ ] Anonymous access is blocked.
 - [ ] UUID guessing is blocked.

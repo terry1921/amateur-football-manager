@@ -21,6 +21,9 @@ describe("getTeamSetupProgress", () => {
     expect(progress.nextStep?.id).toBe("season");
     expect(progress.nextStep?.status).toBe("available");
     expect(progress.nextStep?.href).toBe("/seasons");
+    expect(
+      progress.steps.find(({ id }) => id === "players")?.featureAvailable,
+    ).toBe(true);
   });
 
   it("reports three completed steps and recommends a match for partial setup", () => {

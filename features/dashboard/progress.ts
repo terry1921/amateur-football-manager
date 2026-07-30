@@ -33,7 +33,7 @@ const stepDefinitions: StepDefinition[] = [
   {
     id: "players",
     href: "/players",
-    featureAvailable: false,
+    featureAvailable: true,
     complete: (facts) => facts.playerCount > 0,
     dependencyMet: (facts) => facts.teamExists,
   },
