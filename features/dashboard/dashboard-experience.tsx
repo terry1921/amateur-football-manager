@@ -11,7 +11,8 @@ import {
   Trophy,
   UsersRound,
 } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { MatchDateTime } from "@/features/matches/match-date-time";
 import { Link } from "@/i18n/navigation";
 import type { DashboardMatch, DashboardSuccessData, SetupStep } from "./model";
 import { DashboardEmptyState } from "./dashboard-empty-state";
@@ -309,28 +310,19 @@ function DashboardModule({
   );
 }
 
-function formatMatchDate(value: string, locale: string) {
-  return new Intl.DateTimeFormat(locale, {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date(value));
-}
-
 function MatchDetails({ match }: { match: DashboardMatch }) {
-  const locale = useLocale();
-
   return (
     <div className="p-5 sm:p-6">
-      <p className="text-2xl font-black tracking-[-0.03em] text-ink">
+      <Link
+        href={`/matches/${match.id}`}
+        className="text-2xl font-black tracking-[-0.03em] text-ink underline-offset-4 hover:text-pitch hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch"
+      >
         {match.opponent_name}
-      </p>
+      </Link>
       <div className="mt-4 space-y-2 text-sm text-muted">
         <p className="flex items-center gap-2">
           <Clock3 aria-hidden="true" className="size-4 text-pitch" />
-          {formatMatchDate(match.kickoff_at, locale)}
+          <MatchDateTime value={match.kickoff_at} />
         </p>
         {match.venue ? (
           <p className="flex items-center gap-2">
@@ -345,7 +337,6 @@ function MatchDetails({ match }: { match: DashboardMatch }) {
 
 function DashboardModules({ data }: { data: DashboardSuccessData }) {
   const t = useTranslations("FirstTimeDashboard");
-  const locale = useLocale();
   const operational = data.progress.isOperational;
 
   return (
@@ -415,22 +406,27 @@ function DashboardModules({ data }: { data: DashboardSuccessData }) {
             title={t("empty.upcoming.title")}
             description={t("empty.upcoming.description")}
             actionLabel={t("steps.match.action")}
-            statusLabel={t("steps.match.availability")}
+            actionHref={data.seasonCount > 0 ? "/matches/new" : undefined}
+            statusLabel={
+              data.seasonCount > 0 ? undefined : t("steps.match.blocked")
+            }
           />
         )}
       </DashboardModule>
 
       <DashboardModule title={t("modules.result.title")} icon={Trophy}>
-        {data.recentResult ? (
+        {data.recentResult &&
+        data.recentResult.team_score !== null &&
+        data.recentResult.opponent_score !== null ? (
           <div className="p-5 sm:p-6">
             <p className="text-sm font-medium text-muted">
-              {formatMatchDate(data.recentResult.kickoff_at, locale)}
+              <MatchDateTime value={data.recentResult.kickoff_at} dateOnly />
             </p>
             <p className="mt-3 text-2xl font-black tracking-[-0.03em] text-ink">
               {t("modules.result.score", {
                 teamName: data.team.name,
-                teamScore: data.recentResult.team_score ?? 0,
-                opponentScore: data.recentResult.opponent_score ?? 0,
+                teamScore: data.recentResult.team_score,
+                opponentScore: data.recentResult.opponent_score,
                 opponent: data.recentResult.opponent_name,
               })}
             </p>

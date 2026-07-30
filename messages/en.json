@@ -159,7 +159,7 @@
         "description": "Put the first fixture on your team calendar.",
         "blocked": "Create a season first to organize the match.",
         "action": "Schedule a match",
-        "availability": "Coming in Task 009"
+        "availability": "Available"
       },
       "callup": {
         "title": "Create your first call-up",
@@ -308,6 +308,7 @@
     "details": {
       "back": "Back to seasons",
       "edit": "Edit season",
+      "scheduleMatch": "Schedule match",
       "startDate": "Start date",
       "endDate": "End date",
       "matches": "Matches",
@@ -434,6 +435,161 @@
       "title": "We couldn’t load players",
       "description": "Your player data was not changed. Try loading it again.",
       "action": "Try again"
+    }
+  },
+  "Matches": {
+    "title": "Matches",
+    "description": "Organize upcoming fixtures and preserve your team’s match history.",
+    "create": "Schedule a match",
+    "summary": {
+      "label": "Fixture summary",
+      "upcoming": "Upcoming",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "columns": {
+      "fixture": "Fixture",
+      "kickoff": "Kickoff",
+      "season": "Season",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "scheduled": "Scheduled",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "location": {
+      "home": "Home",
+      "away": "Away",
+      "neutral": "Neutral"
+    },
+    "groups": {
+      "all": "All time groups",
+      "upcoming": "Upcoming",
+      "past": "Past · unresolved",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "filters": {
+      "search": "Search opponent or venue",
+      "season": "Season",
+      "allSeasons": "All seasons",
+      "status": "Status",
+      "allStatuses": "All statuses",
+      "location": "Location",
+      "allLocations": "All locations",
+      "group": "Time group",
+      "reset": "Reset filters"
+    },
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "cancel": "Cancel match",
+      "delete": "Delete match"
+    },
+    "feedback": {
+      "created": "Match scheduled.",
+      "updated": "Match updated.",
+      "cancelled": "Match cancelled.",
+      "deleted": "Match deleted."
+    },
+    "empty": {
+      "title": "Schedule your first match",
+      "description": "Add a fixture to start organizing your team calendar.",
+      "action": "Schedule a match"
+    },
+    "filteredEmpty": {
+      "title": "No fixtures match these filters",
+      "description": "Adjust your search or reset the filters to see other matches."
+    },
+    "truncated": "Showing the 250 most recent fixtures. Narrow the view with filters to find a specific match.",
+    "score": {
+      "versus": "vs"
+    },
+    "new": {
+      "eyebrow": "Fixture calendar",
+      "title": "Schedule a match",
+      "description": "Choose the season and kickoff details. Players and call-ups are not required yet.",
+      "noSeasonTitle": "No season available",
+      "noSeasonDescription": "Create a draft or active season before scheduling a match.",
+      "noSeasonAction": "Create a season"
+    },
+    "edit": {
+      "eyebrow": "Fixture details",
+      "title": "Edit match",
+      "description": "Update scheduling details while this fixture is still scheduled.",
+      "protectedTitle": "This match can’t be edited",
+      "protectedDescription": "Completed and cancelled fixtures are retained as read-only history."
+    },
+    "form": {
+      "season": "Season",
+      "selectSeason": "Select a season",
+      "opponent": "Opponent name",
+      "opponentPlaceholder": "e.g. Verona FC",
+      "date": "Date",
+      "time": "Kickoff time",
+      "location": "Location",
+      "venue": "Venue",
+      "venuePlaceholder": "e.g. Campo Hermanos Galván",
+      "notes": "Notes",
+      "notesPlaceholder": "Plain-text fixture notes",
+      "timeZoneLoading": "Detecting your timezone…",
+      "timeZone": "Kickoff will be saved using {timeZone}.",
+      "pastHelp": "Past dates are allowed for unresolved historical fixtures.",
+      "create": "Schedule match",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "cancel": "Back to matches"
+    },
+    "details": {
+      "back": "Back to matches",
+      "kickoff": "Kickoff",
+      "season": "Season",
+      "location": "Location",
+      "venue": "Venue",
+      "status": "Status",
+      "notes": "Notes",
+      "score": "Score",
+      "notProvided": "Not provided",
+      "scheduledScore": "No score has been recorded.",
+      "historyProtected": "Completed and cancelled fixtures are read-only. Result entry belongs to a later workflow."
+    },
+    "confirm": {
+      "cancelTitle": "Cancel this match?",
+      "cancelDescription": "The fixture against {opponent} on {date} will remain in the season record as cancelled.",
+      "cancelConfirm": "Cancel match",
+      "deleteTitle": "Permanently delete this match?",
+      "deleteDescription": "The empty fixture against {opponent} on {date} will be permanently removed. This can’t be undone.",
+      "deleteConfirm": "Delete permanently",
+      "close": "Keep match",
+      "working": "Working…"
+    },
+    "validation": {
+      "required": "This field is required.",
+      "tooLong": "This value is too long.",
+      "invalidSeason": "Choose a valid season.",
+      "ineligibleSeason": "Choose a draft or active season owned by this team.",
+      "invalidDate": "Enter a valid date.",
+      "invalidTime": "Enter a valid time.",
+      "invalidTimeZone": "Refresh the page so we can detect your timezone.",
+      "invalidLocalTime": "That local time does not exist because of a daylight-saving change. Choose another time.",
+      "invalidLocation": "Choose Home, Away, or Neutral."
+    },
+    "errors": {
+      "sessionExpired": "Your session has expired. Sign in and try again.",
+      "unexpected": "We couldn’t save this match. Check your connection and try again.",
+      "notFound": "This match is unavailable or no longer exists.",
+      "historyProtected": "Completed and cancelled match history cannot be changed.",
+      "deleteRestricted": "This match has a completed result, call-up, or event history and cannot be deleted."
+    },
+    "error": {
+      "title": "We couldn’t load matches",
+      "description": "Your fixture data was not changed. Try loading it again.",
+      "action": "Try again"
+    },
+    "loading": {
+      "label": "Loading matches"
     }
   },
   "ApplicationError": {

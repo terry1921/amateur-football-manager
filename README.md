@@ -51,13 +51,11 @@ npm run db:types
 npm run supabase:stop
 ```
 
-Migrations belong in `supabase/migrations`. The schema and development seed data
-are intentionally deferred to the next database task. To connect this workspace
-to a hosted development project later, run `npx supabase login` and
+Migrations belong in `supabase/migrations`. To connect this workspace to a
+hosted development project later, run `npx supabase login` and
 `npx supabase link --project-ref <project-ref>`; neither step is needed for the
 local setup.
 
 Authentication setup, routes, email behavior, and production configuration are
 documented in [`docs/authentication.md`](./docs/authentication.md). Team
-onboarding and team-owned feature behavior remain deferred to their dedicated
-MVP tasks.
+onboarding, seasons, players, and matches are documented in `docs/`.

@@ -93,6 +93,17 @@ describe("DashboardExperience", () => {
     expect(
       screen.getAllByText("Schedule your first match").length,
     ).toBeGreaterThan(0);
+    const matchLinks = screen.getAllByRole("link", {
+      name: "Schedule a match",
+    });
+    expect(
+      matchLinks.some((link) => link.getAttribute("href") === "/en/matches"),
+    ).toBe(true);
+    expect(
+      matchLinks.some(
+        (link) => link.getAttribute("href") === "/en/matches/new",
+      ),
+    ).toBe(true);
   });
 
   it("makes operational data primary and compacts completed setup", () => {
@@ -110,15 +121,19 @@ describe("DashboardExperience", () => {
         activeSeason: { name: "Apertura 2026", status: "active" },
         playerCount: 18,
         upcomingMatch: {
+          id: "upcoming-match",
           opponent_name: "Verona FC",
           kickoff_at: "2026-08-11T21:10:00.000Z",
+          home_away: "home",
           venue: "Torneo del Barrio HG",
           team_score: null,
           opponent_score: null,
         },
         recentResult: {
+          id: "recent-result",
           opponent_name: "Halcones",
           kickoff_at: "2026-07-20T21:10:00.000Z",
+          home_away: "away",
           venue: null,
           team_score: 3,
           opponent_score: 1,
@@ -134,6 +149,10 @@ describe("DashboardExperience", () => {
     expect(screen.getByText("Apertura 2026")).toBeInTheDocument();
     expect(screen.getByText("18 players")).toBeInTheDocument();
     expect(screen.getByText("Loros FC 3–1 Halcones")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Verona FC" })).toHaveAttribute(
+      "href",
+      "/en/matches/upcoming-match",
+    );
     expect(screen.getByText("Setup complete")).toBeInTheDocument();
     expect(container.querySelector("details")).not.toHaveAttribute("open");
   });

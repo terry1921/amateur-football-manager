@@ -146,10 +146,13 @@ message text is intentionally not used.
 
 ## RPC and Storage status
 
-There is no application RPC endpoint. `public.set_updated_at()` is an
-invoker-context trigger function with a fixed empty search path, and execution
-is revoked from public API roles. No `SECURITY DEFINER` application function
-exists.
+`public.set_updated_at()` is an invoker-context trigger function with a fixed
+empty search path, and execution is revoked from public API roles.
+`public.can_delete_owned_match(uuid, uuid)` is the sole exposed application
+predicate: it is a stable, read-only `SECURITY DEFINER` function used by the
+match delete policy to avoid recursive RLS evaluation. It checks `auth.uid()`
+ownership internally, returns only a boolean, and is unavailable to anonymous
+clients.
 
 No Storage bucket or `storage.objects` authorization policy has been created
 for the MVP yet. Storage isolation tests are deferred until the task that

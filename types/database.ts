@@ -366,6 +366,10 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      can_delete_owned_match: {
+        Args: { target_match_id: string; target_team_id: string };
+        Returns: boolean;
+      };
     };
     Enums: {
       [_ in never]: never;

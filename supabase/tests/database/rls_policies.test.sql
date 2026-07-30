@@ -420,9 +420,9 @@ select throws_ok(
 
 select throws_ok(
   $$update public.matches set team_id = '50000000-0000-0000-0000-000000000002', season_id = '60000000-0000-0000-0000-000000000002' where id = '80000000-0000-0000-0000-000000000001'$$,
-  '42501',
+  '55000',
   null,
-  'an owner cannot move a match to another owner''s team'
+  'match team identity is immutable even when another team UUID is known'
 );
 
 select throws_ok(

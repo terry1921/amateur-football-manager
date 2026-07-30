@@ -159,7 +159,7 @@
         "description": "Agrega el primer encuentro al calendario del equipo.",
         "blocked": "Crea una temporada para organizar el partido.",
         "action": "Programar un partido",
-        "availability": "Disponible en la Tarea 009"
+        "availability": "Disponible"
       },
       "callup": {
         "title": "Crea tu primera convocatoria",
@@ -308,6 +308,7 @@
     "details": {
       "back": "Volver a temporadas",
       "edit": "Editar temporada",
+      "scheduleMatch": "Programar partido",
       "startDate": "Fecha de inicio",
       "endDate": "Fecha de fin",
       "matches": "Partidos",
@@ -434,6 +435,161 @@
       "title": "No pudimos cargar los jugadores",
       "description": "Los datos de tus jugadores no cambiaron. Intenta cargarlos de nuevo.",
       "action": "Intentar de nuevo"
+    }
+  },
+  "Matches": {
+    "title": "Partidos",
+    "description": "Organiza los próximos encuentros y conserva el historial del equipo.",
+    "create": "Programar un partido",
+    "summary": {
+      "label": "Resumen de partidos",
+      "upcoming": "Próximos",
+      "completed": "Completados",
+      "cancelled": "Cancelados"
+    },
+    "columns": {
+      "fixture": "Partido",
+      "kickoff": "Inicio",
+      "season": "Temporada",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "status": {
+      "scheduled": "Programado",
+      "completed": "Completado",
+      "cancelled": "Cancelado"
+    },
+    "location": {
+      "home": "Local",
+      "away": "Visitante",
+      "neutral": "Neutral"
+    },
+    "groups": {
+      "all": "Todos los periodos",
+      "upcoming": "Próximos",
+      "past": "Pasados · sin resolver",
+      "completed": "Completados",
+      "cancelled": "Cancelados"
+    },
+    "filters": {
+      "search": "Buscar rival o sede",
+      "season": "Temporada",
+      "allSeasons": "Todas las temporadas",
+      "status": "Estado",
+      "allStatuses": "Todos los estados",
+      "location": "Localía",
+      "allLocations": "Todas las localías",
+      "group": "Periodo",
+      "reset": "Restablecer filtros"
+    },
+    "actions": {
+      "view": "Ver",
+      "edit": "Editar",
+      "cancel": "Cancelar partido",
+      "delete": "Eliminar partido"
+    },
+    "feedback": {
+      "created": "Partido programado.",
+      "updated": "Partido actualizado.",
+      "cancelled": "Partido cancelado.",
+      "deleted": "Partido eliminado."
+    },
+    "empty": {
+      "title": "Programa tu primer partido",
+      "description": "Agrega un encuentro para empezar a organizar el calendario del equipo.",
+      "action": "Programar un partido"
+    },
+    "filteredEmpty": {
+      "title": "Ningún partido coincide con estos filtros",
+      "description": "Ajusta la búsqueda o restablece los filtros para ver otros partidos."
+    },
+    "truncated": "Se muestran los 250 partidos más recientes. Usa los filtros para encontrar uno específico.",
+    "score": {
+      "versus": "vs"
+    },
+    "new": {
+      "eyebrow": "Calendario de partidos",
+      "title": "Programar un partido",
+      "description": "Elige la temporada y el horario. Aún no se requieren jugadores ni convocatoria.",
+      "noSeasonTitle": "No hay una temporada disponible",
+      "noSeasonDescription": "Crea una temporada en borrador o activa antes de programar un partido.",
+      "noSeasonAction": "Crear una temporada"
+    },
+    "edit": {
+      "eyebrow": "Datos del partido",
+      "title": "Editar partido",
+      "description": "Actualiza los datos mientras el partido siga programado.",
+      "protectedTitle": "Este partido no se puede editar",
+      "protectedDescription": "Los partidos completados y cancelados se conservan como historial de solo lectura."
+    },
+    "form": {
+      "season": "Temporada",
+      "selectSeason": "Selecciona una temporada",
+      "opponent": "Nombre del rival",
+      "opponentPlaceholder": "p. ej., Verona FC",
+      "date": "Fecha",
+      "time": "Hora de inicio",
+      "location": "Localía",
+      "venue": "Sede",
+      "venuePlaceholder": "p. ej., Campo Hermanos Galván",
+      "notes": "Notas",
+      "notesPlaceholder": "Notas del partido en texto plano",
+      "timeZoneLoading": "Detectando tu zona horaria…",
+      "timeZone": "El inicio se guardará usando {timeZone}.",
+      "pastHelp": "Se permiten fechas pasadas para partidos históricos sin resolver.",
+      "create": "Programar partido",
+      "save": "Guardar cambios",
+      "saving": "Guardando…",
+      "cancel": "Volver a partidos"
+    },
+    "details": {
+      "back": "Volver a partidos",
+      "kickoff": "Inicio",
+      "season": "Temporada",
+      "location": "Localía",
+      "venue": "Sede",
+      "status": "Estado",
+      "notes": "Notas",
+      "score": "Marcador",
+      "notProvided": "Sin información",
+      "scheduledScore": "Todavía no se ha registrado un marcador.",
+      "historyProtected": "Los partidos completados y cancelados son de solo lectura. El registro de resultados pertenece a un flujo posterior."
+    },
+    "confirm": {
+      "cancelTitle": "¿Cancelar este partido?",
+      "cancelDescription": "El partido contra {opponent} del {date} permanecerá en la temporada como cancelado.",
+      "cancelConfirm": "Cancelar partido",
+      "deleteTitle": "¿Eliminar este partido permanentemente?",
+      "deleteDescription": "El partido vacío contra {opponent} del {date} se eliminará permanentemente. Esta acción no se puede deshacer.",
+      "deleteConfirm": "Eliminar permanentemente",
+      "close": "Conservar partido",
+      "working": "Procesando…"
+    },
+    "validation": {
+      "required": "Este campo es obligatorio.",
+      "tooLong": "Este valor es demasiado largo.",
+      "invalidSeason": "Elige una temporada válida.",
+      "ineligibleSeason": "Elige una temporada en borrador o activa de este equipo.",
+      "invalidDate": "Ingresa una fecha válida.",
+      "invalidTime": "Ingresa una hora válida.",
+      "invalidTimeZone": "Actualiza la página para que podamos detectar tu zona horaria.",
+      "invalidLocalTime": "Esa hora local no existe por un cambio de horario. Elige otra hora.",
+      "invalidLocation": "Elige Local, Visitante o Neutral."
+    },
+    "errors": {
+      "sessionExpired": "Tu sesión caducó. Inicia sesión e inténtalo de nuevo.",
+      "unexpected": "No pudimos guardar este partido. Revisa tu conexión e inténtalo de nuevo.",
+      "notFound": "Este partido no está disponible o ya no existe.",
+      "historyProtected": "El historial de partidos completados y cancelados no se puede cambiar.",
+      "deleteRestricted": "Este partido tiene resultado, convocatoria o eventos y no se puede eliminar."
+    },
+    "error": {
+      "title": "No pudimos cargar los partidos",
+      "description": "Los datos de tus partidos no cambiaron. Intenta cargarlos de nuevo.",
+      "action": "Intentar de nuevo"
+    },
+    "loading": {
+      "label": "Cargando partidos"
     }
   },
   "ApplicationError": {

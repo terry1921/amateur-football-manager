@@ -70,6 +70,61 @@ describe("matches RLS through Supabase JS", () => {
     expect(remove.data).toEqual([{ id: matchId }]);
   });
 
+  it("allows cancelling an owned scheduled match and preserves null scores", async () => {
+    const matchId = securityUuid(context.namespace, "cancelled-match");
+    const insert = await context.userAClient.from("matches").insert({
+      id: matchId,
+      team_id: context.ids.teamA,
+      season_id: context.ids.seasonA,
+      opponent_name: "Cancelled Opponent A",
+      kickoff_at: "2026-09-10T19:00:00Z",
+      home_away: "home",
+    });
+    expect(insert.error).toBeNull();
+
+    const cancellation = await context.userAClient
+      .from("matches")
+      .update({
+        status: "cancelled",
+        team_score: null,
+        opponent_score: null,
+      })
+      .eq("id", matchId)
+      .select("id, status, team_score, opponent_score")
+      .single();
+
+    expect(cancellation.error).toBeNull();
+    expect(cancellation.data).toEqual({
+      id: matchId,
+      status: "cancelled",
+      team_score: null,
+      opponent_score: null,
+    });
+  });
+
+  it("blocks deletion when a match has call-ups or events", async () => {
+    const remove = await context.userAClient
+      .from("matches")
+      .delete()
+      .eq("id", context.ids.matchA)
+      .select("id");
+
+    expectNoRowsAffected(remove);
+
+    const callup = await context.userAClient
+      .from("callups")
+      .select("id")
+      .eq("id", context.ids.callupA)
+      .single();
+    const event = await context.userAClient
+      .from("match_events")
+      .select("id")
+      .eq("id", context.ids.eventA)
+      .single();
+    expect(callup.error).toBeNull();
+    expect(event.error).toBeNull();
+  });
+
   it("blocks foreign match insert, update, and delete", async () => {
     const insert = await context.userAClient.from("matches").insert({
       team_id: context.ids.teamB,
@@ -104,7 +159,8 @@ describe("matches RLS through Supabase JS", () => {
       .eq("id", context.ids.matchA)
       .select("id");
 
-    expectRlsDenied(result);
+    expect(result.data).toBeNull();
+    expect(result.error?.code).toBe("55000");
   });
 
   it("rejects Team A plus Season B through the composite foreign key", async () => {

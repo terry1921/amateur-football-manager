@@ -70,7 +70,8 @@ its destination is functional:
 
 - Task 007 creates a season; the existing season query becomes true.
 - Task 008 creates a player; `playerCount > 0` becomes true.
-- Task 009 creates a match; the match-existence query becomes true.
+- Task 009 provides the real match scheduler; its CTA is active when a season
+  exists, and the match-existence query becomes true after scheduling.
 - Task 010 creates a call-up; the call-up query becomes true.
 - Task 012 records a valid completed score; the result query becomes true.
 

@@ -40,7 +40,7 @@ const stepDefinitions: StepDefinition[] = [
   {
     id: "match",
     href: "/matches",
-    featureAvailable: false,
+    featureAvailable: true,
     complete: (facts) => facts.matchExists,
     dependencyMet: (facts) => facts.teamExists && facts.seasonExists,
   },

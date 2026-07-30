@@ -42,6 +42,14 @@ operation-specific policies restricted to the `authenticated` database role:
 - `DELETE` can target only rows in the signed-in user's ownership graph where
   the feature's lifecycle permits deletion.
 
+Match deletion has an additional lifecycle boundary: only scheduled/cancelled
+fixtures without call-ups or match events are visible to the delete policy.
+`public.can_delete_owned_match(uuid, uuid)` is a narrowly scoped
+`security definer` predicate used to avoid recursive match/call-up RLS
+evaluation. It checks `auth.uid()` ownership internally and returns only a
+boolean, so calling it with a foreign UUID cannot reveal foreign fixture data.
+Anonymous execution is revoked.
+
 `players` and `seasons` intentionally expose no authenticated `DELETE`
 privilege or policy. Player departures use the `inactive` status, and a trigger
 makes `players.team_id` immutable. This preserves attribution for historical

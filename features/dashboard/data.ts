@@ -17,9 +17,34 @@ export async function getDashboardData(
 
   const teamId = team.id;
   try {
+    const activeSeason = await resolveCurrentSeason({
+      supabase: supabase as unknown as CurrentSeasonClient,
+      teamId,
+    });
+    let upcomingQuery = supabase
+      .from("matches")
+      .select(
+        "id, opponent_name, kickoff_at, home_away, venue, team_score, opponent_score",
+      )
+      .eq("team_id", teamId)
+      .eq("status", "scheduled")
+      .gte("kickoff_at", now.toISOString());
+    let recentResultQuery = supabase
+      .from("matches")
+      .select(
+        "id, opponent_name, kickoff_at, home_away, venue, team_score, opponent_score",
+      )
+      .eq("team_id", teamId)
+      .eq("status", "completed")
+      .not("team_score", "is", null)
+      .not("opponent_score", "is", null);
+    if (activeSeason) {
+      upcomingQuery = upcomingQuery.eq("season_id", activeSeason.id);
+      recentResultQuery = recentResultQuery.eq("season_id", activeSeason.id);
+    }
+
     const [
       seasons,
-      activeSeason,
       players,
       activePlayers,
       unavailablePlayers,
@@ -32,10 +57,6 @@ export async function getDashboardData(
         .from("seasons")
         .select("id", { count: "exact", head: true })
         .eq("team_id", teamId),
-      resolveCurrentSeason({
-        supabase: supabase as unknown as CurrentSeasonClient,
-        teamId,
-      }),
       supabase
         .from("players")
         .select("id", { count: "exact", head: true })
@@ -58,23 +79,14 @@ export async function getDashboardData(
         .from("callups")
         .select("id", { count: "exact", head: true })
         .eq("team_id", teamId),
-      supabase
-        .from("matches")
-        .select("opponent_name, kickoff_at, venue, team_score, opponent_score")
-        .eq("team_id", teamId)
-        .eq("status", "scheduled")
-        .gte("kickoff_at", now.toISOString())
+      upcomingQuery
         .order("kickoff_at", { ascending: true })
+        .order("id", { ascending: true })
         .limit(1)
         .maybeSingle(),
-      supabase
-        .from("matches")
-        .select("opponent_name, kickoff_at, venue, team_score, opponent_score")
-        .eq("team_id", teamId)
-        .eq("status", "completed")
-        .not("team_score", "is", null)
-        .not("opponent_score", "is", null)
+      recentResultQuery
         .order("kickoff_at", { ascending: false })
+        .order("id", { ascending: false })
         .limit(1)
         .maybeSingle(),
     ]);

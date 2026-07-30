@@ -36,6 +36,8 @@ describe("getTeamSetupProgress", () => {
     expect(progress.completedCount).toBe(3);
     expect(progress.percentage).toBe(50);
     expect(progress.nextStep?.id).toBe("match");
+    expect(progress.nextStep?.status).toBe("available");
+    expect(progress.nextStep?.href).toBe("/matches");
   });
 
   it("recommends a call-up after the first match", () => {
@@ -82,7 +84,7 @@ describe("getTeamSetupProgress", () => {
       seasonExists: true,
     });
     expect(seasonOnly.steps.find((step) => step.id === "match")?.status).toBe(
-      "upcoming",
+      "available",
     );
     expect(seasonOnly.steps.find((step) => step.id === "callup")?.status).toBe(
       "blocked",
