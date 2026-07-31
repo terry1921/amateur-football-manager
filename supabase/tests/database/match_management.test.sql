@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(16);
+select plan(18);
 
 select function_privs_are(
   'public',
@@ -99,6 +99,17 @@ values
     'scheduled',
     null,
     null
+  ),
+  (
+    '42000000-0000-0000-0000-000000000006',
+    '12000000-0000-0000-0000-000000000001',
+    '22000000-0000-0000-0000-000000000001',
+    'Result Opponent',
+    '2026-09-05 18:00:00+00',
+    'away',
+    'scheduled',
+    null,
+    null
   );
 
 insert into public.callups (team_id, match_id, player_id)
@@ -108,12 +119,13 @@ values (
   '32000000-0000-0000-0000-000000000001'
 );
 
-insert into public.match_events (team_id, match_id, player_id, type)
+insert into public.match_events (team_id, match_id, player_id, type, minute)
 values (
   '12000000-0000-0000-0000-000000000001',
   '42000000-0000-0000-0000-000000000002',
   '32000000-0000-0000-0000-000000000001',
-  'goal'
+  'goal',
+  10
 );
 
 set constraints all immediate;
@@ -175,6 +187,17 @@ select lives_ok(
 select lives_ok(
   $$update public.matches set status = 'cancelled', team_score = null, opponent_score = null where id = '42000000-0000-0000-0000-000000000001'$$,
   'scheduled fixtures can transition to cancelled'
+);
+
+select lives_ok(
+  $$update public.matches set status = 'completed', team_score = 3, opponent_score = 2 where id = '42000000-0000-0000-0000-000000000006'$$,
+  'scheduled fixtures can transition to completed with both scores'
+);
+
+select results_eq(
+  $$select status, team_score, opponent_score from public.matches where id = '42000000-0000-0000-0000-000000000006'$$,
+  $$values ('completed', 3, 2)$$,
+  'completed result stores the lifecycle state and scores together'
 );
 
 select throws_ok(

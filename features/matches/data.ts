@@ -4,14 +4,20 @@ import {
   type CurrentSeasonClient,
 } from "@/features/seasons/current-season";
 import type { Tables } from "@/types/database";
+import { getPlayerDisplayName } from "@/features/players/model";
 import {
   isEligibleSeason,
   isMatchId,
   type Match,
+  type MatchCallupPlayer,
+  type MatchEvent,
+  type MatchEventType,
   type SeasonStatus,
 } from "./model";
 
 export const MATCH_LIST_LIMIT = 250;
+const MATCH_DETAIL_EVENT_LIMIT = 250;
+const MATCH_DETAIL_CALLUP_LIMIT = 250;
 
 const matchColumns =
   "id, team_id, season_id, opponent_name, opponent_logo_url, competition, round, venue, kickoff_at, home_away, status, team_score, opponent_score, notes, created_at, updated_at";
@@ -112,7 +118,7 @@ export async function getMatchDetails(matchId: string) {
   if (matchResult.error) throw matchResult.error;
   if (!matchResult.data) return null;
 
-  const [seasonResult, callups, events] = await Promise.all([
+  const [seasonResult, callupsResult, eventsResult] = await Promise.all([
     supabase
       .from("seasons")
       .select("id, name, status, start_date, end_date")
@@ -121,24 +127,97 @@ export async function getMatchDetails(matchId: string) {
       .maybeSingle(),
     supabase
       .from("callups")
-      .select("id", { count: "exact", head: true })
-      .eq("match_id", matchId),
+      .select("player_id, status")
+      .eq("match_id", matchId)
+      .limit(MATCH_DETAIL_CALLUP_LIMIT),
     supabase
       .from("match_events")
-      .select("id", { count: "exact", head: true })
-      .eq("match_id", matchId),
+      .select("id, player_id, type, minute, created_at")
+      .eq("match_id", matchId)
+      .order("minute", { ascending: true })
+      .order("created_at", { ascending: true })
+      .order("id", { ascending: true })
+      .limit(MATCH_DETAIL_EVENT_LIMIT),
   ]);
   if (seasonResult.error) throw seasonResult.error;
-  if (callups.error) throw callups.error;
-  if (events.error) throw events.error;
+  if (callupsResult.error) throw callupsResult.error;
+  if (eventsResult.error) throw eventsResult.error;
   if (!seasonResult.data) return null;
+
+  const callupRows = callupsResult.data as Array<{
+    player_id: string;
+    status: string;
+  }>;
+  const eventRows = eventsResult.data as Array<{
+    id: string;
+    player_id: string;
+    type: string;
+    minute: number;
+    created_at: string;
+  }>;
+  const playerIds = [
+    ...new Set([
+      ...callupRows.map(({ player_id }) => player_id),
+      ...eventRows.map(({ player_id }) => player_id),
+    ]),
+  ];
+  const playersResult = playerIds.length
+    ? await supabase
+        .from("players")
+        .select(
+          "id, first_name, last_name, nickname, shirt_number, position, status",
+        )
+        .eq("team_id", team.id)
+        .in("id", playerIds)
+    : { data: [], error: null };
+  if (playersResult.error) throw playersResult.error;
+  const playersById = new Map(
+    playersResult.data.map((player) => [player.id, player]),
+  );
+  const callupPlayers = callupRows
+    .map(({ player_id, status }) => {
+      const player = playersById.get(player_id);
+      if (!player) return null;
+      return {
+        ...player,
+        callup_status: status,
+      } satisfies MatchCallupPlayer;
+    })
+    .filter((player): player is MatchCallupPlayer => player !== null)
+    .sort((left, right) =>
+      getPlayerDisplayName(left).localeCompare(getPlayerDisplayName(right)),
+    );
+  const events = eventRows
+    .map((event) => {
+      const player = playersById.get(event.player_id);
+      if (!player) return null;
+      return {
+        ...event,
+        type: event.type as MatchEventType,
+        player_name: getPlayerDisplayName(player),
+        player_shirt_number: player.shirt_number,
+      } satisfies MatchEvent;
+    })
+    .filter((event): event is MatchEvent => event !== null)
+    .sort(
+      (left, right) =>
+        left.minute - right.minute ||
+        left.created_at.localeCompare(right.created_at) ||
+        left.id.localeCompare(right.id),
+    );
 
   const [match] = hydrateMatches(
     [matchResult.data],
     [seasonResult.data],
-    new Set((callups.count ?? 0) + (events.count ?? 0) > 0 ? [matchId] : []),
+    new Set(callupRows.length + eventRows.length > 0 ? [matchId] : []),
   );
-  return { match, season: seasonResult.data as MatchSeason };
+  return {
+    team,
+    match,
+    season: seasonResult.data as MatchSeason,
+    callupPlayers,
+    events,
+  };
 }
 
 export async function getMatchFormData(matchId?: string) {

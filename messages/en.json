@@ -145,7 +145,8 @@
       "schedule-match": "Schedule a match",
       "manage-callup": "Prepare the next call-up",
       "view-squad": "Review the squad",
-      "view-next-match": "Open the next match"
+      "view-next-match": "Open the next match",
+      "record-result": "Record match result"
     },
     "attention": {
       "title": "Attention required",
@@ -154,7 +155,7 @@
         "past-unresolved-match": {
           "title": "Past match is unresolved",
           "description": "A scheduled fixture is in the past without a final status.",
-          "action": "View match"
+          "action": "Record result"
         },
         "upcoming-match-callup": {
           "title": "The next match has no call-up",
@@ -191,7 +192,8 @@
         "schedule-match": "Schedule match",
         "manage-callup": "Manage call-up",
         "view-squad": "View squad",
-        "view-next-match": "View next match"
+        "view-next-match": "View next match",
+        "record-result": "Record result"
       }
     },
     "steps": {
@@ -235,7 +237,7 @@
         "description": "Complete a match with both teams’ scores.",
         "blocked": "Schedule a match before recording its result.",
         "action": "Record a result",
-        "availability": "Coming in Task 012"
+        "availability": "Available"
       }
     },
     "team": {
@@ -583,6 +585,7 @@
       "edit": "Edit",
       "manageCallup": "Manage call-up",
       "viewCallup": "View call-up",
+      "recordResult": "Record result",
       "cancel": "Cancel match",
       "delete": "Delete match"
     },
@@ -590,6 +593,7 @@
       "created": "Match scheduled.",
       "updated": "Match updated.",
       "cancelled": "Match cancelled.",
+      "result-recorded": "Match result and events recorded.",
       "deleted": "Match deleted."
     },
     "empty": {
@@ -651,7 +655,7 @@
       "score": "Score",
       "notProvided": "Not provided",
       "scheduledScore": "No score has been recorded.",
-      "historyProtected": "Completed and cancelled fixtures are read-only. Result entry belongs to a later workflow."
+      "historyProtected": "Scheduled fixtures can record a result. Completed and cancelled fixtures are read-only."
     },
     "confirm": {
       "cancelTitle": "Cancel this match?",
@@ -688,6 +692,91 @@
     },
     "loading": {
       "label": "Loading matches"
+    }
+  },
+  "Results": {
+    "back": "Back to match",
+    "location": {
+      "home": "Home",
+      "away": "Away",
+      "neutral": "Neutral"
+    },
+    "status": {
+      "scheduled": "Scheduled",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "form": {
+      "title": "Record result",
+      "description": "Enter the official score and the managed team's goals and cards. Saving completes this match and makes it read-only history.",
+      "scoreHeading": "Final score",
+      "eventsHeading": "Team events",
+      "eventsDescription": "Attribute goals and cards to players selected in this match's call-up.",
+      "summaryHeading": "Event summary",
+      "noCallup": "Save a call-up before attributing goals or cards to players. A 0–0 result can still be recorded without events.",
+      "homeScore": "Home score",
+      "awayScore": "Away score",
+      "orientation": "Enter the score as shown on the fixture. The managed team's score is stored with the match for future reporting.",
+      "requiredHelp": "Both scores are required. Scores must be whole numbers of zero or more.",
+      "player": "Player",
+      "minute": "Minute",
+      "addEvent": "Add {type}",
+      "removeEvent": "Remove {type}",
+      "remove": "Remove",
+      "none": "None recorded.",
+      "unknownPlayer": "Unknown player",
+      "eventCount": "{count, plural, =0 {No events} one {# event} other {# events}}",
+      "save": "Record result",
+      "saving": "Recording…",
+      "cancel": "Back to match"
+    },
+    "eventTypes": {
+      "goal": "Goal",
+      "yellow_card": "Yellow card",
+      "red_card": "Red card"
+    },
+    "eventHelp": {
+      "goal": "Every managed-team goal must have a scorer.",
+      "yellow_card": "Record each yellow card received by a managed-team player.",
+      "red_card": "Record each red card received by a managed-team player."
+    },
+    "goalMismatch": "The score shows {score} team goals, but {count} {count, plural, =1 {goal event has} other {goal events have}} been recorded.",
+    "history": {
+      "title": "Match events",
+      "none": "None recorded."
+    },
+    "result": {
+      "win": "Win",
+      "draw": "Draw",
+      "loss": "Loss"
+    },
+    "readOnly": {
+      "completedDescription": "This match is completed and read-only historical data.",
+      "cancelledDescription": "Cancelled matches cannot receive a result.",
+      "viewCallup": "View call-up"
+    },
+    "validation": {
+      "required": "Enter a score.",
+      "integer": "Use a whole number of zero or more.",
+      "tooLarge": "Use a smaller score.",
+      "requiredEvents": "Add the event details before saving.",
+      "invalidEvents": "Check the event details and try again.",
+      "invalidType": "Choose a valid event type.",
+      "invalidPlayer": "Choose a valid called-up player.",
+      "nonNegative": "Use a minute of zero or more.",
+      "unsupportedField": "Remove unsupported event details.",
+      "tooMany": "There are too many events to record at once."
+    },
+    "errors": {
+      "sessionExpired": "Your session has expired. Sign in and try again.",
+      "notFound": "This match is unavailable or no longer exists.",
+      "cancelled": "Cancelled matches cannot receive results.",
+      "completed": "This match is already completed and read-only.",
+      "goalMismatch": "The final score and managed-team goal events do not match.",
+      "notInCallup": "Only players selected in the match call-up can receive events.",
+      "invalidEvents": "We couldn’t validate these match events. Check the details and try again.",
+      "migrationMissing": "The result-entry database update is not installed yet. Apply the latest migrations and try again.",
+      "unexpected": "We couldn’t record this result. Check your connection and try again."
     }
   },
   "Callups": {

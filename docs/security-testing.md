@@ -104,6 +104,8 @@ The suite tests:
 - forged ownership and relationship fields;
 - `WITH CHECK` protection against cross-tenant row movement;
 - mixed-team matches, call-ups, scorers, and assisting players;
+- atomic result completion, score-to-goal reconciliation, called-up-player
+  enforcement, duplicate-completion rejection, and rollback on failure;
 - anonymous CRUD denial for every table;
 - bulk insert, update, and delete behavior;
 - broad, `neq`, `in`, `or`, `not`, range, and order filters;
@@ -159,6 +161,15 @@ selection, and replaces its call-ups in one transaction. Anonymous execution
 is revoked. The focused pgTAP suite in
 `supabase/tests/database/callup_management.test.sql` covers lifecycle,
 eligibility, tenant isolation, duplicates, and rollback behavior.
+
+`public.complete_match_with_events(uuid, integer, integer, jsonb)` is also a
+`SECURITY INVOKER` mutation with a fixed empty search path. It locks the owned
+scheduled match, validates normalized event payloads and call-up membership,
+reconciles managed-team goals, replaces events, and completes the match in one
+transaction. Anonymous execution is revoked. Its rollback, duplicate
+completion, foreign-match, and score-reconciliation coverage lives in
+`supabase/tests/database/match_result_events.test.sql` and
+`tests/security/matches.rls.test.ts`.
 
 No Storage bucket or `storage.objects` authorization policy has been created
 for the MVP yet. Storage isolation tests are deferred until the task that

@@ -41,7 +41,7 @@ describe("match-events RLS through Supabase JS", () => {
         id: eventId,
         team_id: context.ids.teamA,
         match_id: context.ids.matchA,
-        player_id: context.ids.playerA2,
+        player_id: context.ids.playerA,
         type: "red_card",
         minute: 70,
       })
@@ -89,6 +89,7 @@ describe("match-events RLS through Supabase JS", () => {
       match_id: context.ids.matchB,
       player_id: context.ids.playerA,
       type: "goal",
+      minute: 10,
     });
 
     expectRlsDenied(result);
@@ -100,6 +101,7 @@ describe("match-events RLS through Supabase JS", () => {
       match_id: context.ids.matchA,
       player_id: context.ids.playerB,
       type: "goal",
+      minute: 10,
     });
 
     expectForeignKeyDenied(result);
@@ -111,6 +113,7 @@ describe("match-events RLS through Supabase JS", () => {
       match_id: context.ids.matchB,
       player_id: context.ids.playerB,
       type: "goal",
+      minute: 10,
     });
 
     expectRlsDenied(result);
@@ -123,6 +126,7 @@ describe("match-events RLS through Supabase JS", () => {
       player_id: context.ids.playerA2,
       related_player_id: context.ids.playerB,
       type: "goal",
+      minute: 10,
     });
 
     expectForeignKeyDenied(result);

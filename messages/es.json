@@ -145,7 +145,8 @@
       "schedule-match": "Programar partido",
       "manage-callup": "Preparar la próxima convocatoria",
       "view-squad": "Revisar plantel",
-      "view-next-match": "Abrir próximo partido"
+      "view-next-match": "Abrir próximo partido",
+      "record-result": "Registrar resultado"
     },
     "attention": {
       "title": "Requiere atención",
@@ -154,7 +155,7 @@
         "past-unresolved-match": {
           "title": "Hay un partido sin resolver",
           "description": "Un partido programado ya pasó y no tiene estado final.",
-          "action": "Ver partido"
+          "action": "Registrar resultado"
         },
         "upcoming-match-callup": {
           "title": "El próximo partido no tiene convocatoria",
@@ -191,7 +192,8 @@
         "schedule-match": "Programar partido",
         "manage-callup": "Gestionar convocatoria",
         "view-squad": "Ver plantel",
-        "view-next-match": "Ver próximo partido"
+        "view-next-match": "Ver próximo partido",
+        "record-result": "Registrar resultado"
       }
     },
     "steps": {
@@ -235,7 +237,7 @@
         "description": "Completa un partido con los marcadores de ambos equipos.",
         "blocked": "Programa un partido antes de registrar su resultado.",
         "action": "Registrar un resultado",
-        "availability": "Disponible en la Tarea 012"
+        "availability": "Disponible"
       }
     },
     "team": {
@@ -583,6 +585,7 @@
       "edit": "Editar",
       "manageCallup": "Gestionar convocatoria",
       "viewCallup": "Ver convocatoria",
+      "recordResult": "Registrar resultado",
       "cancel": "Cancelar partido",
       "delete": "Eliminar partido"
     },
@@ -590,6 +593,7 @@
       "created": "Partido programado.",
       "updated": "Partido actualizado.",
       "cancelled": "Partido cancelado.",
+      "result-recorded": "Resultado y eventos del partido registrados.",
       "deleted": "Partido eliminado."
     },
     "empty": {
@@ -651,7 +655,7 @@
       "score": "Marcador",
       "notProvided": "Sin información",
       "scheduledScore": "Todavía no se ha registrado un marcador.",
-      "historyProtected": "Los partidos completados y cancelados son de solo lectura. El registro de resultados pertenece a un flujo posterior."
+      "historyProtected": "Los partidos programados pueden recibir un resultado. Los partidos completados y cancelados son de solo lectura."
     },
     "confirm": {
       "cancelTitle": "¿Cancelar este partido?",
@@ -688,6 +692,91 @@
     },
     "loading": {
       "label": "Cargando partidos"
+    }
+  },
+  "Results": {
+    "back": "Volver al partido",
+    "location": {
+      "home": "Local",
+      "away": "Visitante",
+      "neutral": "Neutral"
+    },
+    "status": {
+      "scheduled": "Programado",
+      "completed": "Completado",
+      "cancelled": "Cancelado"
+    },
+    "form": {
+      "title": "Registrar resultado",
+      "description": "Ingresa el marcador oficial y los goles y tarjetas del equipo. Al guardar, el partido se completa y queda como historial de solo lectura.",
+      "scoreHeading": "Marcador final",
+      "eventsHeading": "Eventos del equipo",
+      "eventsDescription": "Atribuye goles y tarjetas a jugadores seleccionados en la convocatoria de este partido.",
+      "summaryHeading": "Resumen de eventos",
+      "noCallup": "Guarda una convocatoria antes de atribuir goles o tarjetas a jugadores. Puedes registrar un 0–0 sin eventos.",
+      "homeScore": "Marcador local",
+      "awayScore": "Marcador visitante",
+      "orientation": "Ingresa el marcador tal como aparece en el partido. El marcador del equipo se guarda con el partido para futuros reportes.",
+      "requiredHelp": "Ambos marcadores son obligatorios. Usa números enteros de cero o mayores.",
+      "player": "Jugador",
+      "minute": "Minuto",
+      "addEvent": "Agregar {type}",
+      "removeEvent": "Quitar {type}",
+      "remove": "Quitar",
+      "none": "Ninguno registrado.",
+      "unknownPlayer": "Jugador desconocido",
+      "eventCount": "{count, plural, =0 {Sin eventos} one {# evento} other {# eventos}}",
+      "save": "Registrar resultado",
+      "saving": "Registrando…",
+      "cancel": "Volver al partido"
+    },
+    "eventTypes": {
+      "goal": "Gol",
+      "yellow_card": "Tarjeta amarilla",
+      "red_card": "Tarjeta roja"
+    },
+    "eventHelp": {
+      "goal": "Cada gol del equipo debe tener un goleador.",
+      "yellow_card": "Registra cada tarjeta amarilla recibida por un jugador del equipo.",
+      "red_card": "Registra cada tarjeta roja recibida por un jugador del equipo."
+    },
+    "goalMismatch": "El marcador muestra {score} goles del equipo, pero hay {count} eventos de gol registrados.",
+    "history": {
+      "title": "Eventos del partido",
+      "none": "Ninguno registrado."
+    },
+    "result": {
+      "win": "Victoria",
+      "draw": "Empate",
+      "loss": "Derrota"
+    },
+    "readOnly": {
+      "completedDescription": "Este partido está completado y es historial de solo lectura.",
+      "cancelledDescription": "Los partidos cancelados no pueden recibir un resultado.",
+      "viewCallup": "Ver convocatoria"
+    },
+    "validation": {
+      "required": "Ingresa un marcador.",
+      "integer": "Usa un número entero de cero o mayor.",
+      "tooLarge": "Usa un marcador más pequeño.",
+      "requiredEvents": "Agrega los datos del evento antes de guardar.",
+      "invalidEvents": "Revisa los datos de los eventos e inténtalo de nuevo.",
+      "invalidType": "Elige un tipo de evento válido.",
+      "invalidPlayer": "Elige un jugador válido de la convocatoria.",
+      "nonNegative": "Usa un minuto de cero o mayor.",
+      "unsupportedField": "Quita los datos de evento no permitidos.",
+      "tooMany": "Hay demasiados eventos para registrarlos a la vez."
+    },
+    "errors": {
+      "sessionExpired": "Tu sesión caducó. Inicia sesión e inténtalo de nuevo.",
+      "notFound": "Este partido no está disponible o ya no existe.",
+      "cancelled": "Los partidos cancelados no pueden recibir resultados.",
+      "completed": "Este partido ya está completado y es de solo lectura.",
+      "goalMismatch": "El marcador final y los eventos de gol del equipo no coinciden.",
+      "notInCallup": "Solo los jugadores seleccionados en la convocatoria pueden recibir eventos.",
+      "invalidEvents": "No pudimos validar estos eventos. Revisa los datos e inténtalo de nuevo.",
+      "migrationMissing": "La actualización de resultados aún no está instalada en la base de datos. Aplica las migraciones más recientes e inténtalo de nuevo.",
+      "unexpected": "No pudimos registrar este resultado. Revisa tu conexión e inténtalo de nuevo."
     }
   },
   "Callups": {

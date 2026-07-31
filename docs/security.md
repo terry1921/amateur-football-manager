@@ -27,7 +27,9 @@ invitations, or public records.
 deliberately do not trust it. They authorize the row by resolving its
 `match_id` to `matches.team_id`, then resolving that team to
 `teams.owner_id`. Composite foreign keys separately guarantee that the stored
-match, team, and player identifiers describe one consistent tenant.
+match, team, and player identifiers describe one consistent tenant. A second
+composite foreign key guarantees that an event player was selected in that
+match's call-up.
 
 ## Policy behavior
 
@@ -58,6 +60,12 @@ players, and performs the replacement atomically. RLS still resolves ownership
 through the match, while a database trigger protects the lifecycle and makes
 call-up identity immutable for direct table mutations. Completed and cancelled
 match call-ups are read-only.
+
+Event writes are limited to scheduled matches, and completed-match event
+history is read-only. `complete_match_with_events` runs as a security-invoker
+transaction, verifies the authenticated owner through RLS-visible rows,
+validates call-up membership, reconciles managed-team goals, replaces events,
+and completes the match atomically.
 
 `players` and `seasons` intentionally expose no authenticated `DELETE`
 privilege or policy. Player departures use the `inactive` status, and a trigger

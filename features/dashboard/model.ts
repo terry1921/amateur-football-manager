@@ -1,5 +1,8 @@
 import type { Tables } from "@/types/database";
-import { getManagedScore } from "@/features/matches/model";
+import {
+  getMatchResult as getManagedMatchResult,
+  type MatchResult,
+} from "@/features/matches/model";
 
 export type SetupStepId =
   "team" | "season" | "players" | "match" | "callup" | "result";
@@ -81,7 +84,8 @@ export type PrimaryDashboardActionId =
   | "schedule-match"
   | "manage-callup"
   | "view-squad"
-  | "view-next-match";
+  | "view-next-match"
+  | "record-result";
 
 export type PrimaryDashboardAction = {
   id: PrimaryDashboardActionId;
@@ -103,7 +107,7 @@ export type DashboardAttentionItem = {
   href: string;
 };
 
-export type DashboardMatchResult = "win" | "draw" | "loss" | null;
+export type DashboardMatchResult = MatchResult | null;
 
 export function getCallupReadiness(
   match: Pick<DashboardMatch, "status" | "callup_count"> | null,
@@ -115,10 +119,7 @@ export function getCallupReadiness(
 export function getMatchResult(
   match: Pick<DashboardMatch, "team_score" | "opponent_score"> | null,
 ): DashboardMatchResult {
-  const score = match ? getManagedScore(match) : null;
-  if (!score) return null;
-  if (score.team === score.opponent) return "draw";
-  return score.team > score.opponent ? "win" : "loss";
+  return match ? getManagedMatchResult(match) : null;
 }
 
 export function getPrimaryDashboardAction({
@@ -127,16 +128,24 @@ export function getPrimaryDashboardAction({
   activePlayerCount,
   matchCount,
   upcomingMatch,
+  pastUnresolvedMatch,
 }: {
   activeSeason: DashboardSeason | null;
   playerCount: number;
   activePlayerCount: number;
   matchCount: number;
   upcomingMatch: DashboardMatch | null;
+  pastUnresolvedMatch?: DashboardMatch | null;
 }): PrimaryDashboardAction {
   if (!activeSeason) return { id: "create-season", href: "/seasons" };
   if (playerCount === 0) return { id: "add-player", href: "/players" };
   if (activePlayerCount === 0) return { id: "view-squad", href: "/players" };
+  if (pastUnresolvedMatch) {
+    return {
+      id: "record-result",
+      href: `/matches/${pastUnresolvedMatch.id}/result`,
+    };
+  }
   if (matchCount === 0 || !upcomingMatch) {
     return { id: "schedule-match", href: "/matches/new" };
   }
@@ -168,7 +177,7 @@ export function getDashboardAttentionItems({
     items.push({
       id: "past-unresolved-match",
       severity: "warning",
-      href: `/matches/${pastUnresolvedMatch.id}`,
+      href: `/matches/${pastUnresolvedMatch.id}/result`,
     });
   }
 

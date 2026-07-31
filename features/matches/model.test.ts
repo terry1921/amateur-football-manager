@@ -4,6 +4,8 @@ import {
   canEditMatch,
   filterMatches,
   getManagedScore,
+  getManagedScoreFromHomeAway,
+  getMatchResult,
   groupMatches,
   isEligibleSeason,
   isMatchId,
@@ -172,5 +174,42 @@ describe("match domain rules", () => {
       ).toEqual({ team: 3, opponent: 2 });
     }
     expect(getManagedScore(match())).toBeNull();
+  });
+
+  it("maps entered home and away scores into the managed-team columns", () => {
+    expect(
+      getManagedScoreFromHomeAway({
+        homeScore: 1,
+        awayScore: 3,
+        location: "home",
+      }),
+    ).toEqual({ team: 1, opponent: 3 });
+    expect(
+      getManagedScoreFromHomeAway({
+        homeScore: 1,
+        awayScore: 3,
+        location: "away",
+      }),
+    ).toEqual({ team: 3, opponent: 1 });
+    expect(
+      getManagedScoreFromHomeAway({
+        homeScore: 1,
+        awayScore: 3,
+        location: "neutral",
+      }),
+    ).toEqual({ team: 1, opponent: 3 });
+  });
+
+  it("derives a result only from a complete managed-team score", () => {
+    expect(getMatchResult(match({ team_score: 2, opponent_score: 1 }))).toBe(
+      "win",
+    );
+    expect(getMatchResult(match({ team_score: 1, opponent_score: 1 }))).toBe(
+      "draw",
+    );
+    expect(getMatchResult(match({ team_score: 0, opponent_score: 1 }))).toBe(
+      "loss",
+    );
+    expect(getMatchResult(match())).toBeNull();
   });
 });

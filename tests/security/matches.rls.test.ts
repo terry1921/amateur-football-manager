@@ -102,6 +102,196 @@ describe("matches RLS through Supabase JS", () => {
     });
   });
 
+  it("completes an owned match with normalized events through one RPC", async () => {
+    const completion = await context.userAClient.rpc(
+      "complete_match_with_events",
+      {
+        target_match_id: context.ids.matchA,
+        final_team_score: 1,
+        final_opponent_score: 0,
+        event_rows: [
+          { type: "goal", player_id: context.ids.playerA, minute: 12 },
+        ],
+      },
+    );
+    expect(completion.error).toBeNull();
+    expect(completion.data).toEqual({
+      match_id: context.ids.matchA,
+      status: "completed",
+      team_score: 1,
+      opponent_score: 0,
+      event_count: 1,
+    });
+
+    const events = await context.userAClient
+      .from("match_events")
+      .select("type, player_id, minute")
+      .eq("match_id", context.ids.matchA);
+    expect(events.error).toBeNull();
+    expect(events.data).toEqual([
+      { type: "goal", player_id: context.ids.playerA, minute: 12 },
+    ]);
+  });
+
+  it("completes an owned match with a goal and yellow card together", async () => {
+    const matchId = securityUuid(context.namespace, "goal-yellow-match");
+    const insert = await context.userAClient.from("matches").insert({
+      id: matchId,
+      team_id: context.ids.teamA,
+      season_id: context.ids.seasonA,
+      opponent_name: "Goal Yellow Opponent",
+      kickoff_at: "2026-09-10T20:30:00Z",
+      home_away: "home",
+    });
+    expect(insert.error).toBeNull();
+
+    const callup = await context.userAClient.from("callups").insert([
+      {
+        team_id: context.ids.teamA,
+        match_id: matchId,
+        player_id: context.ids.playerA,
+      },
+      {
+        team_id: context.ids.teamA,
+        match_id: matchId,
+        player_id: context.ids.playerA2,
+      },
+    ]);
+    expect(callup.error).toBeNull();
+
+    const completion = await context.userAClient.rpc(
+      "complete_match_with_events",
+      {
+        target_match_id: matchId,
+        final_team_score: 1,
+        final_opponent_score: 0,
+        event_rows: [
+          { type: "goal", player_id: context.ids.playerA, minute: 12 },
+          {
+            type: "yellow_card",
+            player_id: context.ids.playerA2,
+            minute: 80,
+          },
+        ],
+      },
+    );
+    expect(completion.error).toBeNull();
+    expect(completion.data).toMatchObject({
+      match_id: matchId,
+      status: "completed",
+      team_score: 1,
+      opponent_score: 0,
+      event_count: 2,
+    });
+  });
+
+  it("rolls back score and events when goal reconciliation fails", async () => {
+    const matchId = securityUuid(context.namespace, "atomic-mismatch");
+    const insert = await context.userAClient.from("matches").insert({
+      id: matchId,
+      team_id: context.ids.teamA,
+      season_id: context.ids.seasonA,
+      opponent_name: "Mismatch Opponent",
+      kickoff_at: "2026-09-10T21:00:00Z",
+      home_away: "home",
+    });
+    expect(insert.error).toBeNull();
+    const callup = await context.userAClient.from("callups").insert({
+      team_id: context.ids.teamA,
+      match_id: matchId,
+      player_id: context.ids.playerA2,
+    });
+    expect(callup.error).toBeNull();
+
+    const completion = await context.userAClient.rpc(
+      "complete_match_with_events",
+      {
+        target_match_id: matchId,
+        final_team_score: 2,
+        final_opponent_score: 1,
+        event_rows: [
+          { type: "goal", player_id: context.ids.playerA2, minute: 30 },
+        ],
+      },
+    );
+    expect(completion.data).toBeNull();
+    expect(completion.error?.code).toBe("22023");
+
+    const unchanged = await context.userAClient
+      .from("matches")
+      .select("status, team_score, opponent_score")
+      .eq("id", matchId)
+      .single();
+    expect(unchanged.data).toEqual({
+      status: "scheduled",
+      team_score: null,
+      opponent_score: null,
+    });
+    const events = await context.userAClient
+      .from("match_events")
+      .select("id")
+      .eq("match_id", matchId);
+    expect(events.data).toEqual([]);
+  });
+
+  it("rejects a foreign match completion through the database function", async () => {
+    const completion = await context.userAClient.rpc(
+      "complete_match_with_events",
+      {
+        target_match_id: context.ids.matchB,
+        final_team_score: 0,
+        final_opponent_score: 0,
+        event_rows: [],
+      },
+    );
+    expect(completion.data).toBeNull();
+    expect(completion.error?.code).toBe("P0002");
+  });
+
+  it("allows an owner to complete a scheduled match atomically and blocks a foreign result", async () => {
+    const matchId = securityUuid(context.namespace, "completed-match");
+    const insert = await context.userAClient.from("matches").insert({
+      id: matchId,
+      team_id: context.ids.teamA,
+      season_id: context.ids.seasonA,
+      opponent_name: "Completed Opponent A",
+      kickoff_at: "2026-09-10T20:00:00Z",
+      home_away: "away",
+    });
+    expect(insert.error).toBeNull();
+
+    const completion = await context.userAClient
+      .from("matches")
+      .update({
+        status: "completed",
+        team_score: 3,
+        opponent_score: 2,
+      })
+      .eq("id", matchId)
+      .eq("status", "scheduled")
+      .select("id, status, team_score, opponent_score")
+      .single();
+    expect(completion.error).toBeNull();
+    expect(completion.data).toEqual({
+      id: matchId,
+      status: "completed",
+      team_score: 3,
+      opponent_score: 2,
+    });
+
+    const foreignCompletion = await context.userAClient
+      .from("matches")
+      .update({
+        status: "completed",
+        team_score: 1,
+        opponent_score: 0,
+      })
+      .eq("id", context.ids.matchB)
+      .eq("status", "scheduled")
+      .select("id");
+    expectNoRowsAffected(foreignCompletion);
+  });
+
   it("blocks deletion when a match has call-ups or events", async () => {
     const remove = await context.userAClient
       .from("matches")
@@ -119,8 +309,8 @@ describe("matches RLS through Supabase JS", () => {
     const event = await context.userAClient
       .from("match_events")
       .select("id")
-      .eq("id", context.ids.eventA)
-      .single();
+      .eq("match_id", context.ids.matchA)
+      .maybeSingle();
     expect(callup.error).toBeNull();
     expect(event.error).toBeNull();
   });

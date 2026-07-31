@@ -317,7 +317,7 @@ select throws_ok(
 );
 
 select throws_ok(
-  $$insert into public.match_events (team_id, match_id, player_id, type) values ('50000000-0000-0000-0000-000000000001', '80000000-0000-0000-0000-000000000002', '70000000-0000-0000-0000-000000000001', 'goal')$$,
+  $$insert into public.match_events (team_id, match_id, player_id, type, minute) values ('50000000-0000-0000-0000-000000000001', '80000000-0000-0000-0000-000000000002', '70000000-0000-0000-0000-000000000001', 'goal', 10)$$,
   '42501',
   null,
   'a forged own team_id cannot authorize an event for another owner''s match'

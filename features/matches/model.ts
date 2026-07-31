@@ -9,11 +9,35 @@ export const matchGroupIds = [
   "completed",
   "cancelled",
 ] as const;
+export const matchEventTypes = ["goal", "yellow_card", "red_card"] as const;
 
 export type MatchStatus = (typeof matchStatuses)[number];
 export type MatchLocation = (typeof matchLocations)[number];
 export type MatchGroupId = (typeof matchGroupIds)[number];
+export type MatchEventType = (typeof matchEventTypes)[number];
 export type SeasonStatus = "draft" | "active" | "completed";
+export type MatchResult = "win" | "draw" | "loss";
+
+export type MatchEvent = {
+  id: string;
+  player_id: string;
+  type: MatchEventType;
+  minute: number;
+  created_at: string;
+  player_name: string;
+  player_shirt_number: number | null;
+};
+
+export type MatchCallupPlayer = {
+  id: string;
+  first_name: string;
+  last_name: string | null;
+  nickname: string | null;
+  shirt_number: number | null;
+  position: string;
+  status: string;
+  callup_status: string;
+};
 
 export type Match = Omit<Tables<"matches">, "home_away" | "status"> & {
   home_away: MatchLocation;
@@ -139,4 +163,29 @@ export function getManagedScore(
 ) {
   if (match.team_score === null || match.opponent_score === null) return null;
   return { team: match.team_score, opponent: match.opponent_score };
+}
+
+export function getManagedScoreFromHomeAway({
+  homeScore,
+  awayScore,
+  location,
+}: {
+  homeScore: number;
+  awayScore: number;
+  location: MatchLocation;
+}) {
+  // Neutral fixtures use the documented V1 convention: home is the managed
+  // team and away is the opponent because the stored columns are team-first.
+  return location === "away"
+    ? { team: awayScore, opponent: homeScore }
+    : { team: homeScore, opponent: awayScore };
+}
+
+export function getMatchResult(
+  match: Pick<Match, "team_score" | "opponent_score">,
+): MatchResult | null {
+  const score = getManagedScore(match);
+  if (!score) return null;
+  if (score.team === score.opponent) return "draw";
+  return score.team > score.opponent ? "win" : "loss";
 }

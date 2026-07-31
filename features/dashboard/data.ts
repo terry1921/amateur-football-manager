@@ -259,6 +259,7 @@ export async function getDashboardData(
       activePlayerCount,
       matchCount,
       upcomingMatch,
+      pastUnresolvedMatch,
     });
     const attentionItems = getDashboardAttentionItems({
       activeSeason,

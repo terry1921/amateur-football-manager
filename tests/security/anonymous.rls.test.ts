@@ -138,6 +138,7 @@ describe("anonymous access through Supabase JS", () => {
         match_id: context.ids.matchA,
         player_id: context.ids.playerA2,
         type: "goal",
+        minute: 10,
       }),
     );
     expectRlsDenied(

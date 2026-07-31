@@ -1,8 +1,15 @@
-import { ArrowLeft, CalendarDays, Pencil, UsersRound } from "lucide-react";
+import {
+  ArrowLeft,
+  CalendarDays,
+  Flag,
+  Pencil,
+  UsersRound,
+} from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { MatchActions } from "@/features/matches/match-actions";
 import { MatchDateTime } from "@/features/matches/match-date-time";
+import { MatchEventHistory } from "@/features/matches/match-event-history";
 import { getMatchDetails } from "@/features/matches/data";
 import { canDeleteMatch, getManagedScore } from "@/features/matches/model";
 import { Link } from "@/i18n/navigation";
@@ -32,7 +39,11 @@ export default async function MatchDetailsPage({
   const score = match.status === "completed" ? getManagedScore(match) : null;
   const notice = value(query.notice);
   const safeNotice =
-    notice === "updated" || notice === "cancelled" ? notice : undefined;
+    notice === "updated" ||
+    notice === "cancelled" ||
+    notice === "result-recorded"
+      ? notice
+      : undefined;
 
   const fields = [
     [
@@ -83,6 +94,15 @@ export default async function MatchDetailsPage({
             </div>
           </div>
           <div className="flex flex-col gap-2 min-[430px]:flex-row">
+            {match.status === "scheduled" ? (
+              <Link
+                href={`/matches/${match.id}/result`}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-pitch px-4 text-sm font-bold text-white"
+              >
+                <Flag aria-hidden="true" className="size-4" />
+                {t("actions.recordResult")}
+              </Link>
+            ) : null}
             <Link
               href={`/matches/${match.id}/call-up`}
               className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-pitch px-4 text-sm font-bold text-white"
@@ -128,6 +148,9 @@ export default async function MatchDetailsPage({
             {match.notes || t("details.notProvided")}
           </p>
         </div>
+        {match.status === "completed" ? (
+          <MatchEventHistory events={details.events} />
+        ) : null}
         <div className="flex flex-col gap-4 border-t border-line bg-[#f8faf9] p-5 sm:flex-row sm:items-center sm:justify-between sm:px-8">
           <p className="max-w-xl text-sm leading-6 text-muted">
             {t("details.historyProtected")}

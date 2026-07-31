@@ -54,6 +54,7 @@ select results_eq(
       ('callups_team_match_fkey'),
       ('callups_team_player_fkey'),
       ('match_events_team_match_fkey'),
+      ('match_events_team_match_player_callup_fkey'),
       ('match_events_team_player_fkey'),
       ('match_events_team_related_player_fkey'),
       ('matches_team_id_fkey'),
@@ -277,28 +278,28 @@ select throws_ok(
 );
 
 select throws_ok(
-  $$insert into public.match_events (team_id, match_id, player_id, type) values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000003', 'goal')$$,
+  $$insert into public.match_events (team_id, match_id, player_id, type, minute) values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000003', 'goal', 10)$$,
   '23503',
   null,
   'events cannot use another team''s player'
 );
 
 select throws_ok(
-  $$insert into public.match_events (team_id, match_id, player_id, related_player_id, type) values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000003', 'goal')$$,
+  $$insert into public.match_events (team_id, match_id, player_id, related_player_id, type, minute) values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000003', 'goal', 10)$$,
   '23503',
   null,
   'assists cannot use another team''s player'
 );
 
 select throws_ok(
-  $$insert into public.match_events (team_id, match_id, player_id, type) values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', 'assist')$$,
+  $$insert into public.match_events (team_id, match_id, player_id, type, minute) values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', 'assist', 10)$$,
   '23514',
   null,
   'assists cannot be stored as separate events'
 );
 
 select throws_ok(
-  $$insert into public.match_events (team_id, match_id, player_id, related_player_id, type) values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000002', 'yellow_card')$$,
+  $$insert into public.match_events (team_id, match_id, player_id, related_player_id, type, minute) values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000002', 'yellow_card', 10)$$,
   '23514',
   null,
   'related players are allowed only on goals'
@@ -361,12 +362,13 @@ values (
   '30000000-0000-0000-0000-000000000003'
 );
 
-insert into public.match_events (team_id, match_id, player_id, type)
+insert into public.match_events (team_id, match_id, player_id, type, minute)
 values (
   '10000000-0000-0000-0000-000000000002',
   '40000000-0000-0000-0000-000000000002',
   '30000000-0000-0000-0000-000000000003',
-  'goal'
+  'goal',
+  10
 );
 
 select throws_ok(

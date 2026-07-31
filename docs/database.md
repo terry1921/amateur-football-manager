@@ -48,9 +48,10 @@ declarative constraints instead of privileged triggers.
   lengths are bounded at the database boundary.
 - `callups`: one player selection per match, with status `called_up`,
   `confirmed`, or `declined`.
-- `match_events`: goals and cards with an optional nonnegative minute. An assist
-  is represented only as `related_player_id` on a `goal`; there is no separate
-  `assist` event. This prevents statistics from double-counting the same assist.
+- `match_events`: normalized goals and cards with a required nonnegative
+  minute. Each event player must be selected in the same match call-up through
+  a composite foreign key. The legacy `related_player_id` column remains for
+  schema compatibility, but Task 012.5 does not create or edit assists.
 
 All primary keys are database-generated UUIDs. Required display names are
 checked after trimming whitespace. Tables with mutable records have
@@ -97,7 +98,8 @@ must use `status = 'inactive'`.
 - `matches_team_season_idx`: covers the team/season integrity relationship.
 - `matches_team_status_kickoff_idx`: scheduled/completed dashboard queries.
 - `callups_player_id_idx`: a player's call-up history. The unique
-  `(match_id, player_id)` constraint also indexes match call-ups.
+  `(match_id, player_id)` and `(team_id, match_id, player_id)` constraints
+  index match call-ups and support the event membership foreign key.
 - `callups_team_match_idx` and `callups_team_player_idx`: cover tenant-scoped
   match and player foreign keys.
 - `match_events_match_type_idx`: match event lists and match-level aggregation.
@@ -125,12 +127,15 @@ suspended, or inactive so historical context is not silently rewritten.
 Completed and cancelled matches are immutable. Match team identity cannot
 change, and status transitions are restricted to future-compatible
 `scheduled -> completed` plus Task 009's `scheduled -> cancelled`.
+Event writes are allowed only while a match is scheduled; the atomic
+`complete_match_with_events` invoker function replaces draft events, enforces
+goal reconciliation, and completes the match in one transaction.
 
 ## Deferred work
 
 - Authentication flows remain Task 004.
 - The initial beta's one-team-per-owner limit remains an application rule rather
   than a database constraint, preserving the planned path to multi-team plans.
-- Result, event, and statistics workflows remain later tasks.
+- Statistics, standings, and opponent-player event workflows remain later tasks.
 - Seed data remains separate from schema migrations and will be introduced by a
   dedicated development-data task.

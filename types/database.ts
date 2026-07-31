@@ -84,7 +84,7 @@ export type Database = {
           created_at: string;
           id: string;
           match_id: string;
-          minute: number | null;
+          minute: number;
           player_id: string;
           related_player_id: string | null;
           team_id: string;
@@ -94,7 +94,7 @@ export type Database = {
           created_at?: string;
           id?: string;
           match_id: string;
-          minute?: number | null;
+          minute: number;
           player_id: string;
           related_player_id?: string | null;
           team_id: string;
@@ -104,7 +104,7 @@ export type Database = {
           created_at?: string;
           id?: string;
           match_id?: string;
-          minute?: number | null;
+          minute?: number;
           player_id?: string;
           related_player_id?: string | null;
           team_id?: string;
@@ -117,6 +117,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "matches";
             referencedColumns: ["team_id", "id"];
+          },
+          {
+            foreignKeyName: "match_events_team_match_player_callup_fkey";
+            columns: ["team_id", "match_id", "player_id"];
+            isOneToOne: false;
+            referencedRelation: "callups";
+            referencedColumns: ["team_id", "match_id", "player_id"];
           },
           {
             foreignKeyName: "match_events_team_player_fkey";
@@ -369,6 +376,15 @@ export type Database = {
       can_delete_owned_match: {
         Args: { target_match_id: string; target_team_id: string };
         Returns: boolean;
+      };
+      complete_match_with_events: {
+        Args: {
+          event_rows: Json;
+          final_opponent_score: number;
+          final_team_score: number;
+          target_match_id: string;
+        };
+        Returns: Json;
       };
       replace_match_callup: {
         Args: { selected_player_ids: string[]; target_match_id: string };

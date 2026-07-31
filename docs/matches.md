@@ -44,16 +44,16 @@ competition or opponent management.
 
 ```text
 scheduled -> cancelled    Task 009
-scheduled -> completed    future result-entry task
+scheduled -> completed    Task 012
 ```
 
 New records are always `scheduled` with both scores explicitly null.
 Completed and cancelled fixtures are immutable historical rows. The standard
-fixture form edits scheduled records only. Restoration and result entry are
-deliberately deferred.
+fixture form edits scheduled records only; result entry is handled by the
+separate match result transaction.
 
-The database trigger allows the future atomic transition from scheduled to
-completed only when the score-state check also succeeds. It rejects unsupported
+The database trigger allows the atomic transition from scheduled to completed
+only when the score-state check also succeeds. It rejects unsupported
 transitions and changes to completed/cancelled history.
 
 > A scheduled match must never be represented as a completed 0–0 result.
@@ -68,9 +68,8 @@ team_score     = managed team's score
 opponent_score = external opponent's score
 ```
 
-This meaning is unchanged for home, away, and neutral fixtures. A future result
-screen does not need a neutral-site side convention because the two score
-columns already identify the managed team explicitly.
+Home and neutral fixtures store entered home as the managed team; away
+fixtures reverse the entered scores before writing the team-first columns.
 
 ## Season selection
 
@@ -154,16 +153,18 @@ ready and links directly to that match's call-up.
 
 The dashboard fetches only the nearest future scheduled match and most recent
 valid completed result. When an active season exists, both summaries are
-scoped to it. The upcoming empty state links to `/matches/new` once a season
-exists, and real upcoming fixtures link to their detail page.
+scoped to it. A past scheduled fixture becomes an attention item and the
+primary action links directly to result entry. The upcoming empty state links
+to `/matches/new` once a season exists, and real upcoming fixtures link to
+their detail page.
 
 ## Future integration contract
 
 - Task 010 attaches call-ups to `match_id`; its lifecycle and eligibility rules
   are documented in [`callups.md`](./callups.md).
 - Task 011 attaches events and eligible team players to `match_id`.
-- Result entry atomically writes valid scores and transitions scheduled to
-  completed.
+- Result entry atomically writes valid scores, normalized managed-team events,
+  and the scheduled-to-completed transition; see [`results.md`](./results.md).
 - Statistics aggregate completed matches by team, season, and player.
 - Content generation reads the same opponent, kickoff, venue, result, and
   event records.

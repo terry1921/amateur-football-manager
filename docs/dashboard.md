@@ -68,7 +68,7 @@ dashboard path. Every read uses the cookie-backed server client, the current
 team is resolved server-side, and no browser-provided `team_id` or `owner_id`
 is accepted.
 
-Result entry, match events, statistics, standings, notifications, charts,
-calendar sync, and social content remain deferred. They can extend this view
-model later by adding authoritative derived fields rather than dashboard state
-records.
+Statistics, standings, notifications, charts, calendar sync, and social
+content remain deferred. Result entry and normalized match-event history are
+now available from the match workflow. Future reporting can extend this view
+model with authoritative derived fields rather than dashboard state records.
