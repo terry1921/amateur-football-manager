@@ -292,6 +292,15 @@
           "redCards": "{count} rojas"
         }
       },
+      "statistics": {
+        "title": "Estadísticas de temporada",
+        "matchesPlayed": "Partidos jugados",
+        "goalsScored": "Goles anotados",
+        "topScorer": "Máximo goleador",
+        "discipline": "Disciplina",
+        "noData": "Aún no hay partidos completados",
+        "viewAll": "Abrir estadísticas"
+      },
       "activity": {
         "title": "Actividad reciente",
         "scheduled": "Partido contra {opponent} programado",
@@ -697,6 +706,55 @@
     },
     "loading": {
       "label": "Cargando partidos"
+    }
+  },
+  "Statistics": {
+    "title": "Estadísticas",
+    "description": "Derivadas de partidos completados y eventos registrados del equipo.",
+    "teamLabel": "Equipo",
+    "teamTitle": "Rendimiento del equipo",
+    "playerTitle": "Estadísticas de jugadores",
+    "viewAll": "Ver todas las estadísticas",
+    "filters": {
+      "label": "Periodo de estadísticas",
+      "current": "Temporada actual",
+      "all": "Carrera",
+      "career": "Totales de carrera"
+    },
+    "metrics": {
+      "matchesPlayed": "Partidos jugados",
+      "record": "Victorias",
+      "goalsScored": "Goles anotados",
+      "goalDifference": "Diferencia de goles"
+    },
+    "recordLine": "{wins}G · {draws}E · {losses}P · {goalsConceded} recibidos · {yellowCards}A · {redCards}R",
+    "playerLine": "{matches} convocatorias · {wins}G · {draws}E · {losses}P",
+    "playerMetrics": {
+      "goals": "Goles",
+      "record": "Balance",
+      "calledUp": "Convocatorias",
+      "cards": "Tarjetas"
+    },
+    "tables": {
+      "players": {
+        "title": "Desglose de jugadores",
+        "description": "Goles, tarjetas, convocatorias y resultados."
+      },
+      "topScorers": {
+        "title": "Máximos goleadores",
+        "description": "Goles registrados en partidos completados."
+      },
+      "discipline": {
+        "title": "Disciplina",
+        "description": "Tarjetas amarillas y rojas en partidos completados."
+      }
+    },
+    "empty": {
+      "title": "Aún no hay estadísticas",
+      "description": "Completa un partido con su marcador y los eventos del equipo para empezar a construir este historial.",
+      "topScorers": "No hay goles registrados.",
+      "discipline": "No hay tarjetas registradas.",
+      "players": "No hay filas de jugadores disponibles."
     }
   },
   "Results": {

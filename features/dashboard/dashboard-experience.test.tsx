@@ -194,6 +194,37 @@ describe("DashboardExperience", () => {
           status: "completed",
           callup_count: 0,
         },
+        dashboardStatistics: {
+          has_completed_matches: true,
+          team: {
+            matches_played: 1,
+            wins: 1,
+            draws: 0,
+            losses: 0,
+            goals_scored: 3,
+            goals_conceded: 1,
+            goal_difference: 2,
+            yellow_cards: 1,
+            red_cards: 0,
+          },
+          players: [
+            {
+              player_id: "top-scorer",
+              first_name: "Marco",
+              last_name: "Guerrero",
+              nickname: null,
+              shirt_number: 9,
+              position: "FWD",
+              matches_called_up: 1,
+              matches_won: 1,
+              matches_drawn: 0,
+              matches_lost: 0,
+              goals: 2,
+              yellow_cards: 0,
+              red_cards: 0,
+            },
+          ],
+        },
       },
     );
 
@@ -205,6 +236,8 @@ describe("DashboardExperience", () => {
     expect(screen.getByText("Apertura 2026")).toBeInTheDocument();
     expect(screen.getByText("18 players")).toBeInTheDocument();
     expect(screen.getByText("Loros FC 3–1 Halcones")).toBeInTheDocument();
+    expect(screen.getByText("Season statistics")).toBeInTheDocument();
+    expect(screen.getByText("Marco Guerrero (2)")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Verona FC" })).toHaveAttribute(
       "href",
       "/en/matches/upcoming-match",

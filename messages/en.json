@@ -292,6 +292,15 @@
           "redCards": "{count} reds"
         }
       },
+      "statistics": {
+        "title": "Season statistics",
+        "matchesPlayed": "Matches played",
+        "goalsScored": "Goals scored",
+        "topScorer": "Top scorer",
+        "discipline": "Discipline",
+        "noData": "No completed matches yet",
+        "viewAll": "Open statistics"
+      },
       "activity": {
         "title": "Recent activity",
         "scheduled": "Match against {opponent} scheduled",
@@ -697,6 +706,55 @@
     },
     "loading": {
       "label": "Loading matches"
+    }
+  },
+  "Statistics": {
+    "title": "Statistics",
+    "description": "Derived from completed matches and recorded team events.",
+    "teamLabel": "Team",
+    "teamTitle": "Team performance",
+    "playerTitle": "Player statistics",
+    "viewAll": "View all statistics",
+    "filters": {
+      "label": "Statistics period",
+      "current": "Current season",
+      "all": "Career",
+      "career": "Career totals"
+    },
+    "metrics": {
+      "matchesPlayed": "Matches played",
+      "record": "Wins",
+      "goalsScored": "Goals scored",
+      "goalDifference": "Goal difference"
+    },
+    "recordLine": "{wins}W · {draws}D · {losses}L · {goalsConceded} conceded · {yellowCards}Y · {redCards}R",
+    "playerLine": "{matches} called up · {wins}W · {draws}D · {losses}L",
+    "playerMetrics": {
+      "goals": "Goals",
+      "record": "Record",
+      "calledUp": "Called up",
+      "cards": "Cards"
+    },
+    "tables": {
+      "players": {
+        "title": "Player breakdown",
+        "description": "Goals, cards, call-ups, and match results."
+      },
+      "topScorers": {
+        "title": "Top scorers",
+        "description": "Goals recorded in completed matches."
+      },
+      "discipline": {
+        "title": "Discipline",
+        "description": "Yellow and red cards recorded in completed matches."
+      }
+    },
+    "empty": {
+      "title": "No statistics yet",
+      "description": "Complete a match with its score and team events to start building this history.",
+      "topScorers": "No goals recorded.",
+      "discipline": "No cards recorded.",
+      "players": "No player rows available."
     }
   },
   "Results": {

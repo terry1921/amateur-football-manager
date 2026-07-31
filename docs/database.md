@@ -99,6 +99,7 @@ must use `status = 'inactive'`.
 - `matches_season_kickoff_idx`: season match lists and statistics.
 - `matches_team_season_idx`: covers the team/season integrity relationship.
 - `matches_team_status_kickoff_idx`: scheduled/completed dashboard queries.
+- `matches_team_season_status_idx`: completed-match season projections.
 - `callups_player_id_idx`: a player's call-up history. The unique
   `(match_id, player_id)` and `(team_id, match_id, player_id)` constraints
   index match call-ups and support the event membership foreign key.
@@ -109,6 +110,9 @@ must use `status = 'inactive'`.
 - `match_events_team_match_idx`, `match_events_team_player_idx`, and
   `match_events_team_related_player_idx`: cover tenant-scoped event foreign
   keys; the related-player index also supports assist aggregation.
+- `match_events_team_match_type_idx`: team match event-type aggregation.
+- `match_events_team_match_player_idx`: covers the event-to-call-up foreign
+  key and player event joins.
 
 Primary keys and unique constraints also create their required indexes.
 
@@ -138,6 +142,8 @@ goal reconciliation, and completes the match in one transaction.
 - Authentication flows remain Task 004.
 - The initial beta's one-team-per-owner limit remains an application rule rather
   than a database constraint, preserving the planned path to multi-team plans.
-- Statistics, standings, and opponent-player event workflows remain later tasks.
+- Statistics are not persisted. `get_statistics_snapshot` derives team and
+  player projections from completed matches, call-ups, and normalized events;
+  standings and opponent-player event workflows remain later tasks.
 - Seed data remains separate from schema migrations and will be introduced by a
   dedicated development-data task.

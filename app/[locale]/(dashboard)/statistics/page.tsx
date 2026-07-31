@@ -1,18 +1,16 @@
-import { getTranslations } from "next-intl/server";
-import { ProtectedPlaceholder } from "@/components/protected-placeholder";
+import { getStatisticsData } from "@/features/statistics/data";
+import { StatisticsView } from "@/features/statistics/statistics-view";
 import type { AppLocale } from "@/i18n/routing";
 
 export default async function StatisticsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: AppLocale }>;
+  searchParams: Promise<{ season?: string }>;
 }) {
-  const { locale } = await params;
-  const t = await getTranslations({
-    locale,
-    namespace: "ProtectedPages.statistics",
-  });
-  return (
-    <ProtectedPlaceholder title={t("title")} description={t("description")} />
-  );
+  await params;
+  const { season } = await searchParams;
+  const data = await getStatisticsData(season);
+  return <StatisticsView data={data} />;
 }

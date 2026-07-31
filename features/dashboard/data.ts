@@ -17,6 +17,7 @@ import {
   type DashboardSeason,
 } from "./model";
 import { getTeamSetupProgress } from "./progress";
+import { parseStatisticsSnapshot } from "@/features/statistics/data";
 
 const DASHBOARD_UPCOMING_LIMIT = 5;
 const DASHBOARD_HISTORY_LIMIT = 1;
@@ -89,6 +90,7 @@ export async function getDashboardData(
       pastUnresolvedResult,
       recentResultResult,
       recentFixtureResult,
+      statisticsResult,
     ] = await Promise.all([
       supabase
         .from("seasons")
@@ -178,6 +180,12 @@ export async function getDashboardData(
             .limit(DASHBOARD_HISTORY_LIMIT)
             .maybeSingle()
         : Promise.resolve({ data: null, error: null }),
+      activeSeason
+        ? supabase.rpc("get_statistics_snapshot", {
+            target_team_id: team.id,
+            target_season_id: activeSeason.id,
+          })
+        : Promise.resolve({ data: null, error: null }),
     ]);
 
     const results = [
@@ -193,6 +201,7 @@ export async function getDashboardData(
       pastUnresolvedResult,
       recentResultResult,
       recentFixtureResult,
+      statisticsResult,
     ];
 
     if (results.some((result) => result.error)) {
@@ -366,6 +375,9 @@ export async function getDashboardData(
       recentResult,
       recentResultTimeline: recentResult
         ? getTimelineSummary(recentTimelineEvents)
+        : null,
+      dashboardStatistics: statisticsResult.data
+        ? parseStatisticsSnapshot(statisticsResult.data)
         : null,
       recentFixture,
     };

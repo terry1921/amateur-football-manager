@@ -5,6 +5,9 @@ import { changePlayerStatusAction } from "@/features/players/actions";
 import { getPlayerDetails } from "@/features/players/data";
 import { getPlayerDisplayName } from "@/features/players/model";
 import { PlayerLifecycleButton } from "@/features/players/player-lifecycle-button";
+import { getStatisticsData } from "@/features/statistics/data";
+import { PlayerStatisticsCard } from "@/features/statistics/player-statistics-card";
+import { getPlayerStatistics as findPlayerStatistics } from "@/features/statistics/model";
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 
@@ -19,6 +22,8 @@ export default async function PlayerDetailsPage({
     getTranslations({ locale, namespace: "Players" }),
   ]);
   if (!player) notFound();
+  const statistics = await getStatisticsData("all");
+  const playerStatistics = findPlayerStatistics(statistics.snapshot, player.id);
   const targetStatus = player.status === "inactive" ? "active" : "inactive";
   const lifecycle = changePlayerStatusAction.bind(
     null,
@@ -92,6 +97,10 @@ export default async function PlayerDetailsPage({
           {t("details.historyProtected")}
         </p>
       </section>
+      <PlayerStatisticsCard
+        player={playerStatistics}
+        hasCompletedMatches={statistics.snapshot.has_completed_matches}
+      />
     </div>
   );
 }

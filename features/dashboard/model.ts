@@ -4,6 +4,7 @@ import {
   type MatchResult,
 } from "@/features/matches/model";
 import type { TimelineSummary } from "@/features/timeline/model";
+import type { StatisticsSnapshot } from "@/features/statistics/model";
 
 export type SetupStepId =
   "team" | "season" | "players" | "match" | "callup" | "result";
@@ -234,6 +235,7 @@ export type DashboardSuccessData = {
   pastUnresolvedMatch: DashboardMatch | null;
   recentResult: DashboardMatch | null;
   recentResultTimeline?: TimelineSummary | null;
+  dashboardStatistics?: StatisticsSnapshot | null;
   recentFixture: DashboardMatch | null;
 };
 

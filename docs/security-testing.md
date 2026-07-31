@@ -171,6 +171,13 @@ completion, foreign-match, and score-reconciliation coverage lives in
 `supabase/tests/database/match_result_events.test.sql` and
 `tests/security/matches.rls.test.ts`.
 
+`public.get_statistics_snapshot(uuid, uuid)` is a `SECURITY INVOKER` read
+projection. It verifies team ownership, rejects a season from another team,
+and is unavailable to anonymous clients. The focused pgTAP suite in
+`supabase/tests/database/statistics_snapshot.test.sql` covers season and
+career aggregation, normalized goals/cards, score orientation, and a foreign
+team rejection.
+
 No Storage bucket or `storage.objects` authorization policy has been created
 for the MVP yet. Storage isolation tests are deferred until the task that
 defines those buckets and policies; database RLS does not protect Storage

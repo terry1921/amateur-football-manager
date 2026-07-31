@@ -69,6 +69,12 @@ and completes the match atomically. Timeline metadata (`stoppage_time` and
 `notes`) is validated by both the database constraints and the transaction
 payload contract.
 
+`get_statistics_snapshot(uuid, uuid)` is a security-invoker, owner-scoped
+projection. It accepts the team and optional season only after confirming that
+the team belongs to `auth.uid()` and that a requested season belongs to that
+team. Anonymous execution is revoked; it returns derived JSON only and never
+writes or exposes rows from another tenant.
+
 `players` and `seasons` intentionally expose no authenticated `DELETE`
 privilege or policy. Player departures use the `inactive` status, and a trigger
 makes `players.team_id` immutable. This preserves attribution for historical

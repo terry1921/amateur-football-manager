@@ -1,6 +1,7 @@
 import {
   AlertTriangle,
   ArrowRight,
+  BarChart3,
   CalendarDays,
   Check,
   CheckCircle2,
@@ -26,6 +27,11 @@ import {
   type SetupStep,
 } from "./model";
 import { DashboardEmptyState } from "./dashboard-empty-state";
+import {
+  getDisciplineTable,
+  getPlayerDisplayNameFromStatistics,
+  getTopScorers,
+} from "@/features/statistics/model";
 
 function SetupStepItem({ step, index }: { step: SetupStep; index: number }) {
   const t = useTranslations("FirstTimeDashboard");
@@ -533,6 +539,88 @@ function UpcomingFixtures({ data }: { data: DashboardSuccessData }) {
   );
 }
 
+function StatisticsModule({ data }: { data: DashboardSuccessData }) {
+  const t = useTranslations("FirstTimeDashboard");
+  const statistics = data.dashboardStatistics;
+  const topScorer = statistics ? getTopScorers(statistics.players)[0] : null;
+  const disciplineLeader = statistics
+    ? getDisciplineTable(statistics.players)[0]
+    : null;
+
+  return (
+    <DashboardModule title={t("modules.statistics.title")} icon={BarChart3}>
+      {!statistics?.has_completed_matches ? (
+        <DashboardEmptyState
+          icon={BarChart3}
+          title={t("modules.statistics.noData")}
+          description={t("empty.results.description")}
+          actionLabel={t("modules.statistics.viewAll")}
+          actionHref="/statistics"
+        />
+      ) : (
+        <div className="p-5 sm:p-6">
+          <div className="grid grid-cols-2 gap-4 border-b border-line pb-4">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.08em] text-muted">
+                {t("modules.statistics.matchesPlayed")}
+              </p>
+              <p className="mt-2 text-2xl font-black text-ink">
+                {statistics.team.matches_played}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.08em] text-muted">
+                {t("modules.statistics.goalsScored")}
+              </p>
+              <p className="mt-2 text-2xl font-black text-ink">
+                {statistics.team.goals_scored}
+              </p>
+            </div>
+          </div>
+          <div className="space-y-3 pt-4 text-sm">
+            {topScorer ? (
+              <p className="flex items-center justify-between gap-3">
+                <span className="text-muted">
+                  {t("modules.statistics.topScorer")}
+                </span>
+                <Link
+                  href={`/players/${topScorer.player_id}`}
+                  className="font-black text-ink hover:text-pitch"
+                >
+                  {getPlayerDisplayNameFromStatistics(topScorer)} (
+                  {topScorer.goals})
+                </Link>
+              </p>
+            ) : null}
+            {disciplineLeader ? (
+              <p className="flex items-center justify-between gap-3">
+                <span className="text-muted">
+                  {t("modules.statistics.discipline")}
+                </span>
+                <Link
+                  href={`/players/${disciplineLeader.player_id}`}
+                  className="font-black text-ink hover:text-pitch"
+                >
+                  {getPlayerDisplayNameFromStatistics(disciplineLeader)} (
+                  {disciplineLeader.yellow_cards}Y ·{" "}
+                  {disciplineLeader.red_cards}R)
+                </Link>
+              </p>
+            ) : null}
+          </div>
+          <Link
+            href="/statistics"
+            className="mt-5 inline-flex min-h-10 items-center gap-2 text-sm font-bold text-pitch"
+          >
+            {t("modules.statistics.viewAll")}
+            <ArrowRight aria-hidden="true" className="size-4" />
+          </Link>
+        </div>
+      )}
+    </DashboardModule>
+  );
+}
+
 function DashboardModules({ data }: { data: DashboardSuccessData }) {
   const t = useTranslations("FirstTimeDashboard");
   const operational = data.progress.isOperational && Boolean(data.activeSeason);
@@ -639,6 +727,8 @@ function DashboardModules({ data }: { data: DashboardSuccessData }) {
       </DashboardModule>
 
       <UpcomingFixtures data={data} />
+
+      <StatisticsModule data={data} />
 
       <DashboardModule title={t("modules.result.title")} icon={Trophy}>
         {data.recentResult &&
