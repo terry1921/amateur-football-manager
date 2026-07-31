@@ -39,12 +39,13 @@ declarative constraints instead of privileged triggers.
   permits only one active season per team.
 - `players`: team roster records. Position is `GK`, `DEF`, `MID`, or `FWD` and
   status is `active`, `injured`, `suspended`, or `inactive`. Optional shirt
-  numbers use the flexible amateur-football range `0` through `99` and are not
+  numbers use the flexible amateur-football range `0` through `999` and are not
   unique, allowing temporary duplicates and unassigned numbers.
 - `matches`: scheduled, completed, or cancelled fixtures. The home/away value is
-  `home`, `away`, or `neutral`. Scores must be nonnegative, supplied as a pair,
-  and present for completed matches. Scheduled and cancelled matches may have
-  no score.
+  `home`, `away`, or `neutral`. Scores use managed-team/opponent orientation,
+  must be nonnegative, and are present only for completed matches. Scheduled
+  and cancelled matches must have null scores. Opponent, venue, and note
+  lengths are bounded at the database boundary.
 - `callups`: one player selection per match, with status `called_up`,
   `confirmed`, or `declined`.
 - `match_events`: goals and cards with an optional nonnegative minute. An assist
@@ -69,8 +70,10 @@ event.
   `NO ACTION`. A season referenced by match history cannot be deleted at
   transaction commit, while a whole-team deletion can remove both records in
   one atomic operation.
-- Call-up/event match relationships: `CASCADE`. Deleting a match removes its
-  dependent workflow records.
+- Call-up/event match relationships: `CASCADE` for deliberate tenant cleanup.
+  The authenticated match-delete policy permits only scheduled/cancelled
+  fixtures with no call-ups or events, so ordinary feature use cannot activate
+  that cascade or erase history.
 - Call-up/event player relationships: initially deferred `NO ACTION`. A player
   with historical participation cannot be deleted at transaction commit; V1
   should set the player's status to `inactive`. Deferral lets a whole-team
@@ -113,11 +116,21 @@ authorize through their referenced match instead of trusting a submitted
 `team_id`. The complete authorization model and regression-test coverage are
 documented in `docs/security.md`.
 
+Call-up inserts, updates, and deletes are limited to scheduled matches. The
+`replace_match_callup` invoker RPC validates an owner's complete selection and
+applies it atomically. Newly selected players must be active and belong to the
+match team; an already-selected player may remain after becoming injured,
+suspended, or inactive so historical context is not silently rewritten.
+
+Completed and cancelled matches are immutable. Match team identity cannot
+change, and status transitions are restricted to future-compatible
+`scheduled -> completed` plus Task 009's `scheduled -> cancelled`.
+
 ## Deferred work
 
 - Authentication flows remain Task 004.
 - The initial beta's one-team-per-owner limit remains an application rule rather
   than a database constraint, preserving the planned path to multi-team plans.
-- Match, call-up, result, and statistics workflows remain later tasks.
+- Result, event, and statistics workflows remain later tasks.
 - Seed data remains separate from schema migrations and will be introduced by a
   dedicated development-data task.

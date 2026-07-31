@@ -11,7 +11,7 @@ changes for the authenticated user's team.
 | First name   | Yes      | Trimmed, non-empty, at most 80 characters       |
 | Last name    | No       | Trimmed, at most 80 characters                  |
 | Nickname     | No       | Trimmed, at most 80 characters                  |
-| Shirt number | No       | Whole number from 0 through 99                  |
+| Shirt number | No       | Whole number from 0 through 999                 |
 | Position     | Yes      | `GK`, `DEF`, `MID`, or `FWD`                    |
 | Status       | Yes      | `active`, `injured`, `suspended`, or `inactive` |
 

@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarDays, Pencil } from "lucide-react";
+import { ArrowLeft, CalendarDays, Pencil, Plus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { getSeasonDetails } from "@/features/seasons/data";
@@ -49,15 +49,26 @@ export default async function SeasonDetailsPage({
               </h1>
             </div>
           </div>
-          {season.editable ? (
-            <Link
-              href={`/seasons/${season.id}/edit`}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-pitch px-4 text-sm font-bold text-pitch focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch"
-            >
-              <Pencil aria-hidden="true" className="size-4" />
-              {t("edit")}
-            </Link>
-          ) : null}
+          <div className="flex flex-wrap gap-2">
+            {season.status !== "completed" ? (
+              <Link
+                href={`/matches/new?season=${season.id}`}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-pitch px-4 text-sm font-bold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch"
+              >
+                <Plus aria-hidden="true" className="size-4" />
+                {t("scheduleMatch")}
+              </Link>
+            ) : null}
+            {season.editable ? (
+              <Link
+                href={`/seasons/${season.id}/edit`}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-pitch px-4 text-sm font-bold text-pitch focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch"
+              >
+                <Pencil aria-hidden="true" className="size-4" />
+                {t("edit")}
+              </Link>
+            ) : null}
+          </div>
         </header>
         <dl className="grid gap-0 sm:grid-cols-3">
           <div className="border-b border-line p-5 sm:border-r sm:border-b-0 sm:p-6">

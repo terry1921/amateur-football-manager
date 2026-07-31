@@ -49,8 +49,14 @@ export type DashboardSeason = Pick<Tables<"seasons">, "name" | "status">;
 
 export type DashboardMatch = Pick<
   Tables<"matches">,
-  "opponent_name" | "kickoff_at" | "venue" | "team_score" | "opponent_score"
->;
+  | "id"
+  | "opponent_name"
+  | "kickoff_at"
+  | "home_away"
+  | "venue"
+  | "team_score"
+  | "opponent_score"
+> & { callup_count?: number };
 
 export type DashboardSuccessData = {
   status: "success";

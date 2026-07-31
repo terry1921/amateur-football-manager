@@ -17,7 +17,7 @@ const shirtNumber = z
   .transform((value) => (value === "" ? null : Number(value)))
   .refine(
     (value) =>
-      value === null || (Number.isInteger(value) && value >= 0 && value <= 99),
+      value === null || (Number.isInteger(value) && value >= 0 && value <= 999),
     "invalidShirtNumber",
   );
 

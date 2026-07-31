@@ -1,9 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import {
-  expectForeignKeyDenied,
-  expectNoRowsAffected,
-  expectRlsDenied,
-} from "./setup/assertions";
+import { expectNoRowsAffected } from "./setup/assertions";
 import { createSecurityTestContext, securityUuid } from "./setup/fixtures";
 import type { SecurityTestContext } from "./setup/types";
 
@@ -88,7 +84,8 @@ describe("call-ups RLS through Supabase JS", () => {
       player_id: context.ids.playerA,
     });
 
-    expectRlsDenied(result);
+    expect(result.data).toBeNull();
+    expect(result.error?.code).toBe("55000");
   });
 
   it("rejects Match A plus Player B through tenant integrity constraints", async () => {
@@ -98,7 +95,48 @@ describe("call-ups RLS through Supabase JS", () => {
       player_id: context.ids.playerB,
     });
 
-    expectForeignKeyDenied(result);
+    expect(result.data).toBeNull();
+    expect(result.error?.code).toBe("22023");
+  });
+
+  it("rejects unavailable, duplicate, and foreign players transactionally", async () => {
+    const unavailable = await context.userAClient
+      .from("players")
+      .update({ status: "injured" })
+      .eq("id", context.ids.playerA2);
+    expect(unavailable.error).toBeNull();
+
+    const unavailableSelection = await context.userAClient.rpc(
+      "replace_match_callup",
+      {
+        target_match_id: context.ids.matchA,
+        selected_player_ids: [context.ids.playerA2],
+      },
+    );
+    const duplicateSelection = await context.userAClient.rpc(
+      "replace_match_callup",
+      {
+        target_match_id: context.ids.matchA,
+        selected_player_ids: [context.ids.playerA, context.ids.playerA],
+      },
+    );
+    const foreignSelection = await context.userAClient.rpc(
+      "replace_match_callup",
+      {
+        target_match_id: context.ids.matchA,
+        selected_player_ids: [context.ids.playerB],
+      },
+    );
+
+    expect(unavailableSelection.error?.code).toBe("22023");
+    expect(duplicateSelection.error?.code).toBe("22023");
+    expect(foreignSelection.error?.code).toBe("22023");
+
+    const preserved = await context.userAClient
+      .from("callups")
+      .select("player_id")
+      .eq("match_id", context.ids.matchA);
+    expect(preserved.data).toEqual([{ player_id: context.ids.playerA }]);
   });
 
   it("rejects Match B plus Player B through match-derived RLS", async () => {
@@ -108,7 +146,8 @@ describe("call-ups RLS through Supabase JS", () => {
       player_id: context.ids.playerB,
     });
 
-    expectRlsDenied(result);
+    expect(result.data).toBeNull();
+    expect(result.error?.code).toBe("55000");
   });
 
   it("rejects moving an owned call-up into the foreign match", async () => {
@@ -122,6 +161,34 @@ describe("call-ups RLS through Supabase JS", () => {
       .eq("id", context.ids.callupA)
       .select("id");
 
-    expectRlsDenied(result);
+    expect(result.data).toBeNull();
+    expect(result.error?.code).toBe("55000");
+  });
+
+  it("makes completed match call-ups read-only", async () => {
+    const complete = await context.userAClient
+      .from("matches")
+      .update({ status: "completed", team_score: 2, opponent_score: 1 })
+      .eq("id", context.ids.matchA);
+    expect(complete.error).toBeNull();
+
+    const update = await context.userAClient
+      .from("callups")
+      .update({ status: "confirmed" })
+      .eq("id", context.ids.callupA)
+      .select("id");
+    const remove = await context.userAClient
+      .from("callups")
+      .delete()
+      .eq("id", context.ids.callupA)
+      .select("id");
+    const replace = await context.userAClient.rpc("replace_match_callup", {
+      target_match_id: context.ids.matchA,
+      selected_player_ids: [],
+    });
+
+    expectNoRowsAffected(update);
+    expectNoRowsAffected(remove);
+    expect(replace.error?.code).toBe("55000");
   });
 });

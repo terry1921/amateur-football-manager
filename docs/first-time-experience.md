@@ -37,7 +37,8 @@ active season exists.
 Progress is `completed steps / 6`, rounded to a whole percentage. The next
 recommendation is the first incomplete step in product order. Dependencies and
 feature availability are separate: a step can be logically next while its CRUD
-screen is still marked as upcoming.
+screen is still marked as upcoming. The call-up step is available once players
+and a match exist.
 
 > A setup step must be marked complete only when completion can be verified
 > from authoritative application data.
@@ -70,8 +71,11 @@ its destination is functional:
 
 - Task 007 creates a season; the existing season query becomes true.
 - Task 008 creates a player; `playerCount > 0` becomes true.
-- Task 009 creates a match; the match-existence query becomes true.
-- Task 010 creates a call-up; the call-up query becomes true.
+- Task 009 provides the real match scheduler; its CTA is active when a season
+  exists, and the match-existence query becomes true after scheduling.
+- Task 010 provides the match call-up manager; the call-up query becomes true
+  after the first saved selection. The upcoming-match card shows a ready count
+  when at least one player is selected and an incomplete prompt otherwise.
 - Task 012 records a valid completed score; the result query becomes true.
 
 No task should write a manual onboarding step. To add a future setup step, add

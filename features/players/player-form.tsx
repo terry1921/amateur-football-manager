@@ -110,7 +110,7 @@ export function PlayerForm({
             name="shirtNumber"
             inputMode="numeric"
             min="0"
-            max="99"
+            max="999"
             defaultValue={defaultValues?.shirtNumber}
             placeholder={t("shirtNumberPlaceholder")}
             aria-invalid={Boolean(state.fieldErrors?.shirtNumber)}
