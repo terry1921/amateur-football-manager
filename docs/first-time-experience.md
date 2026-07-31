@@ -47,10 +47,12 @@ and a match exist.
 
 V1 consistently uses the earliest team owned by the authenticated user. This is
 the temporary current-team rule until a future team-selection feature exists.
-The dashboard issues parallel, team-scoped count/existence queries for seasons,
-players, matches, and call-ups, plus bounded single-row queries for the active
-season, next scheduled match, and latest valid completed result. It never loads
-full collections for progress.
+The dashboard resolves the active season once, then issues parallel,
+team-scoped head counts for setup and player availability plus bounded fixture
+and history reads. Visible upcoming fixture IDs are followed by one batched,
+bounded call-up lookup; there is no per-card call-up query or full collection
+load. See [`dashboard.md`](./dashboard.md) for the complete operational read
+model.
 
 The team ID originates from the authenticated server-side ownership lookup. It
 is never accepted from the browser. All queries use the publishable-key server

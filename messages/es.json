@@ -116,7 +116,9 @@
       "description": "Preparemos a {teamName} para el partido.",
       "operational": "{teamName} está listo para el partido.",
       "operationalDescription": "La configuración principal está lista. Completa los pasos restantes cuando quieras.",
-      "completeDescription": "La configuración está completa. La información operativa del equipo ahora aparece primero."
+      "completeDescription": "La configuración está completa. La información operativa del equipo ahora aparece primero.",
+      "context": "{season} · {status}",
+      "noSeason": "No hay una temporada activa. Crea o activa una para organizar los partidos."
     },
     "progress": {
       "label": "Progreso de configuración del equipo",
@@ -131,6 +133,66 @@
     "status": {
       "completed": "Completado",
       "blocked": "Bloqueado por un requisito"
+    },
+    "seasonStatus": {
+      "draft": "Borrador",
+      "active": "Activa",
+      "completed": "Completada"
+    },
+    "primaryAction": {
+      "create-season": "Crear o activar temporada",
+      "add-player": "Agregar jugadores",
+      "schedule-match": "Programar partido",
+      "manage-callup": "Preparar la próxima convocatoria",
+      "view-squad": "Revisar plantel",
+      "view-next-match": "Abrir próximo partido"
+    },
+    "attention": {
+      "title": "Requiere atención",
+      "clear": "No hay nada que requiera tu atención ahora.",
+      "items": {
+        "past-unresolved-match": {
+          "title": "Hay un partido sin resolver",
+          "description": "Un partido programado ya pasó y no tiene estado final.",
+          "action": "Ver partido"
+        },
+        "upcoming-match-callup": {
+          "title": "El próximo partido no tiene convocatoria",
+          "description": "Selecciona los jugadores que estarán disponibles.",
+          "action": "Crear convocatoria"
+        },
+        "no-available-players": {
+          "title": "No hay jugadores disponibles",
+          "description": "Revisa los estados de los jugadores antes de preparar una convocatoria.",
+          "action": "Revisar plantel"
+        },
+        "no-upcoming-match": {
+          "title": "No hay un próximo partido",
+          "description": "Programa el siguiente encuentro para continuar la temporada.",
+          "action": "Programar partido"
+        },
+        "no-active-season": {
+          "title": "No hay una temporada activa",
+          "description": "Crea o activa una temporada para organizar los partidos actuales.",
+          "action": "Gestionar temporadas"
+        },
+        "no-players": {
+          "title": "El plantel está vacío",
+          "description": "Agrega jugadores antes de preparar el próximo partido.",
+          "action": "Agregar jugadores"
+        }
+      }
+    },
+    "quickActions": {
+      "title": "Acciones rápidas",
+      "items": {
+        "create-season": "Crear temporada",
+        "add-player": "Agregar jugador",
+        "schedule-match": "Programar partido",
+        "manage-callup": "Gestionar convocatoria",
+        "view-squad": "Ver plantel",
+        "view-next-match": "Ver próximo partido"
+      }
     },
     "steps": {
       "team": {
@@ -184,29 +246,50 @@
     "modules": {
       "season": {
         "title": "Temporada",
-        "active": "Temporada activa"
+        "active": "Temporada activa",
+        "status": "Temporada {status}"
       },
       "squad": {
         "title": "Plantel",
         "description": "Jugadores registrados para este equipo",
         "count": "{count, plural, one {# jugador} other {# jugadores}}",
-        "availability": "{active} disponibles · {unavailable} no disponibles"
+        "availability": "{active} disponibles · {unavailable} no disponibles",
+        "available": "{count} disponibles",
+        "injured": "{count} lesionados",
+        "suspended": "{count} suspendidos",
+        "inactive": "{count} inactivos"
       },
       "upcoming": {
         "title": "Próximo partido",
         "callupReady": "Convocatoria lista · {count, plural, one {# jugador} other {# jugadores}}",
-        "callupIncomplete": "Convocatoria incompleta",
+        "callupIncomplete": "Convocatoria no iniciada",
+        "callupNotStarted": "Convocatoria no iniciada",
         "manageCallup": "Gestionar convocatoria",
         "createCallup": "Crear convocatoria"
       },
+      "fixtures": {
+        "title": "Próximos partidos",
+        "ready": "Lista · {count, plural, one {# jugador} other {# jugadores}}",
+        "notStarted": "Sin convocatoria",
+        "viewAll": "Ver todos los partidos"
+      },
       "result": {
         "title": "Resultado reciente",
-        "score": "{teamName} {teamScore}–{opponentScore} {opponent}"
+        "score": "{teamName} {teamScore}–{opponentScore} {opponent}",
+        "outcome": {
+          "win": "Victoria",
+          "draw": "Empate",
+          "loss": "Derrota"
+        },
+        "cancelled": "Este partido fue cancelado.",
+        "unresolved": "Este partido programado aún necesita un estado final.",
+        "viewFixture": "Ver partido"
       },
       "activity": {
         "title": "Actividad reciente",
         "scheduled": "Partido contra {opponent} programado",
-        "result": "Resultado contra {opponent} registrado"
+        "result": "Resultado contra {opponent} registrado",
+        "fixture": "El partido contra {opponent} aún requiere atención"
       }
     },
     "empty": {
@@ -230,7 +313,16 @@
       "activity": {
         "title": "No hay actividad reciente",
         "description": "Los partidos programados y resultados registrados crearán una cronología útil aquí."
+      },
+      "fixtures": {
+        "title": "Aún no hay más partidos",
+        "description": "Aquí aparecerán otros partidos programados."
       }
+    },
+    "location": {
+      "home": "Local",
+      "away": "Visitante",
+      "neutral": "Neutral"
     },
     "error": {
       "title": "No pudimos cargar tu panel",

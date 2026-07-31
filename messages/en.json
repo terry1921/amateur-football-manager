@@ -116,7 +116,9 @@
       "description": "Let’s get {teamName} ready for matchday.",
       "operational": "{teamName} is ready for matchday.",
       "operationalDescription": "Your core setup is in place. Finish the remaining steps when you’re ready.",
-      "completeDescription": "Your setup is complete. Operational team information now comes first."
+      "completeDescription": "Your setup is complete. Operational team information now comes first.",
+      "context": "{season} · {status}",
+      "noSeason": "No active season. Create or activate one to organize fixtures."
     },
     "progress": {
       "label": "Team setup progress",
@@ -131,6 +133,66 @@
     "status": {
       "completed": "Completed",
       "blocked": "Blocked by a prerequisite"
+    },
+    "seasonStatus": {
+      "draft": "Draft",
+      "active": "Active",
+      "completed": "Completed"
+    },
+    "primaryAction": {
+      "create-season": "Create or activate a season",
+      "add-player": "Add players",
+      "schedule-match": "Schedule a match",
+      "manage-callup": "Prepare the next call-up",
+      "view-squad": "Review the squad",
+      "view-next-match": "Open the next match"
+    },
+    "attention": {
+      "title": "Attention required",
+      "clear": "Nothing needs your attention right now.",
+      "items": {
+        "past-unresolved-match": {
+          "title": "Past match is unresolved",
+          "description": "A scheduled fixture is in the past without a final status.",
+          "action": "View match"
+        },
+        "upcoming-match-callup": {
+          "title": "The next match has no call-up",
+          "description": "Select the players who are expected to be available.",
+          "action": "Create call-up"
+        },
+        "no-available-players": {
+          "title": "No players are currently available",
+          "description": "Review player statuses before preparing a call-up.",
+          "action": "Review squad"
+        },
+        "no-upcoming-match": {
+          "title": "No upcoming match",
+          "description": "Schedule the next fixture to keep the season moving.",
+          "action": "Schedule match"
+        },
+        "no-active-season": {
+          "title": "No active season",
+          "description": "Create or activate a season to organize current fixtures.",
+          "action": "Manage seasons"
+        },
+        "no-players": {
+          "title": "The squad is empty",
+          "description": "Add players before preparing the team's next match.",
+          "action": "Add players"
+        }
+      }
+    },
+    "quickActions": {
+      "title": "Quick actions",
+      "items": {
+        "create-season": "Create season",
+        "add-player": "Add player",
+        "schedule-match": "Schedule match",
+        "manage-callup": "Manage call-up",
+        "view-squad": "View squad",
+        "view-next-match": "View next match"
+      }
     },
     "steps": {
       "team": {
@@ -184,29 +246,50 @@
     "modules": {
       "season": {
         "title": "Season",
-        "active": "Active season"
+        "active": "Active season",
+        "status": "{status} season"
       },
       "squad": {
         "title": "Squad",
         "description": "Players registered for this team",
         "count": "{count, plural, one {# player} other {# players}}",
-        "availability": "{active} available · {unavailable} unavailable"
+        "availability": "{active} available · {unavailable} unavailable",
+        "available": "{count} available",
+        "injured": "{count} injured",
+        "suspended": "{count} suspended",
+        "inactive": "{count} inactive"
       },
       "upcoming": {
         "title": "Upcoming match",
         "callupReady": "Call-up ready · {count, plural, one {# player} other {# players}}",
-        "callupIncomplete": "Call-up incomplete",
+        "callupIncomplete": "Call-up not started",
+        "callupNotStarted": "Call-up not started",
         "manageCallup": "Manage call-up",
         "createCallup": "Create call-up"
       },
+      "fixtures": {
+        "title": "Upcoming fixtures",
+        "ready": "Ready · {count, plural, one {# player} other {# players}}",
+        "notStarted": "No call-up",
+        "viewAll": "View all matches"
+      },
       "result": {
         "title": "Recent result",
-        "score": "{teamName} {teamScore}–{opponentScore} {opponent}"
+        "score": "{teamName} {teamScore}–{opponentScore} {opponent}",
+        "outcome": {
+          "win": "Win",
+          "draw": "Draw",
+          "loss": "Loss"
+        },
+        "cancelled": "This fixture was cancelled.",
+        "unresolved": "This scheduled fixture still needs a final status.",
+        "viewFixture": "View fixture"
       },
       "activity": {
         "title": "Recent activity",
         "scheduled": "Match against {opponent} scheduled",
-        "result": "Result against {opponent} recorded"
+        "result": "Result against {opponent} recorded",
+        "fixture": "Fixture against {opponent} still needs attention"
       }
     },
     "empty": {
@@ -230,7 +313,16 @@
       "activity": {
         "title": "No recent activity",
         "description": "Scheduled matches and recorded results will create a useful timeline here."
+      },
+      "fixtures": {
+        "title": "No more fixtures yet",
+        "description": "Additional scheduled fixtures will appear here."
       }
+    },
+    "location": {
+      "home": "Home",
+      "away": "Away",
+      "neutral": "Neutral"
     },
     "error": {
       "title": "We couldn’t load your dashboard",

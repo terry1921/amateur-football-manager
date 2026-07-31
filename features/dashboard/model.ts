@@ -1,4 +1,5 @@
 import type { Tables } from "@/types/database";
+import { getManagedScore } from "@/features/matches/model";
 
 export type SetupStepId =
   "team" | "season" | "players" | "match" | "callup" | "result";
@@ -45,18 +46,166 @@ export type DashboardTeam = Pick<
   | "secondary_color"
 >;
 
-export type DashboardSeason = Pick<Tables<"seasons">, "name" | "status">;
+export type DashboardSeason = Pick<
+  Tables<"seasons">,
+  "id" | "name" | "status" | "start_date" | "end_date"
+>;
 
 export type DashboardMatch = Pick<
   Tables<"matches">,
   | "id"
+  | "season_id"
   | "opponent_name"
   | "kickoff_at"
   | "home_away"
   | "venue"
   | "team_score"
   | "opponent_score"
-> & { callup_count?: number };
+  | "status"
+> & { callup_count: number; season_name?: string };
+
+export type SquadSummary = {
+  total: number;
+  available: number;
+  unavailable: number;
+  injured: number;
+  suspended: number;
+  inactive: number;
+};
+
+export type CallupReadiness = "not_started" | "ready" | "unavailable";
+
+export type PrimaryDashboardActionId =
+  | "create-season"
+  | "add-player"
+  | "schedule-match"
+  | "manage-callup"
+  | "view-squad"
+  | "view-next-match";
+
+export type PrimaryDashboardAction = {
+  id: PrimaryDashboardActionId;
+  href: string;
+};
+
+export type DashboardAttentionSeverity = "critical" | "warning" | "info";
+export type DashboardAttentionId =
+  | "past-unresolved-match"
+  | "upcoming-match-callup"
+  | "no-available-players"
+  | "no-upcoming-match"
+  | "no-active-season"
+  | "no-players";
+
+export type DashboardAttentionItem = {
+  id: DashboardAttentionId;
+  severity: DashboardAttentionSeverity;
+  href: string;
+};
+
+export type DashboardMatchResult = "win" | "draw" | "loss" | null;
+
+export function getCallupReadiness(
+  match: Pick<DashboardMatch, "status" | "callup_count"> | null,
+): CallupReadiness {
+  if (!match || match.status !== "scheduled") return "unavailable";
+  return match.callup_count > 0 ? "ready" : "not_started";
+}
+
+export function getMatchResult(
+  match: Pick<DashboardMatch, "team_score" | "opponent_score"> | null,
+): DashboardMatchResult {
+  const score = match ? getManagedScore(match) : null;
+  if (!score) return null;
+  if (score.team === score.opponent) return "draw";
+  return score.team > score.opponent ? "win" : "loss";
+}
+
+export function getPrimaryDashboardAction({
+  activeSeason,
+  playerCount,
+  activePlayerCount,
+  matchCount,
+  upcomingMatch,
+}: {
+  activeSeason: DashboardSeason | null;
+  playerCount: number;
+  activePlayerCount: number;
+  matchCount: number;
+  upcomingMatch: DashboardMatch | null;
+}): PrimaryDashboardAction {
+  if (!activeSeason) return { id: "create-season", href: "/seasons" };
+  if (playerCount === 0) return { id: "add-player", href: "/players" };
+  if (activePlayerCount === 0) return { id: "view-squad", href: "/players" };
+  if (matchCount === 0 || !upcomingMatch) {
+    return { id: "schedule-match", href: "/matches/new" };
+  }
+  if (getCallupReadiness(upcomingMatch) === "not_started") {
+    return {
+      id: "manage-callup",
+      href: `/matches/${upcomingMatch.id}/call-up`,
+    };
+  }
+  return { id: "view-next-match", href: `/matches/${upcomingMatch.id}` };
+}
+
+export function getDashboardAttentionItems({
+  activeSeason,
+  playerCount,
+  activePlayerCount,
+  upcomingMatch,
+  pastUnresolvedMatch,
+}: {
+  activeSeason: DashboardSeason | null;
+  playerCount: number;
+  activePlayerCount: number;
+  upcomingMatch: DashboardMatch | null;
+  pastUnresolvedMatch: DashboardMatch | null;
+}): DashboardAttentionItem[] {
+  const items: DashboardAttentionItem[] = [];
+
+  if (pastUnresolvedMatch) {
+    items.push({
+      id: "past-unresolved-match",
+      severity: "warning",
+      href: `/matches/${pastUnresolvedMatch.id}`,
+    });
+  }
+
+  if (upcomingMatch && getCallupReadiness(upcomingMatch) === "not_started") {
+    items.push({
+      id: "upcoming-match-callup",
+      severity: "warning",
+      href: `/matches/${upcomingMatch.id}/call-up`,
+    });
+  }
+
+  if (playerCount > 0 && activePlayerCount === 0) {
+    items.push({
+      id: "no-available-players",
+      severity: "warning",
+      href: "/players",
+    });
+  }
+
+  if (activeSeason && !upcomingMatch) {
+    items.push({
+      id: "no-upcoming-match",
+      severity: "info",
+      href: "/matches/new",
+    });
+  }
+
+  if (!activeSeason) {
+    items.push({ id: "no-active-season", severity: "info", href: "/seasons" });
+  }
+
+  if (playerCount === 0) {
+    items.push({ id: "no-players", severity: "info", href: "/players" });
+  }
+
+  return items.slice(0, 5);
+}
 
 export type DashboardSuccessData = {
   status: "success";
@@ -67,8 +216,14 @@ export type DashboardSuccessData = {
   playerCount: number;
   activePlayerCount: number;
   unavailablePlayerCount: number;
+  squadSummary: SquadSummary;
+  primaryAction: PrimaryDashboardAction;
+  attentionItems: DashboardAttentionItem[];
   upcomingMatch: DashboardMatch | null;
+  upcomingMatches: DashboardMatch[];
+  pastUnresolvedMatch: DashboardMatch | null;
   recentResult: DashboardMatch | null;
+  recentFixture: DashboardMatch | null;
 };
 
 export type DashboardData =

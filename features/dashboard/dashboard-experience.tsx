@@ -1,4 +1,6 @@
 import {
+  AlertTriangle,
+  ArrowRight,
   CalendarDays,
   Check,
   CheckCircle2,
@@ -7,6 +9,7 @@ import {
   History,
   LockKeyhole,
   MapPin,
+  Plus,
   ShieldCheck,
   Trophy,
   UsersRound,
@@ -14,7 +17,14 @@ import {
 import { useTranslations } from "next-intl";
 import { MatchDateTime } from "@/features/matches/match-date-time";
 import { Link } from "@/i18n/navigation";
-import type { DashboardMatch, DashboardSuccessData, SetupStep } from "./model";
+import {
+  getCallupReadiness,
+  getMatchResult,
+  type DashboardAttentionItem,
+  type DashboardMatch,
+  type DashboardSuccessData,
+  type SetupStep,
+} from "./model";
 import { DashboardEmptyState } from "./dashboard-empty-state";
 
 function SetupStepItem({ step, index }: { step: SetupStep; index: number }) {
@@ -168,13 +178,25 @@ function WelcomePanel({ data }: { data: DashboardSuccessData }) {
               {t("welcome.operational", { teamName: team.name })}
             </h1>
             <p className="mt-1 text-sm leading-6 text-muted">
-              {progress.isComplete
-                ? t("welcome.completeDescription")
-                : t("welcome.operationalDescription")}
+              {data.activeSeason
+                ? t("welcome.context", {
+                    season: data.activeSeason.name,
+                    status: t(`seasonStatus.${data.activeSeason.status}`),
+                  })
+                : t("welcome.noSeason")}
             </p>
           </div>
         </div>
-        <Progress data={data} />
+        <div className="space-y-4">
+          <Progress data={data} />
+          <Link
+            href={data.primaryAction.href}
+            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-pitch px-4 text-sm font-bold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch"
+          >
+            {t(`primaryAction.${data.primaryAction.id}`)}
+            <ArrowRight aria-hidden="true" className="size-4" />
+          </Link>
+        </div>
       </section>
     );
   }
@@ -312,7 +334,7 @@ function DashboardModule({
 
 function MatchDetails({ match }: { match: DashboardMatch }) {
   const t = useTranslations("FirstTimeDashboard");
-  const ready = (match.callup_count ?? 0) > 0;
+  const readiness = getCallupReadiness(match);
   return (
     <div className="p-5 sm:p-6">
       <Link
@@ -326,6 +348,11 @@ function MatchDetails({ match }: { match: DashboardMatch }) {
           <Clock3 aria-hidden="true" className="size-4 text-pitch" />
           <MatchDateTime value={match.kickoff_at} />
         </p>
+        <p className="flex items-center gap-2">
+          <ShieldCheck aria-hidden="true" className="size-4 text-pitch" />
+          {t(`location.${match.home_away}`)}
+          {match.season_name ? ` · ${match.season_name}` : null}
+        </p>
         {match.venue ? (
           <p className="flex items-center gap-2">
             <MapPin aria-hidden="true" className="size-4 text-pitch" />
@@ -335,20 +362,20 @@ function MatchDetails({ match }: { match: DashboardMatch }) {
       </div>
       <div className="mt-5 flex flex-col gap-3 border-t border-line pt-4 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
         <p
-          className={`text-sm font-bold ${ready ? "text-pitch" : "text-amber-800"}`}
+          className={`text-sm font-bold ${readiness === "ready" ? "text-pitch" : "text-amber-800"}`}
         >
-          {ready
+          {readiness === "ready"
             ? t("modules.upcoming.callupReady", {
-                count: match.callup_count ?? 0,
+                count: match.callup_count,
               })
-            : t("modules.upcoming.callupIncomplete")}
+            : t("modules.upcoming.callupNotStarted")}
         </p>
         <Link
           href={`/matches/${match.id}/call-up`}
           className="inline-flex min-h-11 items-center justify-center rounded-lg border border-pitch px-4 text-sm font-bold text-pitch"
         >
           {t(
-            ready
+            readiness === "ready"
               ? "modules.upcoming.manageCallup"
               : "modules.upcoming.createCallup",
           )}
@@ -358,9 +385,157 @@ function MatchDetails({ match }: { match: DashboardMatch }) {
   );
 }
 
+function AttentionRequired({ data }: { data: DashboardSuccessData }) {
+  const t = useTranslations("FirstTimeDashboard");
+
+  return (
+    <DashboardModule title={t("attention.title")} icon={AlertTriangle} wide>
+      {data.attentionItems.length > 0 ? (
+        <ul className="divide-y divide-line">
+          {data.attentionItems.map((item) => (
+            <AttentionItem key={item.id} item={item} />
+          ))}
+        </ul>
+      ) : (
+        <div className="flex items-center gap-3 p-5 text-sm text-muted sm:p-6">
+          <CheckCircle2 aria-hidden="true" className="size-5 text-pitch" />
+          <span>{t("attention.clear")}</span>
+        </div>
+      )}
+    </DashboardModule>
+  );
+}
+
+function AttentionItem({ item }: { item: DashboardAttentionItem }) {
+  const t = useTranslations("FirstTimeDashboard");
+  const tone =
+    item.severity === "warning"
+      ? "text-amber-800 bg-amber-50"
+      : item.severity === "critical"
+        ? "text-red-800 bg-red-50"
+        : "text-sky-800 bg-sky-50";
+
+  return (
+    <li className="flex items-start gap-4 px-5 py-4 sm:px-6">
+      <span
+        className={`mt-0.5 grid size-9 shrink-0 place-items-center rounded-full ${tone}`}
+      >
+        <AlertTriangle aria-hidden="true" className="size-4" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <h3 className="text-sm font-black text-ink">
+          {t(`attention.items.${item.id}.title`)}
+        </h3>
+        <p className="mt-1 text-sm leading-5 text-muted">
+          {t(`attention.items.${item.id}.description`)}
+        </p>
+      </div>
+      <Link
+        href={item.href}
+        className="inline-flex min-h-10 shrink-0 items-center gap-1 rounded-lg border border-pitch px-3 text-xs font-bold text-pitch focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch"
+      >
+        {t(`attention.items.${item.id}.action`)}
+        <ArrowRight aria-hidden="true" className="size-3.5" />
+      </Link>
+    </li>
+  );
+}
+
+function QuickActions({ data }: { data: DashboardSuccessData }) {
+  const t = useTranslations("FirstTimeDashboard");
+  const actions = [
+    data.primaryAction,
+    ...(data.upcomingMatch && data.primaryAction.id !== "manage-callup"
+      ? [
+          {
+            id: "manage-callup" as const,
+            href: `/matches/${data.upcomingMatch.id}/call-up`,
+          },
+        ]
+      : []),
+    { id: "add-player" as const, href: "/players" },
+    { id: "schedule-match" as const, href: "/matches/new" },
+  ].filter(
+    (action, index, all) =>
+      all.findIndex((candidate) => candidate.id === action.id) === index,
+  );
+
+  return (
+    <DashboardModule title={t("quickActions.title")} icon={Plus}>
+      <div className="flex flex-wrap gap-3 p-5 sm:p-6">
+        {actions.slice(0, 3).map((action, index) => (
+          <Link
+            key={action.id}
+            href={action.href}
+            className={`inline-flex min-h-11 items-center gap-2 rounded-lg px-4 text-sm font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch ${
+              index === 0
+                ? "bg-pitch text-white shadow-[0_8px_20px_rgba(0,163,49,0.14)]"
+                : "border border-pitch text-pitch"
+            }`}
+          >
+            {index === 0 ? (
+              <Plus aria-hidden="true" className="size-4" />
+            ) : null}
+            {t(`quickActions.items.${action.id}`)}
+          </Link>
+        ))}
+      </div>
+    </DashboardModule>
+  );
+}
+
+function UpcomingFixtures({ data }: { data: DashboardSuccessData }) {
+  const t = useTranslations("FirstTimeDashboard");
+  const fixtures = data.upcomingMatches.slice(1);
+
+  return (
+    <DashboardModule title={t("modules.fixtures.title")} icon={CalendarDays}>
+      {fixtures.length > 0 ? (
+        <ul className="divide-y divide-line">
+          {fixtures.map((match) => (
+            <li
+              key={match.id}
+              className="flex items-center gap-4 px-5 py-4 sm:px-6"
+            >
+              <div className="min-w-0 flex-1">
+                <Link
+                  href={`/matches/${match.id}`}
+                  className="font-black text-ink underline-offset-4 hover:text-pitch hover:underline"
+                >
+                  {match.opponent_name}
+                </Link>
+                <p className="mt-1 text-sm text-muted">
+                  <MatchDateTime value={match.kickoff_at} />
+                </p>
+              </div>
+              <span className="text-right text-xs font-bold text-muted">
+                {getCallupReadiness(match) === "ready"
+                  ? t("modules.fixtures.ready", { count: match.callup_count })
+                  : t("modules.fixtures.notStarted")}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <DashboardEmptyState
+          icon={CalendarDays}
+          title={t("empty.fixtures.title")}
+          description={t("empty.fixtures.description")}
+          actionLabel={t(
+            data.activeSeason
+              ? "modules.fixtures.viewAll"
+              : "steps.season.action",
+          )}
+          actionHref={data.activeSeason ? "/matches" : "/seasons"}
+        />
+      )}
+    </DashboardModule>
+  );
+}
+
 function DashboardModules({ data }: { data: DashboardSuccessData }) {
   const t = useTranslations("FirstTimeDashboard");
-  const operational = data.progress.isOperational;
+  const operational = data.progress.isOperational && Boolean(data.activeSeason);
 
   return (
     <div className={`grid gap-5 ${operational ? "lg:grid-cols-2" : ""}`}>
@@ -368,11 +543,19 @@ function DashboardModules({ data }: { data: DashboardSuccessData }) {
         {data.activeSeason ? (
           <div className="p-5 sm:p-6">
             <p className="text-sm font-medium text-muted">
-              {t("modules.season.active")}
+              {t("modules.season.status", {
+                status: t(`seasonStatus.${data.activeSeason.status}`),
+              })}
             </p>
             <p className="mt-2 text-2xl font-black tracking-[-0.03em] text-ink">
               {data.activeSeason.name}
             </p>
+            {data.activeSeason.start_date || data.activeSeason.end_date ? (
+              <p className="mt-2 text-sm text-muted">
+                {data.activeSeason.start_date ?? "—"} –{" "}
+                {data.activeSeason.end_date ?? "—"}
+              </p>
+            ) : null}
           </div>
         ) : (
           <DashboardEmptyState
@@ -398,12 +581,28 @@ function DashboardModules({ data }: { data: DashboardSuccessData }) {
             <p className="mt-2 text-2xl font-black tracking-[-0.03em] text-ink">
               {t("modules.squad.count", { count: data.playerCount })}
             </p>
-            <p className="mt-2 text-sm text-muted">
-              {t("modules.squad.availability", {
-                active: data.activePlayerCount,
-                unavailable: data.unavailablePlayerCount,
-              })}
-            </p>
+            <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-line pt-4 text-sm text-muted sm:grid-cols-4">
+              <span>
+                {t("modules.squad.available", {
+                  count: data.squadSummary.available,
+                })}
+              </span>
+              <span>
+                {t("modules.squad.injured", {
+                  count: data.squadSummary.injured,
+                })}
+              </span>
+              <span>
+                {t("modules.squad.suspended", {
+                  count: data.squadSummary.suspended,
+                })}
+              </span>
+              <span>
+                {t("modules.squad.inactive", {
+                  count: data.squadSummary.inactive,
+                })}
+              </span>
+            </div>
           </div>
         ) : (
           <DashboardEmptyState
@@ -428,14 +627,18 @@ function DashboardModules({ data }: { data: DashboardSuccessData }) {
             icon={CalendarDays}
             title={t("empty.upcoming.title")}
             description={t("empty.upcoming.description")}
-            actionLabel={t("steps.match.action")}
-            actionHref={data.seasonCount > 0 ? "/matches/new" : undefined}
+            actionLabel={t(
+              data.activeSeason ? "steps.match.action" : "steps.season.action",
+            )}
+            actionHref={data.activeSeason ? "/matches/new" : "/seasons"}
             statusLabel={
-              data.seasonCount > 0 ? undefined : t("steps.match.blocked")
+              data.activeSeason ? undefined : t("steps.match.blocked")
             }
           />
         )}
       </DashboardModule>
+
+      <UpcomingFixtures data={data} />
 
       <DashboardModule title={t("modules.result.title")} icon={Trophy}>
         {data.recentResult &&
@@ -453,6 +656,30 @@ function DashboardModules({ data }: { data: DashboardSuccessData }) {
                 opponent: data.recentResult.opponent_name,
               })}
             </p>
+            <p className="mt-2 text-sm font-bold text-pitch">
+              {t(`modules.result.outcome.${getMatchResult(data.recentResult)}`)}
+            </p>
+          </div>
+        ) : data.recentFixture ? (
+          <div className="p-5 sm:p-6">
+            <p className="text-sm font-medium text-muted">
+              <MatchDateTime value={data.recentFixture.kickoff_at} dateOnly />
+            </p>
+            <p className="mt-3 text-lg font-black tracking-[-0.03em] text-ink">
+              {data.recentFixture.opponent_name}
+            </p>
+            <p className="mt-1 text-sm leading-6 text-muted">
+              {data.recentFixture.status === "cancelled"
+                ? t("modules.result.cancelled")
+                : t("modules.result.unresolved")}
+            </p>
+            <Link
+              href={`/matches/${data.recentFixture.id}`}
+              className="mt-4 inline-flex min-h-10 items-center gap-2 text-sm font-bold text-pitch"
+            >
+              {t("modules.result.viewFixture")}
+              <ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
           </div>
         ) : (
           <DashboardEmptyState
@@ -466,7 +693,7 @@ function DashboardModules({ data }: { data: DashboardSuccessData }) {
       </DashboardModule>
 
       <DashboardModule title={t("modules.activity.title")} icon={History}>
-        {data.upcomingMatch || data.recentResult ? (
+        {data.upcomingMatch || data.recentResult || data.recentFixture ? (
           <ul className="divide-y divide-line px-5 sm:px-6">
             {data.upcomingMatch ? (
               <li className="flex gap-3 py-4 text-sm leading-6 text-ink">
@@ -487,6 +714,17 @@ function DashboardModules({ data }: { data: DashboardSuccessData }) {
                 />
                 {t("modules.activity.result", {
                   opponent: data.recentResult.opponent_name,
+                })}
+              </li>
+            ) : null}
+            {data.recentFixture && !data.recentResult ? (
+              <li className="flex gap-3 py-4 text-sm leading-6 text-ink">
+                <History
+                  aria-hidden="true"
+                  className="mt-1 size-4 shrink-0 text-pitch"
+                />
+                {t("modules.activity.fixture", {
+                  opponent: data.recentFixture.opponent_name,
                 })}
               </li>
             ) : null}
@@ -524,15 +762,18 @@ export function DashboardLoadError() {
 
 export function DashboardExperience({ data }: { data: DashboardSuccessData }) {
   const t = useTranslations("FirstTimeDashboard");
-  const compactSetup = data.progress.isOperational;
+  const compactSetup =
+    data.progress.isOperational && Boolean(data.activeSeason);
 
   return (
     <div className="space-y-6">
       <WelcomePanel data={data} />
+      <AttentionRequired data={data} />
 
       {compactSetup ? (
         <>
           <DashboardModules data={data} />
+          <QuickActions data={data} />
           <details className="group overflow-hidden rounded-2xl border border-line bg-white">
             <summary className="flex min-h-16 cursor-pointer list-none items-center gap-3 px-5 font-black text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch sm:px-6 [&::-webkit-details-marker]:hidden">
               <CheckCircle2 aria-hidden="true" className="size-5 text-pitch" />
@@ -558,6 +799,7 @@ export function DashboardExperience({ data }: { data: DashboardSuccessData }) {
             <TeamSummary data={data} />
           </div>
           <DashboardModules data={data} />
+          <QuickActions data={data} />
         </>
       )}
     </div>

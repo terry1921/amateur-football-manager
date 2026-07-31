@@ -6,7 +6,12 @@ import {
   DashboardExperience,
   DashboardLoadError,
 } from "./dashboard-experience";
-import type { DashboardFacts, DashboardSuccessData } from "./model";
+import {
+  getDashboardAttentionItems,
+  getPrimaryDashboardAction,
+  type DashboardFacts,
+  type DashboardSuccessData,
+} from "./model";
 import { getTeamSetupProgress } from "./progress";
 
 vi.mock("@/i18n/navigation", () => ({
@@ -30,6 +35,11 @@ function dashboardData(
   facts: DashboardFacts,
   overrides: Partial<DashboardSuccessData> = {},
 ): DashboardSuccessData {
+  const activeSeason = overrides.activeSeason ?? null;
+  const upcomingMatch = overrides.upcomingMatch ?? null;
+  const playerCount = overrides.playerCount ?? facts.playerCount;
+  const activePlayerCount = overrides.activePlayerCount ?? facts.playerCount;
+  const matchCount = facts.matchExists ? 1 : 0;
   return {
     status: "success",
     team: {
@@ -43,12 +53,37 @@ function dashboardData(
     },
     progress: getTeamSetupProgress(facts),
     seasonCount: facts.seasonExists ? 1 : 0,
-    activeSeason: null,
-    playerCount: facts.playerCount,
-    activePlayerCount: facts.playerCount,
+    activeSeason,
+    playerCount,
+    activePlayerCount,
     unavailablePlayerCount: 0,
-    upcomingMatch: null,
+    squadSummary: {
+      total: playerCount,
+      available: activePlayerCount,
+      unavailable: 0,
+      injured: 0,
+      suspended: 0,
+      inactive: 0,
+    },
+    primaryAction: getPrimaryDashboardAction({
+      activeSeason,
+      playerCount,
+      activePlayerCount,
+      matchCount,
+      upcomingMatch,
+    }),
+    attentionItems: getDashboardAttentionItems({
+      activeSeason,
+      playerCount,
+      activePlayerCount,
+      upcomingMatch,
+      pastUnresolvedMatch: null,
+    }),
+    upcomingMatch,
+    upcomingMatches: upcomingMatch ? [upcomingMatch] : [],
+    pastUnresolvedMatch: null,
     recentResult: null,
+    recentFixture: null,
     ...overrides,
   };
 }
@@ -69,7 +104,7 @@ describe("DashboardExperience", () => {
       screen.getByRole("heading", { name: "Welcome to Matchday" }),
     ).toBeInTheDocument();
     expect(screen.getByText("1 of 6 completed")).toBeInTheDocument();
-    expect(screen.getByText("No active season")).toBeInTheDocument();
+    expect(screen.getAllByText("No active season").length).toBeGreaterThan(0);
     expect(screen.getByText("No players yet")).toBeInTheDocument();
     expect(screen.getByText("No upcoming match")).toBeInTheDocument();
     expect(screen.getByText("No completed matches")).toBeInTheDocument();
@@ -83,7 +118,16 @@ describe("DashboardExperience", () => {
     renderDashboard(
       dashboardData(
         { ...newTeamFacts, seasonExists: true, playerCount: 4 },
-        { seasonCount: 1 },
+        {
+          seasonCount: 1,
+          activeSeason: {
+            id: "season-a",
+            name: "Apertura 2026",
+            status: "active",
+            start_date: null,
+            end_date: null,
+          },
+        },
       ),
     );
 
@@ -118,26 +162,37 @@ describe("DashboardExperience", () => {
       },
       {
         seasonCount: 1,
-        activeSeason: { name: "Apertura 2026", status: "active" },
+        activeSeason: {
+          id: "season-a",
+          name: "Apertura 2026",
+          status: "active",
+          start_date: null,
+          end_date: null,
+        },
         playerCount: 18,
         upcomingMatch: {
           id: "upcoming-match",
+          season_id: "season-a",
           opponent_name: "Verona FC",
           kickoff_at: "2026-08-11T21:10:00.000Z",
           home_away: "home",
           venue: "Torneo del Barrio HG",
           team_score: null,
           opponent_score: null,
+          status: "scheduled",
           callup_count: 3,
         },
         recentResult: {
           id: "recent-result",
+          season_id: "season-a",
           opponent_name: "Halcones",
           kickoff_at: "2026-07-20T21:10:00.000Z",
           home_away: "away",
           venue: null,
           team_score: 3,
           opponent_score: 1,
+          status: "completed",
+          callup_count: 0,
         },
       },
     );
@@ -156,8 +211,13 @@ describe("DashboardExperience", () => {
     );
     expect(screen.getByText("Call-up ready · 3 players")).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "Manage call-up" }),
-    ).toHaveAttribute("href", "/en/matches/upcoming-match/call-up");
+      screen
+        .getAllByRole("link", { name: "Manage call-up" })
+        .some(
+          (link) =>
+            link.getAttribute("href") === "/en/matches/upcoming-match/call-up",
+        ),
+    ).toBe(true);
     expect(screen.getByText("Setup complete")).toBeInTheDocument();
     expect(container.querySelector("details")).not.toHaveAttribute("open");
   });
@@ -175,22 +235,30 @@ describe("DashboardExperience", () => {
           seasonCount: 1,
           upcomingMatch: {
             id: "empty-callup-match",
+            season_id: "season-a",
             opponent_name: "Halcones",
             kickoff_at: "2026-08-11T21:10:00.000Z",
             home_away: "away",
             venue: null,
             team_score: null,
             opponent_score: null,
+            status: "scheduled",
             callup_count: 0,
           },
         },
       ),
     );
 
-    expect(screen.getByText("Call-up incomplete")).toBeInTheDocument();
+    expect(screen.getByText("Call-up not started")).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "Create call-up" }),
-    ).toHaveAttribute("href", "/en/matches/empty-callup-match/call-up");
+      screen
+        .getAllByRole("link", { name: "Create call-up" })
+        .some(
+          (link) =>
+            link.getAttribute("href") ===
+            "/en/matches/empty-callup-match/call-up",
+        ),
+    ).toBe(true);
   });
 
   it("links the now-available season step to season management", () => {

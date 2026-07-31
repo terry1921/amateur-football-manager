@@ -4,7 +4,7 @@ import type { AnchorHTMLAttributes } from "react";
 import { describe, expect, it, vi } from "vitest";
 import enMessages from "@/messages/en.json";
 import esMessages from "@/messages/es.json";
-import { HomeContent } from "./page";
+import { HomeContent } from "@/components/home-content";
 
 vi.mock("@/i18n/navigation", () => ({
   Link: ({
