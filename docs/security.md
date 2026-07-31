@@ -65,7 +65,9 @@ Event writes are limited to scheduled matches, and completed-match event
 history is read-only. `complete_match_with_events` runs as a security-invoker
 transaction, verifies the authenticated owner through RLS-visible rows,
 validates call-up membership, reconciles managed-team goals, replaces events,
-and completes the match atomically.
+and completes the match atomically. Timeline metadata (`stoppage_time` and
+`notes`) is validated by both the database constraints and the transaction
+payload contract.
 
 `players` and `seasons` intentionally expose no authenticated `DELETE`
 privilege or policy. Player departures use the `inactive` status, and a trigger

@@ -40,6 +40,8 @@ export type ResultMutationClient = {
         type: ResultEventInput["type"];
         player_id: string;
         minute: number;
+        stoppage_time?: number;
+        notes?: string;
       }>;
     },
   ) => PromiseLike<{
@@ -61,11 +63,15 @@ export async function completeOwnedMatch(
     target_match_id: matchId,
     final_team_score: score.teamScore,
     final_opponent_score: score.opponentScore,
-    event_rows: events.map(({ type, playerId, minute }) => ({
-      type,
-      player_id: playerId,
-      minute,
-    })),
+    event_rows: events.map(
+      ({ type, playerId, minute, stoppageTime, notes }) => ({
+        type,
+        player_id: playerId,
+        minute,
+        stoppage_time: stoppageTime ?? 0,
+        notes: notes ?? "",
+      }),
+    ),
   });
 
   if (result.error) throw result.error;
@@ -93,6 +99,7 @@ async function validationState(
         "invalidType",
         "invalidPlayer",
         "nonNegative",
+        "notesTooLong",
         "tooMany",
       ].includes(issue.message)
         ? issue.message

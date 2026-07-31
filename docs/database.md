@@ -49,15 +49,17 @@ declarative constraints instead of privileged triggers.
 - `callups`: one player selection per match, with status `called_up`,
   `confirmed`, or `declined`.
 - `match_events`: normalized goals and cards with a required nonnegative
-  minute. Each event player must be selected in the same match call-up through
-  a composite foreign key. The legacy `related_player_id` column remains for
-  schema compatibility, but Task 012.5 does not create or edit assists.
+  minute, optional added time, and optional notes. Each event player must be
+  selected in the same match call-up through a composite foreign key. The
+  legacy `related_player_id` column remains for schema compatibility, but Task
+  012.5 does not create or edit assists.
 
 All primary keys are database-generated UUIDs. Required display names are
 checked after trimming whitespace. Tables with mutable records have
 `created_at`, `updated_at`, and a shared trigger that maintains `updated_at`.
-Match events retain only `created_at` because each row represents one atomic
-event.
+Match events retain `created_at` for deterministic ordering when multiple rows
+share the same football minute. `stoppage_time` and `notes` are event metadata,
+not denormalized statistics.
 
 ## Delete behavior
 

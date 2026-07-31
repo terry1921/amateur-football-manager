@@ -3,6 +3,7 @@ import {
   getMatchResult as getManagedMatchResult,
   type MatchResult,
 } from "@/features/matches/model";
+import type { TimelineSummary } from "@/features/timeline/model";
 
 export type SetupStepId =
   "team" | "season" | "players" | "match" | "callup" | "result";
@@ -232,6 +233,7 @@ export type DashboardSuccessData = {
   upcomingMatches: DashboardMatch[];
   pastUnresolvedMatch: DashboardMatch | null;
   recentResult: DashboardMatch | null;
+  recentResultTimeline?: TimelineSummary | null;
   recentFixture: DashboardMatch | null;
 };
 

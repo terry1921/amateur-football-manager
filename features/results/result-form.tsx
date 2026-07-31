@@ -6,10 +6,12 @@ import { useTranslations } from "next-intl";
 import type {
   MatchCallupPlayer,
   MatchEvent,
-  MatchEventType,
   MatchLocation,
 } from "@/features/matches/model";
 import { getPlayerDisplayName } from "@/features/players/model";
+import { MatchTimeline } from "@/features/timeline/timeline";
+import type { TimelineEvent } from "@/features/timeline/model";
+import { matchEventTypes, type MatchEventType } from "@/features/matches/model";
 import { Link } from "@/i18n/navigation";
 import type { ResultDraftEvent } from "./model";
 import { initialResultActionState, type ResultActionState } from "./state";
@@ -82,150 +84,6 @@ function ScoreField({
   );
 }
 
-function eventLabel(
-  t: ReturnType<typeof useTranslations<"Results">>,
-  type: MatchEventType,
-) {
-  return t(`eventTypes.${type}`);
-}
-
-function EventRow({
-  event,
-  players,
-  onChange,
-  onRemove,
-}: {
-  event: ResultDraftEvent;
-  players: MatchCallupPlayer[];
-  onChange: (event: ResultDraftEvent) => void;
-  onRemove: () => void;
-}) {
-  const t = useTranslations("Results");
-  const playerId = `${event.clientId}-player`;
-  const minuteId = `${event.clientId}-minute`;
-  const label = eventLabel(t, event.type);
-  return (
-    <li className="grid gap-3 rounded-xl border border-line bg-[#f8faf9] p-4 sm:grid-cols-[minmax(0,1fr)_7rem_auto] sm:items-end">
-      <div>
-        <label
-          htmlFor={playerId}
-          className="mb-1.5 block text-xs font-black uppercase tracking-[0.08em] text-muted"
-        >
-          {t("form.player")}
-        </label>
-        <select
-          id={playerId}
-          value={event.playerId}
-          onChange={(input) =>
-            onChange({ ...event, playerId: input.target.value })
-          }
-          className="min-h-11 w-full rounded-lg border border-[#b8c5d2] bg-white px-3 text-sm font-bold text-ink outline-none focus:border-pitch focus:ring-3 focus:ring-pitch/10"
-        >
-          {players.map((player) => (
-            <option key={player.id} value={player.id}>
-              {getPlayerDisplayName(player)}
-              {player.shirt_number === null ? "" : ` · #${player.shirt_number}`}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label
-          htmlFor={minuteId}
-          className="mb-1.5 block text-xs font-black uppercase tracking-[0.08em] text-muted"
-        >
-          {t("form.minute")}
-        </label>
-        <input
-          id={minuteId}
-          type="number"
-          inputMode="numeric"
-          min="0"
-          step="1"
-          value={event.minute}
-          onChange={(input) =>
-            onChange({
-              ...event,
-              minute:
-                input.target.value === "" ? 0 : Number(input.target.value),
-            })
-          }
-          className="min-h-11 w-full rounded-lg border border-[#b8c5d2] bg-white px-3 text-sm font-bold text-ink outline-none focus:border-pitch focus:ring-3 focus:ring-pitch/10"
-        />
-      </div>
-      <button
-        type="button"
-        onClick={onRemove}
-        className="min-h-11 rounded-lg border border-[#b8c5d2] px-3 text-sm font-bold text-muted hover:border-red-300 hover:text-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch sm:min-w-11"
-        aria-label={t("form.removeEvent", { type: label })}
-      >
-        {t("form.remove")}
-      </button>
-    </li>
-  );
-}
-
-function EventSection({
-  type,
-  events,
-  players,
-  onAdd,
-  onChange,
-  onRemove,
-}: {
-  type: MatchEventType;
-  events: ResultDraftEvent[];
-  players: MatchCallupPlayer[];
-  onAdd: () => void;
-  onChange: (event: ResultDraftEvent) => void;
-  onRemove: (clientId: string) => void;
-}) {
-  const t = useTranslations("Results");
-  const label = eventLabel(t, type);
-  return (
-    <section aria-labelledby={`${type}-heading`} className="space-y-3">
-      <div className="flex flex-col gap-3 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
-        <div>
-          <h3
-            id={`${type}-heading`}
-            className="text-base font-black tracking-[-0.02em] text-ink"
-          >
-            {label}
-          </h3>
-          <p className="text-xs leading-5 text-muted">
-            {t(`eventHelp.${type}`)}
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={onAdd}
-          disabled={players.length === 0}
-          className="inline-flex min-h-10 items-center justify-center rounded-lg border border-pitch px-3 text-sm font-bold text-pitch hover:bg-pitch/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch disabled:cursor-not-allowed disabled:border-[#b8c5d2] disabled:text-muted"
-        >
-          {t("form.addEvent", { type: label })}
-        </button>
-      </div>
-      {events.length > 0 ? (
-        <ul className="space-y-2" aria-label={label}>
-          {events.map((event) => (
-            <EventRow
-              key={event.clientId}
-              event={event}
-              players={players}
-              onChange={onChange}
-              onRemove={() => onRemove(event.clientId)}
-            />
-          ))}
-        </ul>
-      ) : (
-        <p className="rounded-xl border border-dashed border-[#b8c5d2] px-4 py-3 text-sm text-muted">
-          {t("form.none")}
-        </p>
-      )}
-    </section>
-  );
-}
-
 export function ResultForm({
   action,
   teamName,
@@ -253,6 +111,8 @@ export function ResultForm({
       type: event.type,
       playerId: event.player_id,
       minute: event.minute,
+      stoppageTime: event.stoppage_time,
+      notes: event.notes ?? "",
     })),
   );
   const homeTeam = location === "away" ? opponentName : teamName;
@@ -281,20 +141,36 @@ export function ResultForm({
         type,
         playerId: firstPlayer.id,
         minute: 0,
+        stoppageTime: 0,
+        notes: "",
       },
     ]);
   };
   const eventPayload = JSON.stringify(
-    events.map(({ type, playerId, minute }) => ({ type, playerId, minute })),
+    events.map(({ type, playerId, minute, stoppageTime, notes }) => ({
+      type,
+      playerId,
+      minute,
+      stoppageTime: stoppageTime ?? 0,
+      notes: notes ?? "",
+    })),
   );
-  const summaryEvents = events
-    .map((event) => ({
-      ...event,
-      playerName: playerById.get(event.playerId)
-        ? getPlayerDisplayName(playerById.get(event.playerId)!)
-        : t("unknownPlayer"),
-    }))
-    .sort((left, right) => left.minute - right.minute);
+  const timelineEvents: TimelineEvent[] = events.map((event) => {
+    const player = playerById.get(event.playerId);
+    return {
+      id: event.clientId,
+      clientId: event.clientId,
+      type: event.type,
+      playerId: event.playerId,
+      minute: event.minute,
+      stoppageTime: event.stoppageTime ?? 0,
+      notes: event.notes ?? "",
+      playerName: player
+        ? getPlayerDisplayName(player)
+        : t("form.unknownPlayer"),
+      playerShirtNumber: player?.shirt_number ?? null,
+    };
+  });
 
   return (
     <form action={formAction} className="space-y-8" noValidate>
@@ -365,29 +241,44 @@ export function ResultForm({
               : t("form.noCallup")}
           </p>
         </div>
-        <div className="space-y-6">
-          {(["goal", "yellow_card", "red_card"] as const).map((type) => (
-            <EventSection
+        <div className="flex flex-wrap gap-2">
+          {matchEventTypes.map((type) => (
+            <button
               key={type}
-              type={type}
-              events={events.filter((event) => event.type === type)}
-              players={players}
-              onAdd={() => addEvent(type)}
-              onChange={(next) =>
-                setEvents((current) =>
-                  current.map((event) =>
-                    event.clientId === next.clientId ? next : event,
-                  ),
-                )
-              }
-              onRemove={(clientId) =>
-                setEvents((current) =>
-                  current.filter((event) => event.clientId !== clientId),
-                )
-              }
-            />
+              type="button"
+              onClick={() => addEvent(type)}
+              disabled={players.length === 0}
+              className="inline-flex min-h-10 items-center justify-center rounded-lg border border-pitch px-3 text-sm font-bold text-pitch hover:bg-pitch/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch disabled:cursor-not-allowed disabled:border-[#b8c5d2] disabled:text-muted"
+            >
+              {t("form.addEvent", { type: t(`eventTypes.${type}`) })}
+            </button>
           ))}
         </div>
+        <MatchTimeline
+          events={timelineEvents}
+          players={players}
+          editable
+          onChange={(next) =>
+            setEvents((current) =>
+              current.map((event) =>
+                event.clientId === next.clientId
+                  ? {
+                      ...event,
+                      playerId: next.playerId,
+                      minute: next.minute,
+                      stoppageTime: next.stoppageTime ?? 0,
+                      notes: next.notes ?? "",
+                    }
+                  : event,
+              ),
+            )
+          }
+          onRemove={(event) =>
+            setEvents((current) =>
+              current.filter((draft) => draft.clientId !== event.clientId),
+            )
+          }
+        />
         {state.fieldErrors?.events ? (
           <p role="alert" className="text-sm font-bold text-red-700">
             {state.fieldErrors.events}
@@ -421,29 +312,7 @@ export function ResultForm({
             })}
           </p>
         ) : null}
-        {summaryEvents.length > 0 ? (
-          <ul className="space-y-2 text-sm text-ink">
-            {summaryEvents.map((event) => (
-              <li
-                key={event.clientId}
-                className="flex items-center justify-between gap-3"
-              >
-                <span>
-                  <span className="font-bold">{event.playerName}</span>
-                  <span className="text-muted">
-                    {" "}
-                    · {t(`eventTypes.${event.type}`)}
-                  </span>
-                </span>
-                <span className="font-black text-pitch">
-                  {event.minute}&apos;
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-sm text-muted">{t("form.none")}</p>
-        )}
+        <p className="text-sm text-muted">{t("form.summaryHelp")}</p>
       </section>
 
       <input type="hidden" name="events" value={eventPayload} readOnly />

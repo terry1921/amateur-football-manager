@@ -285,7 +285,12 @@
         },
         "cancelled": "Este partido fue cancelado.",
         "unresolved": "Este partido programado aún necesita un estado final.",
-        "viewFixture": "Ver partido"
+        "viewFixture": "Ver partido",
+        "timeline": {
+          "goals": "{count} goles",
+          "yellowCards": "{count} amarillas",
+          "redCards": "{count} rojas"
+        }
       },
       "activity": {
         "title": "Actividad reciente",
@@ -720,12 +725,15 @@
       "requiredHelp": "Ambos marcadores son obligatorios. Usa números enteros de cero o mayores.",
       "player": "Jugador",
       "minute": "Minuto",
+      "stoppageTime": "Tiempo añadido",
+      "notes": "Notas (opcional)",
       "addEvent": "Agregar {type}",
       "removeEvent": "Quitar {type}",
       "remove": "Quitar",
       "none": "Ninguno registrado.",
       "unknownPlayer": "Jugador desconocido",
       "eventCount": "{count, plural, =0 {Sin eventos} one {# evento} other {# eventos}}",
+      "summaryHelp": "La cronología se ordena por minuto y tiempo añadido. Los eventos se pueden editar hasta registrar el resultado.",
       "save": "Registrar resultado",
       "saving": "Registrando…",
       "cancel": "Volver al partido"
@@ -744,6 +752,20 @@
     "history": {
       "title": "Eventos del partido",
       "none": "Ninguno registrado."
+    },
+    "timeline": {
+      "title": "Cronología del partido",
+      "eventCount": "{count, plural, =0 {Sin eventos} one {# evento} other {# eventos}}",
+      "search": "Buscar eventos por jugador",
+      "searchPlaceholder": "Buscar jugador",
+      "filters": {
+        "label": "Filtrar eventos del partido",
+        "all": "Todos"
+      },
+      "summary": {
+        "label": "Resumen de eventos"
+      },
+      "noMatches": "Ningún evento coincide con este filtro."
     },
     "result": {
       "win": "Victoria",
@@ -764,6 +786,7 @@
       "invalidType": "Elige un tipo de evento válido.",
       "invalidPlayer": "Elige un jugador válido de la convocatoria.",
       "nonNegative": "Usa un minuto de cero o mayor.",
+      "notesTooLong": "Usa 500 caracteres o menos para las notas.",
       "unsupportedField": "Quita los datos de evento no permitidos.",
       "tooMany": "Hay demasiados eventos para registrarlos a la vez."
     },

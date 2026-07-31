@@ -4,6 +4,11 @@ import {
   type CurrentSeasonClient,
 } from "@/features/seasons/current-season";
 import type { Tables } from "@/types/database";
+import { getPlayerDisplayName } from "@/features/players/model";
+import {
+  getTimelineSummary,
+  type TimelineEvent,
+} from "@/features/timeline/model";
 import {
   getDashboardAttentionItems,
   getPrimaryDashboardAction,
@@ -16,6 +21,7 @@ import { getTeamSetupProgress } from "./progress";
 const DASHBOARD_UPCOMING_LIMIT = 5;
 const DASHBOARD_HISTORY_LIMIT = 1;
 const DASHBOARD_CALLUP_ROWS_LIMIT = DASHBOARD_UPCOMING_LIMIT * 250;
+const DASHBOARD_EVENT_LIMIT = 250;
 const dashboardMatchColumns =
   "id, season_id, opponent_name, kickoff_at, home_away, venue, status, team_score, opponent_score";
 
@@ -196,18 +202,84 @@ export async function getDashboardData(
     const upcomingRows = (upcomingMatchesResult.data ??
       []) as DashboardMatchRow[];
     const upcomingIds = upcomingRows.map(({ id }) => id);
-    const upcomingCallups = upcomingIds.length
-      ? await supabase
-          .from("callups")
-          .select("match_id")
-          .eq("team_id", team.id)
-          .in("match_id", upcomingIds)
-          .limit(DASHBOARD_CALLUP_ROWS_LIMIT)
-      : emptyRows();
+    const [upcomingCallups, recentEventsResult] = await Promise.all([
+      upcomingIds.length
+        ? supabase
+            .from("callups")
+            .select("match_id")
+            .eq("team_id", team.id)
+            .in("match_id", upcomingIds)
+            .limit(DASHBOARD_CALLUP_ROWS_LIMIT)
+        : Promise.resolve(emptyRows()),
+      recentResultResult.data
+        ? supabase
+            .from("match_events")
+            .select(
+              "id, player_id, type, minute, stoppage_time, notes, created_at",
+            )
+            .eq("team_id", team.id)
+            .eq("match_id", recentResultResult.data.id)
+            .order("minute", { ascending: true })
+            .order("stoppage_time", { ascending: true })
+            .order("created_at", { ascending: true })
+            .order("id", { ascending: true })
+            .limit(DASHBOARD_EVENT_LIMIT)
+        : Promise.resolve(emptyRows()),
+    ]);
 
     if (upcomingCallups.error) {
       return { status: "error", reason: "dashboard-query" };
     }
+    if (recentEventsResult.error) {
+      return { status: "error", reason: "dashboard-query" };
+    }
+
+    const recentEventRows = (recentEventsResult.data ?? []) as Array<{
+      id: string;
+      player_id: string;
+      type: string;
+      minute: number;
+      stoppage_time: number;
+      notes: string | null;
+      created_at: string;
+    }>;
+    const recentPlayerIds = [
+      ...new Set(recentEventRows.map(({ player_id }) => player_id)),
+    ];
+    const recentPlayersResult = recentPlayerIds.length
+      ? await supabase
+          .from("players")
+          .select(
+            "id, first_name, last_name, nickname, shirt_number, position, status",
+          )
+          .eq("team_id", team.id)
+          .in("id", recentPlayerIds)
+      : { data: [], error: null };
+    if (recentPlayersResult.error) {
+      return { status: "error", reason: "dashboard-query" };
+    }
+    const recentPlayersById = new Map(
+      recentPlayersResult.data.map((player) => [player.id, player]),
+    );
+    const recentTimelineEvents: TimelineEvent[] = recentEventRows.flatMap(
+      (event) => {
+        const player = recentPlayersById.get(event.player_id);
+        if (!player) return [];
+        return [
+          {
+            id: event.id,
+            playerId: event.player_id,
+            type: event.type as TimelineEvent["type"],
+            minute: event.minute,
+            stoppageTime: event.stoppage_time,
+            notes: event.notes,
+            createdAt: event.created_at,
+            playerName: getPlayerDisplayName(player),
+            playerShirtNumber: player.shirt_number,
+          },
+        ];
+      },
+    );
 
     const callupCounts = new Map<string, number>();
     for (const row of upcomingCallups.data as Array<{ match_id: string }>) {
@@ -292,6 +364,9 @@ export async function getDashboardData(
       upcomingMatches,
       pastUnresolvedMatch,
       recentResult,
+      recentResultTimeline: recentResult
+        ? getTimelineSummary(recentTimelineEvents)
+        : null,
       recentFixture,
     };
   } catch {

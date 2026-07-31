@@ -23,6 +23,8 @@ export type MatchEvent = {
   player_id: string;
   type: MatchEventType;
   minute: number;
+  stoppage_time: number;
+  notes: string | null;
   created_at: string;
   player_name: string;
   player_shirt_number: number | null;

@@ -659,6 +659,25 @@ function DashboardModules({ data }: { data: DashboardSuccessData }) {
             <p className="mt-2 text-sm font-bold text-pitch">
               {t(`modules.result.outcome.${getMatchResult(data.recentResult)}`)}
             </p>
+            {data.recentResultTimeline ? (
+              <div className="mt-4 grid grid-cols-3 gap-2 border-t border-line pt-4 text-xs font-bold text-muted">
+                <span>
+                  {t("modules.result.timeline.goals", {
+                    count: data.recentResultTimeline.goals,
+                  })}
+                </span>
+                <span>
+                  {t("modules.result.timeline.yellowCards", {
+                    count: data.recentResultTimeline.yellowCards,
+                  })}
+                </span>
+                <span>
+                  {t("modules.result.timeline.redCards", {
+                    count: data.recentResultTimeline.redCards,
+                  })}
+                </span>
+              </div>
+            ) : null}
           </div>
         ) : data.recentFixture ? (
           <div className="p-5 sm:p-6">

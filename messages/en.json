@@ -285,7 +285,12 @@
         },
         "cancelled": "This fixture was cancelled.",
         "unresolved": "This scheduled fixture still needs a final status.",
-        "viewFixture": "View fixture"
+        "viewFixture": "View fixture",
+        "timeline": {
+          "goals": "{count} goals",
+          "yellowCards": "{count} yellows",
+          "redCards": "{count} reds"
+        }
       },
       "activity": {
         "title": "Recent activity",
@@ -720,12 +725,15 @@
       "requiredHelp": "Both scores are required. Scores must be whole numbers of zero or more.",
       "player": "Player",
       "minute": "Minute",
+      "stoppageTime": "Added time",
+      "notes": "Notes (optional)",
       "addEvent": "Add {type}",
       "removeEvent": "Remove {type}",
       "remove": "Remove",
       "none": "None recorded.",
       "unknownPlayer": "Unknown player",
       "eventCount": "{count, plural, =0 {No events} one {# event} other {# events}}",
+      "summaryHelp": "The timeline is ordered by minute and added time. Events remain editable until the result is recorded.",
       "save": "Record result",
       "saving": "Recording…",
       "cancel": "Back to match"
@@ -744,6 +752,20 @@
     "history": {
       "title": "Match events",
       "none": "None recorded."
+    },
+    "timeline": {
+      "title": "Match timeline",
+      "eventCount": "{count, plural, =0 {No events} one {# event} other {# events}}",
+      "search": "Search events by player",
+      "searchPlaceholder": "Search player",
+      "filters": {
+        "label": "Filter match events",
+        "all": "All"
+      },
+      "summary": {
+        "label": "Event summary"
+      },
+      "noMatches": "No events match this filter."
     },
     "result": {
       "win": "Win",
@@ -764,6 +786,7 @@
       "invalidType": "Choose a valid event type.",
       "invalidPlayer": "Choose a valid called-up player.",
       "nonNegative": "Use a minute of zero or more.",
+      "notesTooLong": "Use 500 characters or fewer for notes.",
       "unsupportedField": "Remove unsupported event details.",
       "tooMany": "There are too many events to record at once."
     },

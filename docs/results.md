@@ -15,10 +15,11 @@ never copied into player or season totals. The supported event types are:
 | `yellow_card` | Called-up managed-team player and minute |
 | `red_card`    | Called-up managed-team player and minute |
 
-Minutes are required non-negative PostgreSQL integers. Stoppage time is not a
-separate field in the existing MVP schema, so this task records the single
-football minute consistently. Duplicate events at the same minute are valid;
-each event keeps its own database UUID and creation order.
+Minutes are required non-negative PostgreSQL integers. Events also retain
+optional non-negative `stoppage_time` and up to 500 characters of plain-text
+`notes`. The display formats these fields as `45'`, `45+2'`, `90'`, or `90+5'`.
+Duplicate events at the same minute are valid; each event keeps its own
+database UUID and creation order.
 
 Only managed-team player events are recorded. Opponent goals are represented by
 the opponent score because opponent players are not modeled in the MVP. Thus a
@@ -34,7 +35,7 @@ location, and calls the security-invoker PostgreSQL function
 ```text
 lock scheduled match
   -> verify owner and call-up membership
-  -> validate event types, UUIDs, minutes, and payload size
+  -> validate event types, UUIDs, minutes, added time, notes, and payload size
   -> require goal-event count = managed-team score
   -> replace scheduled draft events
   -> set both scores and status = completed
@@ -84,12 +85,13 @@ unresolved player history.
 
 ## UI and dashboard integration
 
-The result form presents final score, team goals, yellow cards, red cards, and a
-review summary. Event rows are drafted locally with stable client IDs and are
-submitted once. The submit button is disabled while the request is pending or
-when goal reconciliation fails. Completed match detail groups the normalized
-event history by type; scheduled and cancelled matches do not expose editable
-historical event controls.
+The result form presents final score and a shared chronological timeline editor
+for team goals, yellow cards, and red cards. Event rows are drafted locally with
+stable client IDs and are submitted once. The submit button is disabled while
+the request is pending or when goal reconciliation fails. Completed match
+detail renders the same read-only timeline, with client-side type filters,
+player search, and a derived goals/cards summary. Completed and cancelled
+matches do not expose editable historical event controls.
 
 On success, the localized dashboard, matches list, match detail, result route,
 and season pages are revalidated. Recent result, next fixture, attention items,

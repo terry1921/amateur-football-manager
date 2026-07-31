@@ -26,6 +26,14 @@ const resultEventSchema = z
       .refine(Number.isInteger, "integer")
       .min(0, "nonNegative")
       .max(POSTGRES_INTEGER_MAX, "tooLarge"),
+    stoppageTime: z
+      .number()
+      .refine(Number.isInteger, "integer")
+      .min(0, "nonNegative")
+      .max(POSTGRES_INTEGER_MAX, "tooLarge")
+      .optional()
+      .default(0),
+    notes: z.string().trim().max(500, "notesTooLong").optional().default(""),
   })
   .strict();
 

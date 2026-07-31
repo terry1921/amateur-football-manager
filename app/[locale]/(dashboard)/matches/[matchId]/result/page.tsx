@@ -2,81 +2,14 @@ import { ArrowLeft, CalendarDays, Flag, MapPin, Trophy } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { getMatchDetails } from "@/features/matches/data";
-import {
-  getManagedScore,
-  getMatchResult,
-  type MatchEvent,
-  type MatchEventType,
-} from "@/features/matches/model";
+import { getManagedScore, getMatchResult } from "@/features/matches/model";
 import { MatchDateTime } from "@/features/matches/match-date-time";
+import { MatchTimeline } from "@/features/timeline/timeline";
+import type { TimelineEvent } from "@/features/timeline/model";
 import { completeMatchAction } from "@/features/results/actions";
 import { ResultForm } from "@/features/results/result-form";
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
-
-function EventHistory({
-  events,
-  t,
-}: {
-  events: MatchEvent[];
-  t: (key: string, values?: Record<string, string | number>) => string;
-}) {
-  return (
-    <section
-      className="mt-8 border-t border-line pt-7"
-      aria-labelledby="event-history-heading"
-    >
-      <h2
-        id="event-history-heading"
-        className="text-xl font-black tracking-[-0.03em] text-ink"
-      >
-        {t("history.title")}
-      </h2>
-      {events.length === 0 ? (
-        <p className="mt-3 text-sm text-muted">{t("history.none")}</p>
-      ) : (
-        <div className="mt-5 space-y-5">
-          {(["goal", "yellow_card", "red_card"] as const).map(
-            (type: MatchEventType) => {
-              const typeEvents = events.filter((event) => event.type === type);
-              return (
-                <div key={type}>
-                  <h3 className="text-xs font-black uppercase tracking-[0.08em] text-muted">
-                    {t(`eventTypes.${type}`)}
-                  </h3>
-                  {typeEvents.length === 0 ? (
-                    <p className="mt-2 text-sm text-muted">
-                      {t("history.none")}
-                    </p>
-                  ) : (
-                    <ul className="mt-2 space-y-2 text-sm text-ink">
-                      {typeEvents.map((event) => (
-                        <li
-                          key={event.id}
-                          className="flex items-center justify-between gap-4"
-                        >
-                          <span className="font-bold">
-                            {event.player_name}
-                            {event.player_shirt_number === null
-                              ? ""
-                              : ` · #${event.player_shirt_number}`}
-                          </span>
-                          <span className="font-black text-pitch">
-                            {event.minute}&apos;
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              );
-            },
-          )}
-        </div>
-      )}
-    </section>
-  );
-}
 
 export default async function MatchResultPage({
   params,
@@ -175,7 +108,21 @@ export default async function MatchResultPage({
                 ) : null}
               </div>
             ) : null}
-            <EventHistory events={details.events} t={t} />
+            <div className="mt-8 border-t border-line pt-7">
+              <MatchTimeline
+                events={details.events.map((event): TimelineEvent => ({
+                  id: event.id,
+                  playerId: event.player_id,
+                  type: event.type,
+                  minute: event.minute,
+                  stoppageTime: event.stoppage_time,
+                  notes: event.notes,
+                  createdAt: event.created_at,
+                  playerName: event.player_name,
+                  playerShirtNumber: event.player_shirt_number,
+                }))}
+              />
+            </div>
             <Link
               href={`/matches/${match.id}/call-up`}
               className="mt-6 inline-flex min-h-11 items-center rounded-lg border border-pitch px-4 text-sm font-bold text-pitch focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch"

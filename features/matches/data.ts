@@ -132,7 +132,7 @@ export async function getMatchDetails(matchId: string) {
       .limit(MATCH_DETAIL_CALLUP_LIMIT),
     supabase
       .from("match_events")
-      .select("id, player_id, type, minute, created_at")
+      .select("id, player_id, type, minute, stoppage_time, notes, created_at")
       .eq("match_id", matchId)
       .order("minute", { ascending: true })
       .order("created_at", { ascending: true })
@@ -153,6 +153,8 @@ export async function getMatchDetails(matchId: string) {
     player_id: string;
     type: string;
     minute: number;
+    stoppage_time: number;
+    notes: string | null;
     created_at: string;
   }>;
   const playerIds = [
@@ -194,6 +196,8 @@ export async function getMatchDetails(matchId: string) {
       return {
         ...event,
         type: event.type as MatchEventType,
+        stoppage_time: event.stoppage_time,
+        notes: event.notes,
         player_name: getPlayerDisplayName(player),
         player_shirt_number: player.shirt_number,
       } satisfies MatchEvent;
@@ -202,6 +206,7 @@ export async function getMatchDetails(matchId: string) {
     .sort(
       (left, right) =>
         left.minute - right.minute ||
+        left.stoppage_time - right.stoppage_time ||
         left.created_at.localeCompare(right.created_at) ||
         left.id.localeCompare(right.id),
     );

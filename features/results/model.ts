@@ -14,6 +14,8 @@ export type ResultEventInput = {
   type: MatchEventType;
   playerId: string;
   minute: number;
+  stoppageTime?: number;
+  notes?: string;
 };
 
 export type ResultDraftEvent = ResultEventInput & {

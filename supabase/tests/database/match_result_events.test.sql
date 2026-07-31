@@ -63,7 +63,7 @@ select lives_ok(
     1,
     '[
       {"type":"goal","player_id":"34000000-0000-0000-0000-000000000001","minute":12},
-      {"type":"goal","player_id":"34000000-0000-0000-0000-000000000001","minute":78},
+      {"type":"goal","player_id":"34000000-0000-0000-0000-000000000001","minute":78,"stoppage_time":2,"notes":"Header"},
       {"type":"yellow_card","player_id":"34000000-0000-0000-0000-000000000002","minute":80},
       {"type":"red_card","player_id":"34000000-0000-0000-0000-000000000002","minute":90}
     ]'::jsonb
@@ -78,9 +78,9 @@ select results_eq(
 );
 
 select results_eq(
-  $$select type, minute from public.match_events where match_id = '44000000-0000-0000-0000-000000000001' order by minute$$,
-  $$values ('goal', 12), ('goal', 78), ('yellow_card', 80), ('red_card', 90)$$,
-  'normalized event rows preserve deterministic event facts'
+  $$select type, minute, stoppage_time, notes from public.match_events where match_id = '44000000-0000-0000-0000-000000000001' order by minute$$,
+  $$values ('goal', 12, 0, null::text), ('goal', 78, 2, 'Header'), ('yellow_card', 80, 0, null::text), ('red_card', 90, 0, null::text)$$,
+  'normalized event rows preserve timeline metadata'
 );
 
 select is(

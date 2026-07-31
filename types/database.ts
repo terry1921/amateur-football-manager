@@ -85,8 +85,10 @@ export type Database = {
           id: string;
           match_id: string;
           minute: number;
+          notes: string | null;
           player_id: string;
           related_player_id: string | null;
+          stoppage_time: number;
           team_id: string;
           type: string;
         };
@@ -95,8 +97,10 @@ export type Database = {
           id?: string;
           match_id: string;
           minute: number;
+          notes?: string | null;
           player_id: string;
           related_player_id?: string | null;
+          stoppage_time?: number;
           team_id: string;
           type: string;
         };
@@ -105,8 +109,10 @@ export type Database = {
           id?: string;
           match_id?: string;
           minute?: number;
+          notes?: string | null;
           player_id?: string;
           related_player_id?: string | null;
+          stoppage_time?: number;
           team_id?: string;
           type?: string;
         };

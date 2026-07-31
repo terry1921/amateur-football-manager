@@ -164,9 +164,9 @@ eligibility, tenant isolation, duplicates, and rollback behavior.
 
 `public.complete_match_with_events(uuid, integer, integer, jsonb)` is also a
 `SECURITY INVOKER` mutation with a fixed empty search path. It locks the owned
-scheduled match, validates normalized event payloads and call-up membership,
-reconciles managed-team goals, replaces events, and completes the match in one
-transaction. Anonymous execution is revoked. Its rollback, duplicate
+scheduled match, validates normalized event payloads, timeline metadata, and
+call-up membership, reconciles managed-team goals, replaces events, and
+completes the match in one transaction. Anonymous execution is revoked. Its rollback, duplicate
 completion, foreign-match, and score-reconciliation coverage lives in
 `supabase/tests/database/match_result_events.test.sql` and
 `tests/security/matches.rls.test.ts`.

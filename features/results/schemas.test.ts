@@ -18,7 +18,7 @@ describe("resultSchema", () => {
     },
   );
 
-  it("accepts normalized goal and card payloads", () => {
+  it("accepts normalized goal and card payloads with timeline metadata", () => {
     expect(
       resultSubmissionSchema.parse({
         homeScore: "2",
@@ -28,6 +28,8 @@ describe("resultSchema", () => {
             type: "goal",
             playerId: "10000000-0000-4000-8000-000000000001",
             minute: 12,
+            stoppageTime: 2,
+            notes: "Header",
           },
           {
             type: "yellow_card",
@@ -39,7 +41,7 @@ describe("resultSchema", () => {
     ).toHaveLength(2);
   });
 
-  it("rejects missing minutes and unsupported event fields", () => {
+  it("rejects missing minutes", () => {
     expect(
       resultSubmissionSchema.safeParse({
         homeScore: "1",
@@ -48,7 +50,6 @@ describe("resultSchema", () => {
           {
             type: "goal",
             playerId: "10000000-0000-4000-8000-000000000001",
-            notes: "not supported",
           },
         ]),
       }).success,
