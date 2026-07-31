@@ -396,6 +396,14 @@ export type Database = {
         Args: { target_season_id?: string | null; target_team_id: string };
         Returns: Json;
       };
+      get_player_statistics_detail: {
+        Args: {
+          target_player_id: string;
+          target_season_id?: string | null;
+          target_team_id: string;
+        };
+        Returns: Json;
+      };
       replace_match_callup: {
         Args: { selected_player_ids: string[]; target_match_id: string };
         Returns: {

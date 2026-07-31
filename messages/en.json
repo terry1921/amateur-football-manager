@@ -297,7 +297,8 @@
         "matchesPlayed": "Matches played",
         "goalsScored": "Goals scored",
         "topScorer": "Top scorer",
-        "discipline": "Discipline",
+        "yellowCards": "Yellow cards",
+        "redCards": "Red cards",
         "noData": "No completed matches yet",
         "viewAll": "Open statistics"
       },
@@ -719,7 +720,14 @@
       "label": "Statistics period",
       "current": "Current season",
       "all": "Career",
-      "career": "Career totals"
+      "career": "Team career",
+      "search": "Search players",
+      "position": "Position",
+      "status": "Status",
+      "allPositions": "All positions",
+      "allStatuses": "All statuses",
+      "currentPlayers": "Current squad",
+      "apply": "Apply filters"
     },
     "metrics": {
       "matchesPlayed": "Matches played",
@@ -729,11 +737,38 @@
     },
     "recordLine": "{wins}W · {draws}D · {losses}L · {goalsConceded} conceded · {yellowCards}Y · {redCards}R",
     "playerLine": "{matches} called up · {wins}W · {draws}D · {losses}L",
+    "rankingCalledUp": "{count} completed matches called up",
+    "teamRecordWhenCalledUp": "Team record when called up: {wins}W · {draws}D · {losses}L",
+    "result": {
+      "win": "Win",
+      "draw": "Draw",
+      "loss": "Loss"
+    },
+    "position": {
+      "GK": "Goalkeeper",
+      "DEF": "Defender",
+      "MID": "Midfielder",
+      "FWD": "Forward"
+    },
+    "status": {
+      "active": "Active",
+      "injured": "Injured",
+      "suspended": "Suspended",
+      "inactive": "Inactive"
+    },
+    "table": {
+      "goalsShort": "goals"
+    },
     "playerMetrics": {
       "goals": "Goals",
       "record": "Record",
       "calledUp": "Called up",
-      "cards": "Cards"
+      "cards": "Cards",
+      "completedCalledUp": "Completed called up",
+      "totalCalledUp": "All call-ups",
+      "scoringMatches": "Scoring matches",
+      "teamRecordLabel": "Team record when called up",
+      "multiGoalMatches": "{count} multi-goal matches"
     },
     "tables": {
       "players": {
@@ -744,17 +779,36 @@
         "title": "Top scorers",
         "description": "Goals recorded in completed matches."
       },
-      "discipline": {
-        "title": "Discipline",
-        "description": "Yellow and red cards recorded in completed matches."
+      "yellowCards": {
+        "title": "Yellow-card leaders",
+        "description": "Yellow cards recorded in completed matches."
+      },
+      "redCards": {
+        "title": "Red-card leaders",
+        "description": "Red cards recorded in completed matches."
       }
     },
     "empty": {
       "title": "No statistics yet",
       "description": "Complete a match with its score and team events to start building this history.",
       "topScorers": "No goals recorded.",
+      "yellowCards": "No yellow cards recorded for this scope.",
+      "redCards": "No red cards recorded for this scope.",
       "discipline": "No cards recorded.",
-      "players": "No player rows available."
+      "players": "No player rows available.",
+      "filteredTitle": "No players match these filters",
+      "filtered": "Change the search, position, or status filters to see another player set.",
+      "playerNoData": "This player has no completed-match statistics for the selected scope."
+    },
+    "history": {
+      "recentTitle": "Recent completed matches",
+      "recentDescription": "Matches where this player was called up; a call-up is not an appearance.",
+      "noRecent": "No completed matches called up in this scope.",
+      "goalsTitle": "Goal history",
+      "goalLabel": "Goal event",
+      "disciplineTitle": "Discipline history",
+      "yellow_card": "Yellow card",
+      "red_card": "Red card"
     }
   },
   "Results": {

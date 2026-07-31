@@ -1,4 +1,10 @@
 import { getTeamAccess } from "@/features/teams/access";
+import {
+  playerPositions,
+  playerStatuses,
+  type PlayerPosition,
+  type PlayerStatus,
+} from "@/features/players/model";
 import type { Json } from "@/types/database";
 import {
   getDisciplineTable,
@@ -8,6 +14,7 @@ import {
   getTopScorers,
   resolveStatisticsFilter,
   type PlayerStatistics,
+  type PlayerStatisticsDetail,
   type StatisticsFilter,
   type StatisticsSeason,
   type StatisticsSnapshot,
@@ -29,6 +36,57 @@ export function emptyTeamStatistics() {
   };
 }
 
+function recordOf(value: Json | undefined) {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, Json | undefined>)
+    : null;
+}
+
+function numberOf(record: Record<string, Json | undefined>, key: string) {
+  return typeof record[key] === "number" ? record[key] : 0;
+}
+
+function stringOf(record: Record<string, Json | undefined>, key: string) {
+  return typeof record[key] === "string" ? record[key] : "";
+}
+
+function positionOf(value: string): PlayerPosition {
+  return playerPositions.includes(value as PlayerPosition)
+    ? (value as PlayerPosition)
+    : "MID";
+}
+
+function statusOf(value: string): PlayerStatus {
+  return playerStatuses.includes(value as PlayerStatus)
+    ? (value as PlayerStatus)
+    : "active";
+}
+
+export function parsePlayerStatistics(value: Json | undefined) {
+  const record = recordOf(value);
+  if (!record) return null;
+  return {
+    player_id: stringOf(record, "player_id"),
+    first_name: stringOf(record, "first_name"),
+    last_name: typeof record.last_name === "string" ? record.last_name : null,
+    nickname: typeof record.nickname === "string" ? record.nickname : null,
+    shirt_number:
+      typeof record.shirt_number === "number" ? record.shirt_number : null,
+    position: positionOf(stringOf(record, "position")),
+    status: statusOf(stringOf(record, "status")),
+    total_matches_called_up: numberOf(record, "total_matches_called_up"),
+    matches_called_up: numberOf(record, "matches_called_up"),
+    matches_won: numberOf(record, "matches_won"),
+    matches_drawn: numberOf(record, "matches_drawn"),
+    matches_lost: numberOf(record, "matches_lost"),
+    goals: numberOf(record, "goals"),
+    scoring_matches: numberOf(record, "scoring_matches"),
+    multi_goal_matches: numberOf(record, "multi_goal_matches"),
+    yellow_cards: numberOf(record, "yellow_cards"),
+    red_cards: numberOf(record, "red_cards"),
+  } satisfies PlayerStatistics;
+}
+
 export function parseStatisticsSnapshot(
   value: Json | null,
 ): StatisticsSnapshot {
@@ -40,14 +98,8 @@ export function parseStatisticsSnapshot(
     };
   }
   const record = value as Record<string, Json | undefined>;
-  const rawTeam =
-    record.team &&
-    typeof record.team === "object" &&
-    !Array.isArray(record.team)
-      ? (record.team as Record<string, Json | undefined>)
-      : {};
-  const numberValue = (key: string) =>
-    typeof rawTeam[key] === "number" ? rawTeam[key] : 0;
+  const rawTeam = recordOf(record.team) ?? {};
+  const numberValue = (key: string) => numberOf(rawTeam, key);
   const rawPlayers = Array.isArray(record.players) ? record.players : [];
   return {
     has_completed_matches: record.has_completed_matches === true,
@@ -62,10 +114,90 @@ export function parseStatisticsSnapshot(
       yellow_cards: numberValue("yellow_cards"),
       red_cards: numberValue("red_cards"),
     },
-    players: rawPlayers.filter(
-      (player): player is PlayerStatistics =>
-        Boolean(player) && typeof player === "object" && !Array.isArray(player),
-    ) as PlayerStatistics[],
+    players: rawPlayers.flatMap((player) => {
+      const parsed = parsePlayerStatistics(player);
+      return parsed ? [parsed] : [];
+    }),
+  };
+}
+
+function parseRecentMatch(value: Json | undefined) {
+  const record = recordOf(value);
+  if (!record) return null;
+  return {
+    match_id: stringOf(record, "match_id"),
+    season_id: stringOf(record, "season_id"),
+    opponent_name: stringOf(record, "opponent_name"),
+    kickoff_at: stringOf(record, "kickoff_at"),
+    team_score: numberOf(record, "team_score"),
+    opponent_score: numberOf(record, "opponent_score"),
+    result: stringOf(record, "result") as "win" | "draw" | "loss",
+    goals: numberOf(record, "goals"),
+    yellow_cards: numberOf(record, "yellow_cards"),
+    red_cards: numberOf(record, "red_cards"),
+  };
+}
+
+function parseHistoryEvent(value: Json | undefined) {
+  const record = recordOf(value);
+  if (!record) return null;
+  return {
+    event_id: stringOf(record, "event_id"),
+    match_id: stringOf(record, "match_id"),
+    opponent_name: stringOf(record, "opponent_name"),
+    kickoff_at: stringOf(record, "kickoff_at"),
+    minute: numberOf(record, "minute"),
+    stoppage_time: numberOf(record, "stoppage_time"),
+    team_score: numberOf(record, "team_score"),
+    opponent_score: numberOf(record, "opponent_score"),
+    result: stringOf(record, "result") as "win" | "draw" | "loss",
+  };
+}
+
+export function parsePlayerStatisticsDetail(
+  value: Json | null,
+): PlayerStatisticsDetail {
+  const record = recordOf(value);
+  if (!record) {
+    return {
+      has_completed_matches: false,
+      player: null,
+      recent_matches: [],
+      goal_history: [],
+      discipline_history: [],
+    };
+  }
+  const rawRecentMatches = Array.isArray(record.recent_matches)
+    ? record.recent_matches
+    : [];
+  const rawGoalHistory = Array.isArray(record.goal_history)
+    ? record.goal_history
+    : [];
+  const rawDisciplineHistory = Array.isArray(record.discipline_history)
+    ? record.discipline_history
+    : [];
+  const recentMatches = rawRecentMatches.flatMap((item) => {
+    const parsed = parseRecentMatch(item);
+    return parsed ? [parsed] : [];
+  });
+  const goalHistory = rawGoalHistory.flatMap((item) => {
+    const parsed = parseHistoryEvent(item);
+    return parsed ? [parsed] : [];
+  });
+  const disciplineHistory = rawDisciplineHistory.flatMap((item) => {
+    const parsed = parseHistoryEvent(item);
+    const itemRecord = recordOf(item);
+    const type = itemRecord ? stringOf(itemRecord, "type") : "";
+    return parsed && (type === "yellow_card" || type === "red_card")
+      ? [{ ...parsed, type: type as "yellow_card" | "red_card" }]
+      : [];
+  });
+  return {
+    has_completed_matches: recentMatches.length > 0,
+    player: parsePlayerStatistics(record.player),
+    recent_matches: recentMatches,
+    goal_history: goalHistory,
+    discipline_history: disciplineHistory,
   };
 }
 
@@ -87,7 +219,31 @@ export async function readStatisticsSnapshot(
   return parseStatisticsSnapshot(result.data);
 }
 
-export async function getStatisticsData(requestedFilter?: string) {
+export async function readPlayerStatisticsDetail(
+  supabase: {
+    rpc: (
+      name: "get_player_statistics_detail",
+      args: {
+        target_player_id: string;
+        target_season_id: string | null;
+        target_team_id: string;
+      },
+    ) => PromiseLike<{ data: Json | null; error: { message: string } | null }>;
+  },
+  teamId: string,
+  playerId: string,
+  seasonId: string | null,
+) {
+  const result = await supabase.rpc("get_player_statistics_detail", {
+    target_team_id: teamId,
+    target_player_id: playerId,
+    target_season_id: seasonId,
+  });
+  if (result.error) throw result.error;
+  return parsePlayerStatisticsDetail(result.data);
+}
+
+async function getStatisticsContext(requestedFilter?: string) {
   const { supabase, team } = await getTeamAccess();
   if (!team) throw new Error("statistics_team_not_found");
 
@@ -108,13 +264,8 @@ export async function getStatisticsData(requestedFilter?: string) {
     seasons,
     activeSeason?.id ?? null,
   );
-  const snapshot = await readStatisticsSnapshot(
-    supabase as unknown as Parameters<typeof readStatisticsSnapshot>[0],
-    team.id,
-    resolved.seasonId,
-  );
-
   return {
+    supabase,
     team,
     seasons,
     activeSeason,
@@ -122,6 +273,24 @@ export async function getStatisticsData(requestedFilter?: string) {
     selectedSeason: resolved.seasonId
       ? (seasons.find(({ id }) => id === resolved.seasonId) ?? null)
       : null,
+    seasonId: resolved.seasonId,
+  };
+}
+
+export async function getStatisticsData(requestedFilter?: string) {
+  const context = await getStatisticsContext(requestedFilter);
+  const snapshot = await readStatisticsSnapshot(
+    context.supabase as unknown as Parameters<typeof readStatisticsSnapshot>[0],
+    context.team.id,
+    context.seasonId,
+  );
+
+  return {
+    team: context.team,
+    seasons: context.seasons,
+    activeSeason: context.activeSeason,
+    selectedFilter: context.selectedFilter,
+    selectedSeason: context.selectedSeason,
     snapshot,
   };
 }
@@ -130,8 +299,24 @@ export async function getPlayerStatistics(
   playerId: string,
   requestedFilter: StatisticsFilter = "all",
 ) {
-  const data = await getStatisticsData(requestedFilter);
-  return { ...data, player: findPlayerStatistics(data.snapshot, playerId) };
+  const context = await getStatisticsContext(requestedFilter);
+  const detail = await readPlayerStatisticsDetail(
+    context.supabase as unknown as Parameters<
+      typeof readPlayerStatisticsDetail
+    >[0],
+    context.team.id,
+    playerId,
+    context.seasonId,
+  );
+  return {
+    team: context.team,
+    seasons: context.seasons,
+    activeSeason: context.activeSeason,
+    selectedFilter: context.selectedFilter,
+    selectedSeason: context.selectedSeason,
+    detail,
+    player: detail.player,
+  };
 }
 
 export { findPlayerStatistics as getPlayerStatistic };

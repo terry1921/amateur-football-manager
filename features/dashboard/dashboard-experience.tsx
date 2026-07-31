@@ -28,9 +28,10 @@ import {
 } from "./model";
 import { DashboardEmptyState } from "./dashboard-empty-state";
 import {
-  getDisciplineTable,
   getPlayerDisplayNameFromStatistics,
+  getRedCardLeaders,
   getTopScorers,
+  getYellowCardLeaders,
 } from "@/features/statistics/model";
 
 function SetupStepItem({ step, index }: { step: SetupStep; index: number }) {
@@ -543,8 +544,11 @@ function StatisticsModule({ data }: { data: DashboardSuccessData }) {
   const t = useTranslations("FirstTimeDashboard");
   const statistics = data.dashboardStatistics;
   const topScorer = statistics ? getTopScorers(statistics.players)[0] : null;
-  const disciplineLeader = statistics
-    ? getDisciplineTable(statistics.players)[0]
+  const yellowCardLeader = statistics
+    ? getYellowCardLeaders(statistics.players)[0]
+    : null;
+  const redCardLeader = statistics
+    ? getRedCardLeaders(statistics.players)[0]
     : null;
 
   return (
@@ -592,18 +596,31 @@ function StatisticsModule({ data }: { data: DashboardSuccessData }) {
                 </Link>
               </p>
             ) : null}
-            {disciplineLeader ? (
+            {yellowCardLeader ? (
               <p className="flex items-center justify-between gap-3">
                 <span className="text-muted">
-                  {t("modules.statistics.discipline")}
+                  {t("modules.statistics.yellowCards")}
                 </span>
                 <Link
-                  href={`/players/${disciplineLeader.player_id}`}
+                  href={`/players/${yellowCardLeader.player_id}`}
                   className="font-black text-ink hover:text-pitch"
                 >
-                  {getPlayerDisplayNameFromStatistics(disciplineLeader)} (
-                  {disciplineLeader.yellow_cards}Y ·{" "}
-                  {disciplineLeader.red_cards}R)
+                  {getPlayerDisplayNameFromStatistics(yellowCardLeader)} (
+                  {yellowCardLeader.yellow_cards})
+                </Link>
+              </p>
+            ) : null}
+            {redCardLeader ? (
+              <p className="flex items-center justify-between gap-3">
+                <span className="text-muted">
+                  {t("modules.statistics.redCards")}
+                </span>
+                <Link
+                  href={`/players/${redCardLeader.player_id}`}
+                  className="font-black text-ink hover:text-pitch"
+                >
+                  {getPlayerDisplayNameFromStatistics(redCardLeader)} (
+                  {redCardLeader.red_cards})
                 </Link>
               </p>
             ) : null}

@@ -75,6 +75,11 @@ the team belongs to `auth.uid()` and that a requested season belongs to that
 team. Anonymous execution is revoked; it returns derived JSON only and never
 writes or exposes rows from another tenant.
 
+`get_player_statistics_detail(uuid, uuid, uuid)` applies the same owner and
+season checks and additionally rejects a player outside the requested team. Its
+history is derived through the same RLS-visible completed matches, call-ups,
+and normalized events.
+
 `players` and `seasons` intentionally expose no authenticated `DELETE`
 privilege or policy. Player departures use the `inactive` status, and a trigger
 makes `players.team_id` immutable. This preserves attribution for historical

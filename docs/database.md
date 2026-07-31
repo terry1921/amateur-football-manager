@@ -107,6 +107,8 @@ must use `status = 'inactive'`.
   match and player foreign keys.
 - `match_events_match_type_idx`: match event lists and match-level aggregation.
 - `match_events_player_type_idx`: player statistics and leaderboards.
+- `match_events_player_type_match_idx`: bounded player goal and discipline
+  history reads.
 - `match_events_team_match_idx`, `match_events_team_player_idx`, and
   `match_events_team_related_player_idx`: cover tenant-scoped event foreign
   keys; the related-player index also supports assist aggregation.
@@ -142,8 +144,9 @@ goal reconciliation, and completes the match in one transaction.
 - Authentication flows remain Task 004.
 - The initial beta's one-team-per-owner limit remains an application rule rather
   than a database constraint, preserving the planned path to multi-team plans.
-- Statistics are not persisted. `get_statistics_snapshot` derives team and
-  player projections from completed matches, call-ups, and normalized events;
-  standings and opponent-player event workflows remain later tasks.
+- Statistics are not persisted. `get_statistics_snapshot` and
+  `get_player_statistics_detail` derive team and player projections from
+  completed matches, call-ups, and normalized events; standings and
+  opponent-player event workflows remain later tasks.
 - Seed data remains separate from schema migrations and will be introduced by a
   dedicated development-data task.

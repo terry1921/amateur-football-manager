@@ -297,7 +297,8 @@
         "matchesPlayed": "Partidos jugados",
         "goalsScored": "Goles anotados",
         "topScorer": "Máximo goleador",
-        "discipline": "Disciplina",
+        "yellowCards": "Amarillas",
+        "redCards": "Rojas",
         "noData": "Aún no hay partidos completados",
         "viewAll": "Abrir estadísticas"
       },
@@ -719,7 +720,14 @@
       "label": "Periodo de estadísticas",
       "current": "Temporada actual",
       "all": "Carrera",
-      "career": "Totales de carrera"
+      "career": "Carrera en el equipo",
+      "search": "Buscar jugadores",
+      "position": "Posición",
+      "status": "Estado",
+      "allPositions": "Todas las posiciones",
+      "allStatuses": "Todos los estados",
+      "currentPlayers": "Plantel actual",
+      "apply": "Aplicar filtros"
     },
     "metrics": {
       "matchesPlayed": "Partidos jugados",
@@ -729,11 +737,38 @@
     },
     "recordLine": "{wins}G · {draws}E · {losses}P · {goalsConceded} recibidos · {yellowCards}A · {redCards}R",
     "playerLine": "{matches} convocatorias · {wins}G · {draws}E · {losses}P",
+    "rankingCalledUp": "{count} partidos completados convocado",
+    "teamRecordWhenCalledUp": "Balance del equipo cuando fue convocado: {wins}G · {draws}E · {losses}P",
+    "result": {
+      "win": "Victoria",
+      "draw": "Empate",
+      "loss": "Derrota"
+    },
+    "position": {
+      "GK": "Portero",
+      "DEF": "Defensa",
+      "MID": "Mediocampista",
+      "FWD": "Delantero"
+    },
+    "status": {
+      "active": "Activo",
+      "injured": "Lesionado",
+      "suspended": "Suspendido",
+      "inactive": "Inactivo"
+    },
+    "table": {
+      "goalsShort": "goles"
+    },
     "playerMetrics": {
       "goals": "Goles",
       "record": "Balance",
       "calledUp": "Convocatorias",
-      "cards": "Tarjetas"
+      "cards": "Tarjetas",
+      "completedCalledUp": "Convocado en completados",
+      "totalCalledUp": "Todas las convocatorias",
+      "scoringMatches": "Partidos con gol",
+      "teamRecordLabel": "Balance del equipo cuando fue convocado",
+      "multiGoalMatches": "{count} partidos con varios goles"
     },
     "tables": {
       "players": {
@@ -744,17 +779,36 @@
         "title": "Máximos goleadores",
         "description": "Goles registrados en partidos completados."
       },
-      "discipline": {
-        "title": "Disciplina",
-        "description": "Tarjetas amarillas y rojas en partidos completados."
+      "yellowCards": {
+        "title": "Líderes en amarillas",
+        "description": "Tarjetas amarillas en partidos completados."
+      },
+      "redCards": {
+        "title": "Líderes en rojas",
+        "description": "Tarjetas rojas en partidos completados."
       }
     },
     "empty": {
       "title": "Aún no hay estadísticas",
       "description": "Completa un partido con su marcador y los eventos del equipo para empezar a construir este historial.",
       "topScorers": "No hay goles registrados.",
+      "yellowCards": "No hay amarillas registradas en este periodo.",
+      "redCards": "No hay rojas registradas en este periodo.",
       "discipline": "No hay tarjetas registradas.",
-      "players": "No hay filas de jugadores disponibles."
+      "players": "No hay filas de jugadores disponibles.",
+      "filteredTitle": "Ningún jugador coincide con estos filtros",
+      "filtered": "Cambia la búsqueda, posición o estado para ver otro grupo de jugadores.",
+      "playerNoData": "Este jugador no tiene estadísticas de partidos completados en el periodo seleccionado."
+    },
+    "history": {
+      "recentTitle": "Partidos completados recientes",
+      "recentDescription": "Partidos en los que el jugador fue convocado; una convocatoria no es una aparición.",
+      "noRecent": "No hay partidos completados con convocatoria en este periodo.",
+      "goalsTitle": "Historial de goles",
+      "goalLabel": "Evento de gol",
+      "disciplineTitle": "Historial disciplinario",
+      "yellow_card": "Tarjeta amarilla",
+      "red_card": "Tarjeta roja"
     }
   },
   "Results": {

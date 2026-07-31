@@ -176,7 +176,9 @@ projection. It verifies team ownership, rejects a season from another team,
 and is unavailable to anonymous clients. The focused pgTAP suite in
 `supabase/tests/database/statistics_snapshot.test.sql` covers season and
 career aggregation, normalized goals/cards, score orientation, and a foreign
-team rejection.
+team rejection. The player-statistics suite also checks join-multiplication
+resistance, inactive-player history, detail-scope validation, and aggregate
+leakage from a foreign team.
 
 No Storage bucket or `storage.objects` authorization policy has been created
 for the MVP yet. Storage isolation tests are deferred until the task that
