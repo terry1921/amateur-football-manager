@@ -59,6 +59,10 @@ export function SocialImage({
       src={src ?? ""}
       alt={alt}
       onError={() => setFailed(true)}
+      width={64}
+      height={64}
+      loading="lazy"
+      decoding="async"
       className="size-16 shrink-0 rounded-full object-cover"
     />
   );
@@ -84,7 +88,7 @@ function MatchSelector({ data }: { data: SocialGeneratorData }) {
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
       <nav
         aria-label={t("filters.seasonLabel")}
-        className="flex flex-wrap gap-2"
+        className="mobile-chip-row flex flex-wrap gap-2"
       >
         {[
           { id: "current", name: t("filters.current") },

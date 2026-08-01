@@ -436,7 +436,7 @@ export function CallupEditor({
               </p>
             ) : null}
             {editable ? (
-              <div className="flex flex-col gap-3 border-t border-line bg-[#f8faf9] p-5 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
+              <div className="mobile-action-bar flex flex-col gap-3 border-t border-line bg-[#f8faf9] p-5 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
                 <p className="text-xs leading-5 text-muted">
                   {t("editor.help")}
                 </p>

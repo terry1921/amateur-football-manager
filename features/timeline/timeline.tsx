@@ -284,7 +284,7 @@ export function MatchTimeline({
       </div>
 
       <div
-        className="flex flex-wrap gap-2"
+        className="mobile-chip-row flex flex-wrap gap-2"
         role="group"
         aria-label={t("timeline.filters.label")}
       >

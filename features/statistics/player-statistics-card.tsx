@@ -33,7 +33,10 @@ function ScopeSelector({
       .map((season) => ({ key: season.id, label: season.name })),
   ];
   return (
-    <nav aria-label={t("filters.label")} className="flex flex-wrap gap-2">
+    <nav
+      aria-label={t("filters.label")}
+      className="mobile-chip-row flex flex-wrap gap-2"
+    >
       {options.map((option) => (
         <Link
           key={option.key}

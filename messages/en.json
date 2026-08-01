@@ -84,7 +84,11 @@
     "leaderboards": "Leaderboards",
     "social": "Social media",
     "content": "Content",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "logoutShort": "Exit",
+    "install": "Install app",
+    "more": "More",
+    "closeMore": "Close menu"
   },
   "Onboarding": {
     "progress": "Step 1 of 1",

@@ -57,7 +57,10 @@ function FilterBar({ data }: { data: LeaderboardsViewData }) {
 
   return (
     <div className="space-y-4">
-      <nav aria-label={t("filters.label")} className="flex flex-wrap gap-2">
+      <nav
+        aria-label={t("filters.label")}
+        className="mobile-chip-row flex flex-wrap gap-2"
+      >
         {options.map((option) => (
           <Link
             key={option.key}
@@ -251,62 +254,98 @@ function LeaderboardTable({
         </p>
       </header>
       {rows.length > 0 ? (
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[37rem] text-left">
-            <caption className="sr-only">{title}</caption>
-            <thead className="bg-[#f8faf9] text-xs font-black uppercase tracking-[0.08em] text-muted">
-              <tr>
-                <th scope="col" className="w-16 px-5 py-3 sm:px-6">
-                  {t("table.rank")}
-                </th>
-                <th scope="col" className="px-5 py-3 sm:px-6">
-                  {t("table.player")}
-                </th>
-                <th scope="col" className="px-5 py-3 text-right sm:px-6">
-                  {t(`table.${metric}`)}
-                </th>
-                <th scope="col" className="px-5 py-3 text-right sm:px-6">
-                  {t("table.calledUp")}
-                </th>
-                <th scope="col" className="px-5 py-3 text-right sm:px-6">
-                  {t("table.record")}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((player, index) => {
-                const rank = getLeaderboardRank(rows, index, metric);
-                const name = getPlayerDisplayNameFromStatistics(player);
-                return (
-                  <tr key={player.player_id} className="border-t border-line">
-                    <td className="px-5 py-4 text-sm font-black text-muted sm:px-6">
-                      <span aria-label={t("table.rankLabel", { rank, name })}>
-                        {rank}
-                      </span>
-                    </td>
-                    <th scope="row" className="px-5 py-4 sm:px-6">
-                      <Link
-                        href={`/players/${player.player_id}`}
-                        className="font-black text-ink underline-offset-4 hover:text-pitch hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch"
-                      >
-                        {name}
-                      </Link>
-                    </th>
-                    <td className="px-5 py-4 text-right text-sm font-black text-ink sm:px-6">
+        <>
+          <ol className="grid gap-2 p-3 md:hidden">
+            {rows.map((player, index) => {
+              const rank = getLeaderboardRank(rows, index, metric);
+              const name = getPlayerDisplayNameFromStatistics(player);
+              return (
+                <li
+                  key={player.player_id}
+                  className="grid min-h-16 grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-line bg-[#f8faf9] px-3 py-2"
+                >
+                  <span
+                    aria-label={t("table.rankLabel", { rank, name })}
+                    className="text-sm font-black text-muted"
+                  >
+                    {rank}
+                  </span>
+                  <Link
+                    href={"/players/" + player.player_id}
+                    className="min-w-0 truncate font-black text-ink underline-offset-4 hover:text-pitch hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch"
+                  >
+                    {name}
+                  </Link>
+                  <span className="text-right">
+                    <span className="block text-sm font-black text-ink">
                       {player[metric]}
-                    </td>
-                    <td className="px-5 py-4 text-right text-sm text-muted sm:px-6">
-                      {player.matches_called_up}
-                    </td>
-                    <td className="px-5 py-4 text-right sm:px-6">
-                      <Record player={player} />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                    </span>
+                    <span className="block text-xs font-bold text-muted">
+                      {player.matches_called_up} · {player.matches_won}-
+                      {player.matches_drawn}-{player.matches_lost}
+                    </span>
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+          <div className="hidden overflow-x-auto md:block">
+            <table className="w-full min-w-[37rem] text-left">
+              <caption className="sr-only">{title}</caption>
+              <thead className="bg-[#f8faf9] text-xs font-black uppercase tracking-[0.08em] text-muted">
+                <tr>
+                  <th scope="col" className="w-16 px-5 py-3 sm:px-6">
+                    {t("table.rank")}
+                  </th>
+                  <th scope="col" className="px-5 py-3 sm:px-6">
+                    {t("table.player")}
+                  </th>
+                  <th scope="col" className="px-5 py-3 text-right sm:px-6">
+                    {t(`table.${metric}`)}
+                  </th>
+                  <th scope="col" className="px-5 py-3 text-right sm:px-6">
+                    {t("table.calledUp")}
+                  </th>
+                  <th scope="col" className="px-5 py-3 text-right sm:px-6">
+                    {t("table.record")}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((player, index) => {
+                  const rank = getLeaderboardRank(rows, index, metric);
+                  const name = getPlayerDisplayNameFromStatistics(player);
+                  return (
+                    <tr key={player.player_id} className="border-t border-line">
+                      <td className="px-5 py-4 text-sm font-black text-muted sm:px-6">
+                        <span aria-label={t("table.rankLabel", { rank, name })}>
+                          {rank}
+                        </span>
+                      </td>
+                      <th scope="row" className="px-5 py-4 sm:px-6">
+                        <Link
+                          href={`/players/${player.player_id}`}
+                          className="font-black text-ink underline-offset-4 hover:text-pitch hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch"
+                        >
+                          {name}
+                        </Link>
+                      </th>
+                      <td className="px-5 py-4 text-right text-sm font-black text-ink sm:px-6">
+                        {player[metric]}
+                      </td>
+                      <td className="px-5 py-4 text-right text-sm text-muted sm:px-6">
+                        {player.matches_called_up}
+                      </td>
+                      <td className="px-5 py-4 text-right sm:px-6">
+                        <Record player={player} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
       ) : (
         <p className="p-5 text-sm text-muted sm:p-6">{t(`empty.${id}`)}</p>
       )}

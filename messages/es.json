@@ -84,7 +84,11 @@
     "leaderboards": "Rankings",
     "social": "Redes sociales",
     "content": "Contenido",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "logoutShort": "Salir",
+    "install": "Instalar app",
+    "more": "Más",
+    "closeMore": "Cerrar menú"
   },
   "Onboarding": {
     "progress": "Paso 1 de 1",

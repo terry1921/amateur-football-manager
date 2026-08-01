@@ -316,7 +316,7 @@ export function ResultForm({
       </section>
 
       <input type="hidden" name="events" value={eventPayload} readOnly />
-      <div className="flex flex-col-reverse gap-3 border-t border-line pt-5 sm:flex-row sm:justify-end">
+      <div className="mobile-action-bar flex flex-col-reverse gap-3 border-t border-line pt-5 sm:flex-row sm:justify-end">
         <Link
           href={cancelHref}
           className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#b8c5d2] bg-white px-6 text-sm font-bold text-ink transition hover:border-pitch hover:text-pitch focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch"

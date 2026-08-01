@@ -28,6 +28,8 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button,
@@ -35,6 +37,117 @@ input,
 textarea,
 select {
   font: inherit;
+}
+
+button,
+select,
+input:not([type="checkbox"]):not([type="radio"]) {
+  min-height: 2.75rem;
+  touch-action: manipulation;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--pitch);
+  outline-offset: 2px;
+}
+
+.dashboard-main {
+  padding-bottom: calc(7rem + env(safe-area-inset-bottom));
+}
+
+.dashboard-header {
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}
+
+.mobile-bottom-navigation {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.mobile-bottom-navigation a,
+.mobile-bottom-navigation button {
+  min-height: 3.5rem;
+}
+
+.mobile-bottom-navigation a {
+  flex-direction: column;
+  border-top: 2px solid transparent;
+  padding-inline: 0.25rem;
+  font-size: 0.65rem;
+}
+
+.mobile-more-sheet a {
+  min-height: 3rem;
+  flex-direction: row;
+  justify-content: flex-start;
+  border-radius: 0.75rem;
+  border-top: 0;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.mobile-chip-row {
+  scrollbar-width: none;
+}
+
+.mobile-chip-row::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .mobile-chip-row {
+    flex-wrap: nowrap;
+    margin-inline: -0.25rem;
+    max-width: calc(100% + 0.5rem);
+    overflow-x: auto;
+    padding-inline: 0.25rem;
+  }
+
+  .mobile-chip-row > * {
+    flex-shrink: 0;
+  }
+}
+
+.mobile-action-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  margin-inline: -1.25rem;
+  padding: 0.75rem 1.25rem calc(0.75rem + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  background: color-mix(in srgb, white 92%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+@media (min-width: 640px) {
+  .dashboard-main {
+    padding-bottom: 3.5rem;
+  }
+
+  .mobile-action-bar {
+    margin-inline: 0;
+    padding: 0;
+    border-top: 0;
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .brand-wordmark {

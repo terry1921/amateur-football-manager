@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
 import "../globals.css";
 
 type LocaleLayoutProps = Readonly<{
@@ -14,6 +15,14 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+export const viewport: Viewport = {
+  colorScheme: "light",
+  initialScale: 1,
+  themeColor: "#071a36",
+  viewportFit: "cover",
+  width: "device-width",
+};
+
 export async function generateMetadata({
   params,
 }: LocaleLayoutProps): Promise<Metadata> {
@@ -23,6 +32,18 @@ export async function generateMetadata({
   return {
     title: t("title"),
     description: t("description"),
+    applicationName: "Matchday",
+    manifest: "/manifest.webmanifest",
+    icons: {
+      icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+      apple: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    },
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "black-translucent",
+      title: "Matchday",
+    },
+    formatDetection: { telephone: false },
   };
 }
 
@@ -41,7 +62,10 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className="h-full antialiased">
       <body className="flex min-h-full flex-col">
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <ServiceWorkerRegistration />
+          {children}
+        </NextIntlClientProvider>
       </body>
     </html>
   );

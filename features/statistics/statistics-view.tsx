@@ -155,7 +155,10 @@ function FilterBar({ data }: { data: StatisticsViewData }) {
 
   return (
     <div className="space-y-4">
-      <nav aria-label={t("filters.label")} className="flex flex-wrap gap-2">
+      <nav
+        aria-label={t("filters.label")}
+        className="mobile-chip-row flex flex-wrap gap-2"
+      >
         {options.map((option) => {
           const selected = option.key === seasonKey;
           return (

@@ -66,7 +66,7 @@ function ConfirmAction({
       <dialog
         ref={dialog}
         onClose={() => opener.current?.focus()}
-        className="m-auto w-[min(92vw,30rem)] rounded-2xl border border-line bg-white p-0 text-ink shadow-2xl backdrop:bg-ink/45"
+        className="fixed inset-x-0 bottom-0 m-0 w-full max-w-none rounded-t-2xl border border-line bg-white p-0 text-ink shadow-2xl backdrop:bg-ink/45 sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:m-auto sm:w-[min(92vw,30rem)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl"
       >
         <div className="p-5 sm:p-6">
           <div className="flex items-start justify-between gap-4">
