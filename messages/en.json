@@ -82,6 +82,7 @@
     "matches": "Matches",
     "statistics": "Statistics",
     "leaderboards": "Leaderboards",
+    "social": "Social media",
     "content": "Content",
     "logout": "Sign out"
   },
@@ -898,6 +899,93 @@
       "calledUp": "No completed call-ups recorded for this scope.",
       "filteredTitle": "No players match these filters",
       "filtered": "Change the search, position, or status filters to see another player set."
+    }
+  },
+  "Social": {
+    "eyebrow": "Ready to publish",
+    "title": "Social media generator",
+    "description": "Turn your team’s recorded match data into branded graphics and captions. Every value comes from your existing matches, events, statistics, and call-ups.",
+    "filters": {
+      "seasonLabel": "Social media season",
+      "current": "Current season",
+      "all": "Career",
+      "match": "Match",
+      "chooseMatch": "Choose a match",
+      "apply": "Load match"
+    },
+    "templates": {
+      "label": "Choose a template",
+      "result": {
+        "title": "Match result",
+        "description": "Final score and scorers"
+      },
+      "upcoming": {
+        "title": "Upcoming match",
+        "description": "Fixture announcement"
+      },
+      "topScorer": {
+        "title": "Top scorer",
+        "description": "Current leader from statistics"
+      },
+      "playerOfMatch": {
+        "title": "Player of the Match",
+        "description": "Derived from recorded events"
+      },
+      "lineup": {
+        "title": "Lineup",
+        "description": "Recorded match call-up"
+      }
+    },
+    "preview": {
+      "title": "Preview",
+      "sizeLabel": "Preview size",
+      "desktop": "Desktop",
+      "mobile": "Mobile",
+      "cardLabel": "{template} preview",
+      "export": "Export high-resolution PNG",
+      "exported": "PNG downloaded",
+      "exportFailed": "We could not create the PNG. Try again."
+    },
+    "captions": {
+      "title": "Caption",
+      "description": "A deterministic caption for the selected platform. You can copy it into your publishing tool.",
+      "platformLabel": "Caption platform",
+      "platforms": {
+        "facebook": "Facebook",
+        "instagram": "Instagram",
+        "x": "X"
+      },
+      "label": "{platform} caption",
+      "copy": "Copy caption",
+      "copied": "Caption copied",
+      "noPublishing": "Publishing is intentionally outside this module.",
+      "vs": "vs",
+      "topScorerLine": "Top scorer: {player}",
+      "playerOfMatchLine": "Player of the Match: {player}",
+      "lineupLine": "{count} players called up"
+    },
+    "content": {
+      "goalScorers": "Goal scorers",
+      "noScorers": "No recorded scorers",
+      "topScorer": "Top scorer",
+      "playerOfMatch": "Player of the Match",
+      "lineup": "Match call-up",
+      "players": "players",
+      "goals": "goals",
+      "goal": "goal",
+      "competition": "Competition",
+      "venue": "Venue"
+    },
+    "fallback": {
+      "teamLogo": "{team} logo",
+      "opponentLogo": "{opponent} logo",
+      "playerPhoto": "{player} photo"
+    },
+    "empty": {
+      "noMatches": "No matches in this season",
+      "description": "Create a fixture or record a result before generating social content.",
+      "templateUnavailable": "This template is not ready yet",
+      "templateDescription": "Select a completed match, an upcoming fixture, or a template with the required recorded data."
     }
   },
   "Results": {

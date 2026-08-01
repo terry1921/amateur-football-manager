@@ -42,7 +42,7 @@ export const getTeamAccess = cache(async () => {
   const { data: team, error } = await supabase
     .from("teams")
     .select(
-      "id, name, short_name, city, country, primary_color, secondary_color",
+      "id, name, short_name, city, country, logo_url, primary_color, secondary_color",
     )
     .eq("owner_id", user.id)
     .order("created_at", { ascending: true })

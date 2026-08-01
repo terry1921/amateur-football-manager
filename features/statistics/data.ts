@@ -243,7 +243,7 @@ export async function readPlayerStatisticsDetail(
   return parsePlayerStatisticsDetail(result.data);
 }
 
-async function getStatisticsContext(requestedFilter?: string) {
+export async function getStatisticsContext(requestedFilter?: string) {
   const { supabase, team } = await getTeamAccess();
   if (!team) throw new Error("statistics_team_not_found");
 

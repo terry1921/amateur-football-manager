@@ -8,6 +8,7 @@ import {
   Shield,
   Trophy,
   Medal,
+  Share2,
   UsersRound,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -21,6 +22,7 @@ const navigation = [
   { key: "matches", href: "/matches", icon: Trophy },
   { key: "statistics", href: "/statistics", icon: BarChart3 },
   { key: "leaderboards", href: "/leaderboards", icon: Medal },
+  { key: "social", href: "/social", icon: Share2 },
   { key: "content", href: "/content", icon: FileText },
 ] as const;
 

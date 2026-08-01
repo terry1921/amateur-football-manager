@@ -82,6 +82,7 @@
     "matches": "Partidos",
     "statistics": "Estadísticas",
     "leaderboards": "Rankings",
+    "social": "Redes sociales",
     "content": "Contenido",
     "logout": "Cerrar sesión"
   },
@@ -898,6 +899,93 @@
       "calledUp": "No hay convocatorias en partidos completados para este periodo.",
       "filteredTitle": "Ningún jugador coincide con estos filtros",
       "filtered": "Cambia la búsqueda, posición o estado para ver otro grupo de jugadores."
+    }
+  },
+  "Social": {
+    "eyebrow": "Listo para publicar",
+    "title": "Generador para redes sociales",
+    "description": "Convierte los datos registrados de tus partidos en gráficos y textos con la identidad de tu equipo. Cada dato proviene de tus partidos, eventos, estadísticas y convocatorias existentes.",
+    "filters": {
+      "seasonLabel": "Temporada de redes sociales",
+      "current": "Temporada actual",
+      "all": "Carrera",
+      "match": "Partido",
+      "chooseMatch": "Elegir un partido",
+      "apply": "Cargar partido"
+    },
+    "templates": {
+      "label": "Elegir plantilla",
+      "result": {
+        "title": "Resultado",
+        "description": "Marcador final y goleadores"
+      },
+      "upcoming": {
+        "title": "Próximo partido",
+        "description": "Anuncio del encuentro"
+      },
+      "topScorer": {
+        "title": "Máximo goleador",
+        "description": "Líder actual de estadísticas"
+      },
+      "playerOfMatch": {
+        "title": "Jugador del partido",
+        "description": "Derivado de eventos registrados"
+      },
+      "lineup": {
+        "title": "Convocatoria",
+        "description": "Convocatoria registrada del partido"
+      }
+    },
+    "preview": {
+      "title": "Vista previa",
+      "sizeLabel": "Tamaño de vista previa",
+      "desktop": "Escritorio",
+      "mobile": "Móvil",
+      "cardLabel": "Vista previa de {template}",
+      "export": "Exportar PNG en alta resolución",
+      "exported": "PNG descargado",
+      "exportFailed": "No pudimos crear el PNG. Inténtalo de nuevo."
+    },
+    "captions": {
+      "title": "Texto",
+      "description": "Texto determinista para la plataforma elegida. Puedes copiarlo a tu herramienta de publicación.",
+      "platformLabel": "Plataforma del texto",
+      "platforms": {
+        "facebook": "Facebook",
+        "instagram": "Instagram",
+        "x": "X"
+      },
+      "label": "Texto para {platform}",
+      "copy": "Copiar texto",
+      "copied": "Texto copiado",
+      "noPublishing": "La publicación queda intencionalmente fuera de este módulo.",
+      "vs": "vs",
+      "topScorerLine": "Máximo goleador: {player}",
+      "playerOfMatchLine": "Jugador del partido: {player}",
+      "lineupLine": "{count} jugadores convocados"
+    },
+    "content": {
+      "goalScorers": "Goleadores",
+      "noScorers": "No hay goleadores registrados",
+      "topScorer": "Máximo goleador",
+      "playerOfMatch": "Jugador del partido",
+      "lineup": "Convocatoria del partido",
+      "players": "jugadores",
+      "goals": "goles",
+      "goal": "gol",
+      "competition": "Competición",
+      "venue": "Sede"
+    },
+    "fallback": {
+      "teamLogo": "Escudo de {team}",
+      "opponentLogo": "Escudo de {opponent}",
+      "playerPhoto": "Foto de {player}"
+    },
+    "empty": {
+      "noMatches": "No hay partidos en esta temporada",
+      "description": "Crea un partido o registra un resultado antes de generar contenido social.",
+      "templateUnavailable": "Esta plantilla todavía no está disponible",
+      "templateDescription": "Elige un partido completado, un próximo encuentro o una plantilla con los datos registrados necesarios."
     }
   },
   "Results": {
