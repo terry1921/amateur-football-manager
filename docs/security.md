@@ -46,11 +46,10 @@ operation-specific policies restricted to the `authenticated` database role:
 
 Match deletion has an additional lifecycle boundary: only scheduled/cancelled
 fixtures without call-ups or match events are visible to the delete policy.
-`public.can_delete_owned_match(uuid, uuid)` is a narrowly scoped
-`security definer` predicate used to avoid recursive match/call-up RLS
-evaluation. It checks `auth.uid()` ownership internally and returns only a
-boolean, so calling it with a foreign UUID cannot reveal foreign fixture data.
-Anonymous execution is revoked.
+`public.can_delete_owned_match(uuid, uuid)` is a narrowly scoped,
+read-only `security invoker` predicate. It checks the caller's RLS-visible
+ownership graph and returns only a boolean, so calling it with a foreign UUID
+cannot reveal foreign fixture data. Anonymous execution is revoked.
 
 Call-up writes have a separate lifecycle boundary: authenticated clients may
 mutate call-ups only while the referenced match is scheduled. The
@@ -86,8 +85,10 @@ makes `players.team_id` immutable. This preserves attribution for historical
 call-ups, goals, cards, and other match events even if a direct Data API request
 tries to bypass the application UI.
 
-Anonymous table privileges are explicitly revoked. Authenticated clients and
-the service role receive the table privileges required by the Data API.
+Anonymous table privileges are explicitly revoked. Authenticated clients
+receive only the CRUD privileges required by the Data API; `TRUNCATE`,
+`TRIGGER`, and `REFERENCES` are explicitly revoked. The service role receives
+the table privileges required by trusted server operations.
 The service role has PostgreSQL's RLS-bypass capability and has no dedicated
 policy; it must remain restricted to trusted server environments.
 

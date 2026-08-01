@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(60);
+select plan(61);
 
 select results_eq(
   $$
@@ -108,6 +108,21 @@ select ok(
     )
   ),
   'authenticated users have the Data API privileges required for CRUD'
+);
+
+select ok(
+  not exists (
+    select 1
+    from (values
+      ('teams'), ('seasons'), ('players'), ('matches'), ('callups'), ('match_events')
+    ) as application_tables(table_name)
+    where has_table_privilege(
+      'authenticated',
+      format('public.%I', table_name),
+      'TRUNCATE, TRIGGER, REFERENCES'
+    )
+  ),
+  'authenticated users do not retain non-API table privileges'
 );
 
 select ok(

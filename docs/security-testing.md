@@ -151,9 +151,9 @@ message text is intentionally not used.
 `public.set_updated_at()` is an invoker-context trigger function with a fixed
 empty search path, and execution is revoked from public API roles.
 `public.can_delete_owned_match(uuid, uuid)` is a stable, read-only
-`SECURITY DEFINER` predicate used by the match delete policy to avoid recursive
-RLS evaluation. It checks `auth.uid()` ownership internally, returns only a
-boolean, and is unavailable to anonymous clients.
+`SECURITY INVOKER` predicate used by the match delete policy. It evaluates only
+RLS-visible ownership rows, returns only a boolean, and is unavailable to
+anonymous clients.
 
 `public.replace_match_callup(uuid, uuid[])` is a `SECURITY INVOKER` mutation
 with a fixed empty search path. It locks the owned match, validates the complete
@@ -184,6 +184,10 @@ No Storage bucket or `storage.objects` authorization policy has been created
 for the MVP yet. Storage isolation tests are deferred until the task that
 defines those buckets and policies; database RLS does not protect Storage
 objects.
+
+Authenticated table grants are also checked for least privilege. They include
+only the Data API CRUD operations required by each table and explicitly exclude
+`TRUNCATE`, `TRIGGER`, and `REFERENCES`.
 
 ## CI behavior
 

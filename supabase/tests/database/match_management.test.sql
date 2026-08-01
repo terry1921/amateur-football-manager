@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(18);
+select plan(19);
 
 select function_privs_are(
   'public',
@@ -11,6 +11,16 @@ select function_privs_are(
   'anon',
   array[]::text[],
   'anonymous users cannot call the match deletion predicate'
+);
+
+select is(
+  (
+    select prosecdef
+    from pg_proc
+    where oid = 'public.can_delete_owned_match(uuid, uuid)'::regprocedure
+  ),
+  false,
+  'the match deletion predicate runs as SECURITY INVOKER'
 );
 
 insert into auth.users (id, email)
@@ -189,15 +199,18 @@ select lives_ok(
   'scheduled fixtures can transition to cancelled'
 );
 
-select lives_ok(
+select throws_ok(
   $$update public.matches set status = 'completed', team_score = 3, opponent_score = 2 where id = '42000000-0000-0000-0000-000000000006'$$,
-  'scheduled fixtures can transition to completed with both scores'
+  '55000',
+  null,
+  'direct completion cannot bypass the result transaction'
 );
 
-select results_eq(
-  $$select status, team_score, opponent_score from public.matches where id = '42000000-0000-0000-0000-000000000006'$$,
-  $$values ('completed', 3, 2)$$,
-  'completed result stores the lifecycle state and scores together'
+select throws_ok(
+  $$insert into public.matches (team_id, season_id, opponent_name, kickoff_at, home_away, status, team_score, opponent_score) values ('12000000-0000-0000-0000-000000000001', '22000000-0000-0000-0000-000000000001', 'Direct Completed Insert', now(), 'home', 'completed', 2, 1)$$,
+  '55000',
+  null,
+  'completed matches can only be created by the result transaction'
 );
 
 select throws_ok(
