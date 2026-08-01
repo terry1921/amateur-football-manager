@@ -6,6 +6,7 @@ import {
   type PlayerStatus,
 } from "@/features/players/model";
 import type { Json } from "@/types/database";
+import { mapBackendError } from "@/lib/errors/map-backend-error";
 import {
   getDisciplineTable,
   getPlayerStatistics as findPlayerStatistics,
@@ -215,7 +216,7 @@ export async function readStatisticsSnapshot(
     target_team_id: teamId,
     target_season_id: seasonId,
   });
-  if (result.error) throw result.error;
+  if (result.error) throw mapBackendError(result.error, "statistics");
   return parseStatisticsSnapshot(result.data);
 }
 
@@ -239,7 +240,7 @@ export async function readPlayerStatisticsDetail(
     target_player_id: playerId,
     target_season_id: seasonId,
   });
-  if (result.error) throw result.error;
+  if (result.error) throw mapBackendError(result.error, "statistics");
   return parsePlayerStatisticsDetail(result.data);
 }
 
@@ -254,7 +255,8 @@ export async function getStatisticsContext(requestedFilter?: string) {
     .order("start_date", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false })
     .limit(STATISTICS_SEASON_LIMIT);
-  if (seasonsResult.error) throw seasonsResult.error;
+  if (seasonsResult.error)
+    throw mapBackendError(seasonsResult.error, "statistics");
 
   const seasons = seasonsResult.data as StatisticsSeason[];
   const activeSeason =

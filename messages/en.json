@@ -300,6 +300,9 @@
       },
       "statistics": {
         "title": "Season statistics",
+        "errorTitle": "Unable to load statistics",
+        "errorDescription": "The dashboard could not calculate this module. Your match records were not changed.",
+        "errorAction": "Open statistics and retry",
         "matchesPlayed": "Matches played",
         "goalsScored": "Goals scored",
         "topScorer": "Top scorer",
@@ -535,6 +538,7 @@
     "errors": {
       "sessionExpired": "Your session has expired. Sign in and try again.",
       "notFound": "We could not find this player for your team.",
+      "duplicateShirtNumber": "That shirt number is already assigned to another player on your team.",
       "unexpected": "We could not save this player. Check your connection and try again."
     },
     "feedback": {
@@ -1087,7 +1091,8 @@
       "sessionExpired": "Your session has expired. Sign in and try again.",
       "notFound": "This match is unavailable or no longer exists.",
       "cancelled": "Cancelled matches cannot receive results.",
-      "completed": "This match is already completed and read-only.",
+      "completed": "This match was completed in another session and is now read-only. Refresh to view the latest result.",
+      "refresh": "Refresh match",
       "goalMismatch": "The final score and managed-team goal events do not match.",
       "notInCallup": "Only players selected in the match call-up can receive events.",
       "invalidEvents": "We couldn’t validate these match events. Check the details and try again.",
@@ -1172,6 +1177,29 @@
     "title": "Something went wrong",
     "description": "We couldn’t load this part of Matchday. Try again without losing your setup data.",
     "action": "Try again"
+  },
+  "Offline": {
+    "message": "You’re offline. Cached screens remain available, but changes cannot be saved."
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "description": "This page is unavailable or no longer exists.",
+    "dashboard": "Go to dashboard",
+    "player": {
+      "title": "Player not found",
+      "description": "This player is unavailable or no longer belongs to this team.",
+      "back": "Back to players"
+    },
+    "match": {
+      "title": "Match not found",
+      "description": "This match is unavailable or no longer exists.",
+      "back": "Back to matches"
+    },
+    "season": {
+      "title": "Season not found",
+      "description": "This season is unavailable or no longer exists.",
+      "back": "Back to seasons"
+    }
   },
   "ProtectedPages": {
     "dashboard": {

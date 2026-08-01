@@ -236,6 +236,7 @@ export type DashboardSuccessData = {
   recentResult: DashboardMatch | null;
   recentResultTimeline?: TimelineSummary | null;
   dashboardStatistics?: StatisticsSnapshot | null;
+  dashboardStatisticsStatus: "success" | "error";
   recentFixture: DashboardMatch | null;
 };
 

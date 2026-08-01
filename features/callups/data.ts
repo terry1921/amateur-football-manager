@@ -1,5 +1,6 @@
 import { getTeamAccess } from "@/features/teams/access";
 import { isMatchId } from "@/features/matches/model";
+import { mapBackendError } from "@/lib/errors/map-backend-error";
 import type { PlayerPosition, PlayerStatus } from "@/features/players/model";
 import type { Tables } from "@/types/database";
 import {
@@ -69,7 +70,7 @@ export async function getCallupData(matchId: string) {
     .eq("team_id", team.id)
     .eq("id", matchId)
     .maybeSingle();
-  if (matchResult.error) throw matchResult.error;
+  if (matchResult.error) throw mapBackendError(matchResult.error, "match");
   if (!matchResult.data) return null;
 
   const [seasonResult, rosterResult, callupResult] = await Promise.all([
@@ -92,9 +93,9 @@ export async function getCallupData(matchId: string) {
       .eq("match_id", matchId),
   ]);
 
-  if (seasonResult.error) throw seasonResult.error;
-  if (rosterResult.error) throw rosterResult.error;
-  if (callupResult.error) throw callupResult.error;
+  if (seasonResult.error) throw mapBackendError(seasonResult.error, "season");
+  if (rosterResult.error) throw mapBackendError(rosterResult.error, "player");
+  if (callupResult.error) throw mapBackendError(callupResult.error, "callup");
   if (!seasonResult.data) return null;
 
   const match = {

@@ -2,6 +2,7 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 import type { AppLocale } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/server";
+import { mapBackendError } from "@/lib/errors/map-backend-error";
 
 export type AccessArea = "auth" | "onboarding" | "application";
 
@@ -49,7 +50,7 @@ export const getTeamAccess = cache(async () => {
     .limit(1)
     .maybeSingle();
 
-  if (error) throw error;
+  if (error) throw mapBackendError(error, "team");
 
   return { supabase, user, team };
 });

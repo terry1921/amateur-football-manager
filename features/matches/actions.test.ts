@@ -99,4 +99,29 @@ describe("match mutation boundaries", () => {
     ]);
     expect(inserts[0]).not.toHaveProperty("owner_id");
   });
+
+  it("accepts a creation key for safe uncertain retries", async () => {
+    const inserts: Array<Record<string, unknown>> = [];
+    const client = {
+      from: () => ({
+        insert: async (row: Record<string, unknown>) => {
+          inserts.push(row);
+          return { error: null };
+        },
+      }),
+    } as unknown as MatchMutationClient;
+
+    await insertScheduledMatch(
+      client,
+      "trusted-team-a",
+      input,
+      "2026-08-11T01:30:00.000Z",
+      "10000000-0000-4000-8000-000000000099",
+    );
+
+    expect(inserts[0]).toHaveProperty(
+      "creation_key",
+      "10000000-0000-4000-8000-000000000099",
+    );
+  });
 });

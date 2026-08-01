@@ -84,6 +84,7 @@ function dashboardData(
     pastUnresolvedMatch: null,
     recentResult: null,
     recentFixture: null,
+    dashboardStatisticsStatus: "success",
     ...overrides,
   };
 }
@@ -332,5 +333,17 @@ describe("DashboardExperience", () => {
     expect(
       screen.getByRole("link", { name: "Refresh dashboard" }),
     ).toHaveAttribute("href", "/en/dashboard");
+  });
+
+  it("keeps the dashboard usable when only statistics fail", () => {
+    renderDashboard(
+      dashboardData(newTeamFacts, { dashboardStatisticsStatus: "error" }),
+    );
+
+    expect(screen.getByText("Unable to load statistics")).toBeInTheDocument();
+    expect(
+      screen.queryByText("No completed matches yet"),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("No players yet")).toBeInTheDocument();
   });
 });

@@ -2,6 +2,7 @@
 
 import { UserMinus, UserPlus } from "lucide-react";
 import { useActionState } from "react";
+import { useOnlineStatus } from "@/components/feedback/use-online-status";
 import {
   initialPlayerLifecycleState,
   type PlayerLifecycleActionState,
@@ -24,12 +25,14 @@ export function PlayerLifecycleButton({
     action,
     initialPlayerLifecycleState,
   );
+  const online = useOnlineStatus();
   const Icon = lifecycle === "reactivate" ? UserPlus : UserMinus;
   return (
     <form action={formAction} className="contents">
       <button
         type="submit"
-        disabled={pending}
+        disabled={pending || !online}
+        aria-busy={pending}
         className={`inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch disabled:cursor-wait disabled:opacity-60 ${lifecycle === "reactivate" ? "bg-pitch text-white hover:bg-[#008f2b]" : "text-pitch hover:bg-pitch/8"}`}
       >
         <Icon aria-hidden="true" className="size-4" />

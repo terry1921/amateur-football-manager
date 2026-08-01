@@ -18,6 +18,7 @@ import {
 } from "./model";
 import { getTeamSetupProgress } from "./progress";
 import { parseStatisticsSnapshot } from "@/features/statistics/data";
+import { logServerError } from "@/lib/errors/log-error";
 
 const DASHBOARD_UPCOMING_LIMIT = 5;
 const DASHBOARD_HISTORY_LIMIT = 1;
@@ -204,7 +205,12 @@ export async function getDashboardData(
       statisticsResult,
     ];
 
-    if (results.some((result) => result.error)) {
+    const requiredFailure = results.slice(0, -1).find((result) => result.error);
+    if (requiredFailure?.error) {
+      logServerError(requiredFailure.error, {
+        operation: "dashboard.load",
+        teamId: team.id,
+      });
       return { status: "error", reason: "dashboard-query" };
     }
 
@@ -237,9 +243,17 @@ export async function getDashboardData(
     ]);
 
     if (upcomingCallups.error) {
+      logServerError(upcomingCallups.error, {
+        operation: "dashboard.callups",
+        teamId: team.id,
+      });
       return { status: "error", reason: "dashboard-query" };
     }
     if (recentEventsResult.error) {
+      logServerError(recentEventsResult.error, {
+        operation: "dashboard.events",
+        teamId: team.id,
+      });
       return { status: "error", reason: "dashboard-query" };
     }
 
@@ -265,6 +279,10 @@ export async function getDashboardData(
           .in("id", recentPlayerIds)
       : { data: [], error: null };
     if (recentPlayersResult.error) {
+      logServerError(recentPlayersResult.error, {
+        operation: "dashboard.event-players",
+        teamId: team.id,
+      });
       return { status: "error", reason: "dashboard-query" };
     }
     const recentPlayersById = new Map(
@@ -379,9 +397,11 @@ export async function getDashboardData(
       dashboardStatistics: statisticsResult.data
         ? parseStatisticsSnapshot(statisticsResult.data)
         : null,
+      dashboardStatisticsStatus: statisticsResult.error ? "error" : "success",
       recentFixture,
     };
-  } catch {
+  } catch (error) {
+    logServerError(error, { operation: "dashboard.load", teamId: team.id });
     return { status: "error", reason: "dashboard-query" };
   }
 }

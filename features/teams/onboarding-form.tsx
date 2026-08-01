@@ -3,6 +3,8 @@
 import { useActionState, useId } from "react";
 import { useFormStatus } from "react-dom";
 import { useTranslations } from "next-intl";
+import { FormErrorSummary } from "@/components/feedback/form-error-summary";
+import { useOnlineStatus } from "@/components/feedback/use-online-status";
 import type { CreateTeamActionState, TeamField } from "./state";
 import { initialCreateTeamState } from "./state";
 
@@ -62,12 +64,14 @@ function Field({
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  const online = useOnlineStatus();
   const t = useTranslations("Onboarding");
 
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={pending || !online}
+      aria-busy={pending}
       className="flex min-h-14 w-full items-center justify-center rounded-xl bg-pitch px-6 text-base font-bold text-white shadow-[0_12px_28px_rgba(0,163,49,0.18)] transition hover:bg-[#008f2b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch disabled:cursor-wait disabled:opacity-65"
     >
       {pending ? t("creating") : t("submit")}
@@ -82,14 +86,7 @@ export function OnboardingForm({ action }: { action: CreateTeamAction }) {
 
   return (
     <form action={formAction} className="space-y-5" noValidate>
-      {state.message ? (
-        <div
-          role="alert"
-          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-800"
-        >
-          {state.message}
-        </div>
-      ) : null}
+      <FormErrorSummary message={state.message} />
 
       <Field
         id={`${formId}-name`}

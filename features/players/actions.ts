@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import type { z } from "zod";
 import { getTeamAccess } from "@/features/teams/access";
+import { mapBackendError } from "@/lib/errors/map-backend-error";
 import type { AppLocale } from "@/i18n/routing";
 import type { PlayerStatus } from "./model";
 import { playerInputFromFormData, playerSchema } from "./schemas";
@@ -45,9 +46,27 @@ async function validationState(
 
 async function unexpectedFormError(
   locale: AppLocale,
+  error?: unknown,
 ): Promise<PlayerFormActionState> {
   const t = await getTranslations({ locale, namespace: "Players.errors" });
-  return { status: "error", message: t("unexpected") };
+  const mapped = error
+    ? mapBackendError(error, "player")
+    : { code: "UNEXPECTED_ERROR" as const, retryable: true };
+  if (mapped.code === "DUPLICATE_SHIRT_NUMBER") {
+    return {
+      status: "error",
+      message: t("duplicateShirtNumber"),
+      errorCode: mapped.code,
+      fieldErrors: { shirtNumber: t("duplicateShirtNumber") },
+    };
+  }
+  return {
+    status: "error",
+    message:
+      mapped.code === "PLAYER_NOT_FOUND" ? t("notFound") : t("unexpected"),
+    errorCode: mapped.code,
+    retryable: mapped.retryable,
+  };
 }
 
 function toRow(data: z.infer<typeof playerSchema>) {
@@ -75,7 +94,7 @@ export async function createPlayerAction(
     team_id: context.team.id,
     ...toRow(parsed.data),
   });
-  if (error) return unexpectedFormError(locale);
+  if (error) return unexpectedFormError(locale, error);
   refreshPlayerViews(locale);
   redirect(`/${locale}/players?notice=created`);
 }
@@ -99,8 +118,13 @@ export async function updatePlayerAction(
     .select("id")
     .maybeSingle();
   const t = await getTranslations({ locale, namespace: "Players.errors" });
-  if (error) return { status: "error", message: t("unexpected") };
-  if (!data) return { status: "error", message: t("notFound") };
+  if (error) return unexpectedFormError(locale, error);
+  if (!data)
+    return {
+      status: "error",
+      message: t("notFound"),
+      errorCode: "PLAYER_NOT_FOUND",
+    };
   refreshPlayerViews(locale);
   redirect(`/${locale}/players?notice=updated`);
 }
@@ -123,8 +147,22 @@ export async function changePlayerStatusAction(
     .select("id")
     .maybeSingle();
   const t = await getTranslations({ locale, namespace: "Players.errors" });
-  if (error) return { status: "error", message: t("unexpected") };
-  if (!data) return { status: "error", message: t("notFound") };
+  if (error) {
+    const mapped = mapBackendError(error, "player");
+    return {
+      status: "error",
+      message:
+        mapped.code === "PLAYER_NOT_FOUND" ? t("notFound") : t("unexpected"),
+      errorCode: mapped.code,
+      retryable: mapped.retryable,
+    };
+  }
+  if (!data)
+    return {
+      status: "error",
+      message: t("notFound"),
+      errorCode: "PLAYER_NOT_FOUND",
+    };
   refreshPlayerViews(locale);
   redirect(
     `/${locale}/players?notice=${status === "inactive" ? "deactivated" : "reactivated"}`,

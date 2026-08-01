@@ -26,7 +26,7 @@ type TeamInsertClient = {
       primary_color: string | null;
       secondary_color: string | null;
       slug: string;
-    }) => PromiseLike<{ error: { code?: string } | null }>;
+    }) => PromiseLike<{ error: { code?: string; message?: string } | null }>;
   };
 };
 
@@ -50,7 +50,12 @@ export async function insertTeamWithUniqueSlug(
     });
 
     if (!error) return;
-    if (error.code !== "23505") throw error;
+    if (
+      error.code !== "23505" ||
+      error.message?.includes("teams_owner_unique_idx")
+    ) {
+      throw error;
+    }
   }
 
   throw new Error("slug_attempts_exhausted");
@@ -104,7 +109,14 @@ export async function createTeamAction(
 
   try {
     await insertTeamWithUniqueSlug(supabase, user.id, result.data);
-  } catch {
+  } catch (error) {
+    const databaseError = error as { code?: string; message?: string };
+    if (
+      databaseError.code === "23505" &&
+      databaseError.message?.includes("teams_owner_unique_idx")
+    ) {
+      redirect(`/${locale}/dashboard`);
+    }
     return { status: "error", message: t("unexpected") };
   }
 

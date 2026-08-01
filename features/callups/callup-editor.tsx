@@ -12,6 +12,8 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 import { useActionState, useMemo, useState } from "react";
 import { MatchDateTime } from "@/features/matches/match-date-time";
+import { FormErrorSummary } from "@/components/feedback/form-error-summary";
+import { useOnlineStatus } from "@/components/feedback/use-online-status";
 import {
   getPlayerDisplayName,
   playerPositions,
@@ -66,6 +68,7 @@ export function CallupEditor({
   const locale = useLocale() as AppLocale;
   const t = useTranslations("Callups");
   const editable = match.status === "scheduled";
+  const online = useOnlineStatus();
   const [selectedIds, setSelectedIds] = useState(
     () =>
       new Set(players.filter(({ selected }) => selected).map(({ id }) => id)),
@@ -430,11 +433,9 @@ export function CallupEditor({
               </ul>
             )}
 
-            {actionState.message ? (
-              <p role="alert" className="mx-5 mt-4 text-sm text-red-700">
-                {actionState.message}
-              </p>
-            ) : null}
+            <div className="mx-5 mt-4">
+              <FormErrorSummary message={actionState.message} />
+            </div>
             {editable ? (
               <div className="mobile-action-bar flex flex-col gap-3 border-t border-line bg-[#f8faf9] p-5 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
                 <p className="text-xs leading-5 text-muted">
@@ -442,7 +443,7 @@ export function CallupEditor({
                 </p>
                 <button
                   type="submit"
-                  disabled={pending}
+                  disabled={pending || !online}
                   aria-busy={pending}
                   className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-pitch px-5 text-sm font-bold text-white disabled:cursor-wait disabled:opacity-60"
                 >

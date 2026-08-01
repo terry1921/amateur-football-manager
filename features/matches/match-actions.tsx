@@ -3,6 +3,7 @@
 import { Ban, Trash2, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useActionState, useRef } from "react";
+import { useOnlineStatus } from "@/components/feedback/use-online-status";
 import type { AppLocale } from "@/i18n/routing";
 import { cancelMatchAction, deleteMatchAction } from "./actions";
 import {
@@ -33,6 +34,7 @@ function ConfirmAction({
     action,
     initialMatchLifecycleState,
   );
+  const online = useOnlineStatus();
   const dialog = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLButtonElement>(null);
   const Icon = kind === "cancel" ? Ban : Trash2;
@@ -102,14 +104,14 @@ function ConfirmAction({
             <button
               type="button"
               onClick={close}
-              disabled={pending}
+              disabled={pending || !online}
               className="min-h-11 rounded-lg border border-[#b8c5d2] px-4 text-sm font-bold"
             >
               {t("close")}
             </button>
             <button
               type="submit"
-              disabled={pending}
+              disabled={pending || !online}
               aria-busy={pending}
               className={`min-h-11 rounded-lg px-4 text-sm font-bold text-white disabled:cursor-wait disabled:opacity-60 ${
                 kind === "delete" ? "bg-red-700" : "bg-amber-700"

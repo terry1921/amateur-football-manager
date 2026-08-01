@@ -4,6 +4,7 @@ import {
   type CurrentSeasonClient,
 } from "./current-season";
 import { canEditSeason, sortSeasons, type Season } from "./model";
+import { mapBackendError } from "@/lib/errors/map-backend-error";
 
 export type SeasonWithUsage = Season & {
   matchCount: number;
@@ -37,8 +38,8 @@ export async function getSeasonsData() {
     }),
   ]);
 
-  if (seasonsResult.error) throw seasonsResult.error;
-  if (matchesResult.error) throw matchesResult.error;
+  if (seasonsResult.error) throw mapBackendError(seasonsResult.error, "season");
+  if (matchesResult.error) throw mapBackendError(matchesResult.error, "season");
 
   const usage = new Map<string, number>();
   for (const match of matchesResult.data) {
@@ -75,8 +76,8 @@ export async function getSeasonDetails(seasonId: string) {
       .eq("season_id", seasonId),
   ]);
 
-  if (seasonResult.error) throw seasonResult.error;
-  if (matchesResult.error) throw matchesResult.error;
+  if (seasonResult.error) throw mapBackendError(seasonResult.error, "season");
+  if (matchesResult.error) throw mapBackendError(matchesResult.error, "season");
   if (!seasonResult.data) return null;
 
   const season = seasonResult.data as Season;

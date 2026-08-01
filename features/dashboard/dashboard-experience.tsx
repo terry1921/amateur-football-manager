@@ -553,7 +553,23 @@ function StatisticsModule({ data }: { data: DashboardSuccessData }) {
 
   return (
     <DashboardModule title={t("modules.statistics.title")} icon={BarChart3}>
-      {!statistics?.has_completed_matches ? (
+      {data.dashboardStatisticsStatus === "error" ? (
+        <div role="alert" className="p-5 sm:p-6">
+          <p className="text-sm font-black text-ink">
+            {t("modules.statistics.errorTitle")}
+          </p>
+          <p className="mt-2 text-sm leading-6 text-muted">
+            {t("modules.statistics.errorDescription")}
+          </p>
+          <Link
+            href="/statistics"
+            className="mt-4 inline-flex min-h-10 items-center gap-2 text-sm font-bold text-pitch"
+          >
+            {t("modules.statistics.errorAction")}
+            <ArrowRight aria-hidden="true" className="size-4" />
+          </Link>
+        </div>
+      ) : !statistics?.has_completed_matches ? (
         <DashboardEmptyState
           icon={BarChart3}
           title={t("modules.statistics.noData")}

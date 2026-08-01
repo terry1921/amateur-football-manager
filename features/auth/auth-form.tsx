@@ -4,6 +4,8 @@ import { useActionState, useId } from "react";
 import { useFormStatus } from "react-dom";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { FormErrorSummary } from "@/components/feedback/form-error-summary";
+import { useOnlineStatus } from "@/components/feedback/use-online-status";
 import type { AuthActionState } from "./state";
 import { initialAuthState } from "./state";
 
@@ -19,11 +21,13 @@ type AuthFormProps = {
 
 function SubmitButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
+  const online = useOnlineStatus();
 
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={pending || !online}
+      aria-busy={pending}
       className="mt-2 flex min-h-12 w-full items-center justify-center rounded-xl bg-pitch px-5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(0,163,49,0.18)] transition hover:bg-[#008f2b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch disabled:cursor-wait disabled:opacity-65"
     >
       {pending ? `${label}…` : label}
@@ -82,14 +86,12 @@ export function AuthForm({ action, kind }: AuthFormProps) {
 
   return (
     <form action={formAction} className="space-y-5" noValidate>
-      {state.message ? (
+      {state.status === "error" ? (
+        <FormErrorSummary message={state.message} />
+      ) : state.message ? (
         <div
-          role={state.status === "error" ? "alert" : "status"}
-          className={`rounded-xl border px-4 py-3 text-sm leading-6 ${
-            state.status === "error"
-              ? "border-red-200 bg-red-50 text-red-800"
-              : "border-pitch/25 bg-pitch/8 text-ink"
-          }`}
+          role="status"
+          className="rounded-xl border border-pitch/25 bg-pitch/8 px-4 py-3 text-sm leading-6 text-ink"
         >
           {state.message}
         </div>

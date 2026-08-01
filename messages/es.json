@@ -300,6 +300,9 @@
       },
       "statistics": {
         "title": "Estadísticas de temporada",
+        "errorTitle": "No pudimos cargar las estadísticas",
+        "errorDescription": "El dashboard no pudo calcular este módulo. Tus registros de partidos no cambiaron.",
+        "errorAction": "Abrir estadísticas e intentar de nuevo",
         "matchesPlayed": "Partidos jugados",
         "goalsScored": "Goles anotados",
         "topScorer": "Máximo goleador",
@@ -535,6 +538,7 @@
     "errors": {
       "sessionExpired": "Tu sesión expiró. Inicia sesión e inténtalo de nuevo.",
       "notFound": "No encontramos este jugador en tu equipo.",
+      "duplicateShirtNumber": "Ese dorsal ya está asignado a otro jugador de tu equipo.",
       "unexpected": "No pudimos guardar este jugador. Revisa tu conexión e inténtalo de nuevo."
     },
     "feedback": {
@@ -1087,7 +1091,8 @@
       "sessionExpired": "Tu sesión caducó. Inicia sesión e inténtalo de nuevo.",
       "notFound": "Este partido no está disponible o ya no existe.",
       "cancelled": "Los partidos cancelados no pueden recibir resultados.",
-      "completed": "Este partido ya está completado y es de solo lectura.",
+      "completed": "Este partido se completó en otra sesión y ahora es de solo lectura. Actualiza para ver el resultado más reciente.",
+      "refresh": "Actualizar partido",
       "goalMismatch": "El marcador final y los eventos de gol del equipo no coinciden.",
       "notInCallup": "Solo los jugadores seleccionados en la convocatoria pueden recibir eventos.",
       "invalidEvents": "No pudimos validar estos eventos. Revisa los datos e inténtalo de nuevo.",
@@ -1175,6 +1180,29 @@
     "title": "Algo salió mal",
     "description": "No pudimos cargar esta parte de Matchday. Inténtalo de nuevo sin perder los datos de configuración.",
     "action": "Intentar de nuevo"
+  },
+  "Offline": {
+    "message": "Estás sin conexión. Puedes ver pantallas en caché, pero no se pueden guardar cambios."
+  },
+  "NotFound": {
+    "title": "Página no encontrada",
+    "description": "Esta página no está disponible o ya no existe.",
+    "dashboard": "Ir al dashboard",
+    "player": {
+      "title": "Jugador no encontrado",
+      "description": "Este jugador no está disponible o ya no pertenece a este equipo.",
+      "back": "Volver a jugadores"
+    },
+    "match": {
+      "title": "Partido no encontrado",
+      "description": "Este partido no está disponible o ya no existe.",
+      "back": "Volver a partidos"
+    },
+    "season": {
+      "title": "Temporada no encontrada",
+      "description": "Esta temporada no está disponible o ya no existe.",
+      "back": "Volver a temporadas"
+    }
   },
   "ProtectedPages": {
     "dashboard": {

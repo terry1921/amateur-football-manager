@@ -13,6 +13,8 @@ import { MatchTimeline } from "@/features/timeline/timeline";
 import type { TimelineEvent } from "@/features/timeline/model";
 import { matchEventTypes, type MatchEventType } from "@/features/matches/model";
 import { Link } from "@/i18n/navigation";
+import { FormErrorSummary } from "@/components/feedback/form-error-summary";
+import { useOnlineStatus } from "@/components/feedback/use-online-status";
 import type { ResultDraftEvent } from "./model";
 import { initialResultActionState, type ResultActionState } from "./state";
 
@@ -23,11 +25,12 @@ type ResultFormAction = (
 
 function SubmitButton({ disabled }: { disabled: boolean }) {
   const { pending } = useFormStatus();
+  const online = useOnlineStatus();
   const t = useTranslations("Results.form");
   return (
     <button
       type="submit"
-      disabled={pending || disabled}
+      disabled={pending || disabled || !online}
       aria-busy={pending}
       className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-pitch px-6 text-sm font-bold text-white shadow-[0_10px_24px_rgba(0,163,49,0.16)] transition hover:bg-[#008f2b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch disabled:cursor-not-allowed disabled:opacity-65 sm:w-auto"
     >
@@ -174,14 +177,17 @@ export function ResultForm({
 
   return (
     <form action={formAction} className="space-y-8" noValidate>
-      {state.message ? (
-        <div
-          role="alert"
-          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-800"
-        >
-          {state.message}
-        </div>
-      ) : null}
+      <FormErrorSummary message={state.message}>
+        {state.errorCode === "MATCH_ALREADY_COMPLETED" ? (
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="mt-3 block min-h-10 rounded-lg border border-red-300 px-3 text-sm font-bold text-red-800"
+          >
+            {t("errors.refresh")}
+          </button>
+        ) : null}
+      </FormErrorSummary>
       <section
         aria-labelledby={`${formId}-score-heading`}
         className="space-y-4"

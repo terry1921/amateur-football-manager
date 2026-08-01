@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import type { z } from "zod";
 import { getTeamAccess } from "@/features/teams/access";
 import type { AppLocale } from "@/i18n/routing";
+import { mapBackendError } from "@/lib/errors/map-backend-error";
 import { seasonInputFromFormData, seasonSchema } from "./schemas";
 import type {
   SeasonField,
@@ -42,13 +43,27 @@ async function databaseFormError(
   error: DatabaseError,
 ): Promise<SeasonFormActionState> {
   const t = await getTranslations({ locale, namespace: "Seasons.errors" });
-  if (error.code === "23505") {
-    return { status: "error", fieldErrors: { name: t("duplicate") } };
+  const mapped = mapBackendError(error, "season");
+  if (mapped.code === "RESULT_CONFLICT") {
+    return {
+      status: "error",
+      fieldErrors: { name: t("duplicate") },
+      errorCode: mapped.code,
+    };
   }
-  if (error.code === "55000") {
-    return { status: "error", message: t("historyProtected") };
+  if (mapped.code === "SEASON_ALREADY_ACTIVE") {
+    return {
+      status: "error",
+      message: t("cannotActivate"),
+      errorCode: mapped.code,
+    };
   }
-  return { status: "error", message: t("unexpected") };
+  return {
+    status: "error",
+    message: t("unexpected"),
+    errorCode: mapped.code,
+    retryable: mapped.retryable,
+  };
 }
 
 async function seasonActionContext(locale: AppLocale) {
@@ -57,7 +72,10 @@ async function seasonActionContext(locale: AppLocale) {
   const team = context.team;
   if (user && team) return { ...context, user, team };
   const t = await getTranslations({ locale, namespace: "Seasons.errors" });
-  return { error: t("sessionExpired") } as const;
+  return {
+    error: t("sessionExpired"),
+    errorCode: "AUTH_SESSION_EXPIRED" as const,
+  } as const;
 }
 
 export async function createSeasonAction(
@@ -69,7 +87,12 @@ export async function createSeasonAction(
   if (!parsed.success) return formValidationState(locale, parsed.error);
 
   const context = await seasonActionContext(locale);
-  if ("error" in context) return { status: "error", message: context.error };
+  if ("error" in context)
+    return {
+      status: "error",
+      message: context.error,
+      errorCode: context.errorCode,
+    };
 
   const { error } = await context.supabase.from("seasons").insert({
     team_id: context.team.id,
@@ -94,7 +117,12 @@ export async function updateSeasonAction(
   if (!parsed.success) return formValidationState(locale, parsed.error);
 
   const context = await seasonActionContext(locale);
-  if ("error" in context) return { status: "error", message: context.error };
+  if ("error" in context)
+    return {
+      status: "error",
+      message: context.error,
+      errorCode: context.errorCode,
+    };
 
   const { data: season, error: lookupError } = await context.supabase
     .from("seasons")
@@ -104,10 +132,27 @@ export async function updateSeasonAction(
     .maybeSingle();
   const t = await getTranslations({ locale, namespace: "Seasons.errors" });
 
-  if (lookupError) return { status: "error", message: t("unexpected") };
-  if (!season) return { status: "error", message: t("notFound") };
+  if (lookupError) {
+    const mapped = mapBackendError(lookupError, "season");
+    return {
+      status: "error",
+      message: t("unexpected"),
+      errorCode: mapped.code,
+      retryable: mapped.retryable,
+    };
+  }
+  if (!season)
+    return {
+      status: "error",
+      message: t("notFound"),
+      errorCode: "SEASON_NOT_FOUND",
+    };
   if (season.status === "completed") {
-    return { status: "error", message: t("historyProtected") };
+    return {
+      status: "error",
+      message: t("historyProtected"),
+      errorCode: "MATCH_HAS_HISTORY",
+    };
   }
 
   const { count, error: matchError } = await context.supabase
@@ -116,7 +161,15 @@ export async function updateSeasonAction(
     .eq("team_id", context.team.id)
     .eq("season_id", seasonId);
 
-  if (matchError) return { status: "error", message: t("unexpected") };
+  if (matchError) {
+    const mapped = mapBackendError(matchError, "season");
+    return {
+      status: "error",
+      message: t("unexpected"),
+      errorCode: mapped.code,
+      retryable: mapped.retryable,
+    };
+  }
   if ((count ?? 0) > 0) {
     return { status: "error", message: t("hasMatches") };
   }
@@ -143,7 +196,12 @@ export async function activateSeasonAction(
 ): Promise<SeasonLifecycleActionState> {
   void _previousState;
   const context = await seasonActionContext(locale);
-  if ("error" in context) return { status: "error", message: context.error };
+  if ("error" in context)
+    return {
+      status: "error",
+      message: context.error,
+      errorCode: context.errorCode,
+    };
 
   const { error } = await context.supabase.rpc("activate_season", {
     target_season_id: seasonId,
@@ -151,9 +209,15 @@ export async function activateSeasonAction(
   const t = await getTranslations({ locale, namespace: "Seasons.errors" });
 
   if (error) {
+    const mapped = mapBackendError(error, "season");
     return {
       status: "error",
-      message: error.code === "22023" ? t("cannotActivate") : t("notFound"),
+      message:
+        mapped.code === "SEASON_ALREADY_ACTIVE"
+          ? t("cannotActivate")
+          : t("notFound"),
+      errorCode: mapped.code,
+      retryable: mapped.retryable,
     };
   }
 
@@ -168,7 +232,12 @@ export async function completeSeasonAction(
 ): Promise<SeasonLifecycleActionState> {
   void _previousState;
   const context = await seasonActionContext(locale);
-  if ("error" in context) return { status: "error", message: context.error };
+  if ("error" in context)
+    return {
+      status: "error",
+      message: context.error,
+      errorCode: context.errorCode,
+    };
 
   const { data, error } = await context.supabase
     .from("seasons")
@@ -180,8 +249,21 @@ export async function completeSeasonAction(
     .maybeSingle();
   const t = await getTranslations({ locale, namespace: "Seasons.errors" });
 
-  if (error) return { status: "error", message: t("unexpected") };
-  if (!data) return { status: "error", message: t("notFound") };
+  if (error) {
+    const mapped = mapBackendError(error, "season");
+    return {
+      status: "error",
+      message: t("unexpected"),
+      errorCode: mapped.code,
+      retryable: mapped.retryable,
+    };
+  }
+  if (!data)
+    return {
+      status: "error",
+      message: t("notFound"),
+      errorCode: "SEASON_NOT_FOUND",
+    };
 
   refreshSeasonViews(locale);
   return { status: "success" };

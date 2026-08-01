@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
+import { OfflineBanner } from "@/components/feedback/offline-banner";
 import "../globals.css";
 
 type LocaleLayoutProps = Readonly<{
@@ -64,6 +65,7 @@ export default async function LocaleLayout({
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider>
           <ServiceWorkerRegistration />
+          <OfflineBanner />
           {children}
         </NextIntlClientProvider>
       </body>

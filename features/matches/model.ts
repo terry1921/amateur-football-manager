@@ -41,7 +41,10 @@ export type MatchCallupPlayer = {
   callup_status: string;
 };
 
-export type Match = Omit<Tables<"matches">, "home_away" | "status"> & {
+export type Match = Omit<
+  Tables<"matches">,
+  "home_away" | "status" | "creation_key"
+> & {
   home_away: MatchLocation;
   status: MatchStatus;
   season_name: string;

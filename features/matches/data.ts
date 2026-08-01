@@ -5,6 +5,7 @@ import {
 } from "@/features/seasons/current-season";
 import type { Tables } from "@/types/database";
 import { getPlayerDisplayName } from "@/features/players/model";
+import { mapBackendError } from "@/lib/errors/map-backend-error";
 import {
   isEligibleSeason,
   isMatchId,
@@ -30,7 +31,7 @@ export type MatchSeason = Pick<
 type MatchRow = Tables<"matches">;
 
 export function hydrateMatches(
-  rows: MatchRow[],
+  rows: Array<Omit<MatchRow, "creation_key">>,
   seasons: Array<Pick<MatchSeason, "id" | "name">>,
   dependentMatchIds: Set<string>,
 ) {
@@ -78,8 +79,8 @@ export async function getMatchesData() {
       .order("created_at", { ascending: false }),
   ]);
 
-  if (matchesResult.error) throw matchesResult.error;
-  if (seasonsResult.error) throw seasonsResult.error;
+  if (matchesResult.error) throw mapBackendError(matchesResult.error, "match");
+  if (seasonsResult.error) throw mapBackendError(seasonsResult.error, "season");
 
   const ids = matchesResult.data.map(({ id }) => id);
   let dependentMatchIds = new Set<string>();
@@ -88,8 +89,8 @@ export async function getMatchesData() {
       supabase.from("callups").select("match_id").in("match_id", ids),
       supabase.from("match_events").select("match_id").in("match_id", ids),
     ]);
-    if (callups.error) throw callups.error;
-    if (events.error) throw events.error;
+    if (callups.error) throw mapBackendError(callups.error, "callup");
+    if (events.error) throw mapBackendError(events.error, "result");
     dependentMatchIds = new Set([
       ...callups.data.map(({ match_id }) => match_id),
       ...events.data.map(({ match_id }) => match_id),
@@ -115,7 +116,7 @@ export async function getMatchDetails(matchId: string) {
     .eq("id", matchId)
     .maybeSingle();
 
-  if (matchResult.error) throw matchResult.error;
+  if (matchResult.error) throw mapBackendError(matchResult.error, "match");
   if (!matchResult.data) return null;
 
   const [seasonResult, callupsResult, eventsResult] = await Promise.all([
@@ -139,9 +140,9 @@ export async function getMatchDetails(matchId: string) {
       .order("id", { ascending: true })
       .limit(MATCH_DETAIL_EVENT_LIMIT),
   ]);
-  if (seasonResult.error) throw seasonResult.error;
-  if (callupsResult.error) throw callupsResult.error;
-  if (eventsResult.error) throw eventsResult.error;
+  if (seasonResult.error) throw mapBackendError(seasonResult.error, "season");
+  if (callupsResult.error) throw mapBackendError(callupsResult.error, "callup");
+  if (eventsResult.error) throw mapBackendError(eventsResult.error, "result");
   if (!seasonResult.data) return null;
 
   const callupRows = callupsResult.data as Array<{
@@ -172,7 +173,7 @@ export async function getMatchDetails(matchId: string) {
         .eq("team_id", team.id)
         .in("id", playerIds)
     : { data: [], error: null };
-  if (playersResult.error) throw playersResult.error;
+  if (playersResult.error) throw mapBackendError(playersResult.error, "player");
   const playersById = new Map(
     playersResult.data.map((player) => [player.id, player]),
   );
@@ -243,7 +244,7 @@ export async function getMatchFormData(matchId?: string) {
     }),
     matchId ? getMatchDetails(matchId) : Promise.resolve(null),
   ]);
-  if (seasonsResult.error) throw seasonsResult.error;
+  if (seasonsResult.error) throw mapBackendError(seasonsResult.error, "season");
 
   const seasons = (seasonsResult.data as MatchSeason[]).filter(({ status }) =>
     isEligibleSeason(status),

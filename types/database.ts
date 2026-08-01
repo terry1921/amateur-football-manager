@@ -150,6 +150,7 @@ export type Database = {
       matches: {
         Row: {
           competition: string | null;
+          creation_key: string | null;
           created_at: string;
           home_away: string;
           id: string;
@@ -168,6 +169,7 @@ export type Database = {
         };
         Insert: {
           competition?: string | null;
+          creation_key?: string | null;
           created_at?: string;
           home_away: string;
           id?: string;
@@ -186,6 +188,7 @@ export type Database = {
         };
         Update: {
           competition?: string | null;
+          creation_key?: string | null;
           created_at?: string;
           home_away?: string;
           id?: string;

@@ -7,6 +7,7 @@ import type { AppLocale } from "@/i18n/routing";
 import { routing } from "@/i18n/routing";
 import { getAppUrl, isAppLocale, safeInternalPath } from "@/lib/auth/urls";
 import { createClient } from "@/lib/supabase/server";
+import { mapAuthError } from "@/lib/errors/map-backend-error";
 import {
   forgotPasswordSchema,
   loginSchema,
@@ -80,7 +81,13 @@ export async function loginAction(
 
   if (error) {
     const t = await getTranslations({ locale, namespace: "Auth.errors" });
-    return { status: "error", message: t(authErrorKey(error.code)) };
+    const mapped = mapAuthError(error);
+    return {
+      status: "error",
+      message: t(authErrorKey(error.code)),
+      errorCode: mapped.code,
+      retryable: mapped.retryable,
+    };
   }
 
   redirect(safeInternalPath(nextInput, `/${locale}/dashboard`));
@@ -113,7 +120,13 @@ export async function registerAction(
 
   if (error) {
     const t = await getTranslations({ locale, namespace: "Auth.errors" });
-    return { status: "error", message: t(authErrorKey(error.code)) };
+    const mapped = mapAuthError(error);
+    return {
+      status: "error",
+      message: t(authErrorKey(error.code)),
+      errorCode: mapped.code,
+      retryable: mapped.retryable,
+    };
   }
 
   if (data.session) redirect(`/${locale}/dashboard`);
@@ -135,11 +148,27 @@ export async function forgotPasswordAction(
   if (!result.success) return validationState(locale, result.error);
 
   const supabase = await createClient();
-  await supabase.auth.resetPasswordForEmail(result.data.email, {
-    redirectTo: getAppUrl(
-      `/${locale}/auth/callback?next=${encodeURIComponent(`/${locale}/reset-password`)}`,
-    ),
-  });
+  const { error } = await supabase.auth.resetPasswordForEmail(
+    result.data.email,
+    {
+      redirectTo: getAppUrl(
+        `/${locale}/auth/callback?next=${encodeURIComponent(`/${locale}/reset-password`)}`,
+      ),
+    },
+  );
+
+  if (error) {
+    const mapped = mapAuthError(error);
+    if (mapped.retryable) {
+      const t = await getTranslations({ locale, namespace: "Auth.errors" });
+      return {
+        status: "error",
+        message: t("unexpected"),
+        errorCode: mapped.code,
+        retryable: mapped.retryable,
+      };
+    }
+  }
 
   const t = await getTranslations({
     locale,
@@ -167,14 +196,25 @@ export async function resetPasswordAction(
   } = await supabase.auth.getUser();
   const t = await getTranslations({ locale, namespace: "Auth.errors" });
 
-  if (!user) return { status: "error", message: t("expiredResetLink") };
+  if (!user)
+    return {
+      status: "error",
+      message: t("expiredResetLink"),
+      errorCode: "AUTH_SESSION_EXPIRED",
+    };
 
   const { error } = await supabase.auth.updateUser({
     password: result.data.password,
   });
 
   if (error) {
-    return { status: "error", message: t(authErrorKey(error.code)) };
+    const mapped = mapAuthError(error);
+    return {
+      status: "error",
+      message: t(authErrorKey(error.code)),
+      errorCode: mapped.code,
+      retryable: mapped.retryable,
+    };
   }
 
   await supabase.auth.signOut();

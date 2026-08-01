@@ -6,6 +6,7 @@ import { getTranslations } from "next-intl/server";
 import type { z } from "zod";
 import { getTeamAccess } from "@/features/teams/access";
 import type { AppLocale } from "@/i18n/routing";
+import { mapBackendError } from "@/lib/errors/map-backend-error";
 import type { MatchInput } from "./schemas";
 import { matchInputFromFormData, matchSchema } from "./schemas";
 import type {
@@ -48,7 +49,10 @@ async function matchActionContext(locale: AppLocale) {
     return { ...context, user: context.user, team: context.team };
   }
   const t = await getTranslations({ locale, namespace: "Matches.errors" });
-  return { error: t("sessionExpired") } as const;
+  return {
+    error: t("sessionExpired"),
+    errorCode: "AUTH_SESSION_EXPIRED" as const,
+  } as const;
 }
 
 async function validationState(
@@ -68,9 +72,19 @@ async function validationState(
 
 async function unexpectedFormError(
   locale: AppLocale,
+  error?: unknown,
 ): Promise<MatchFormActionState> {
   const t = await getTranslations({ locale, namespace: "Matches.errors" });
-  return { status: "error", message: t("unexpected") };
+  const mapped = error
+    ? mapBackendError(error, "match")
+    : { code: "UNEXPECTED_ERROR" as const, retryable: true };
+  const key = mapped.code === "MATCH_NOT_FOUND" ? "notFound" : "unexpected";
+  return {
+    status: "error",
+    message: t(key),
+    errorCode: mapped.code,
+    retryable: mapped.retryable,
+  };
 }
 
 export async function verifyOwnedEligibleSeason(
@@ -94,8 +108,9 @@ export async function insertScheduledMatch(
   teamId: string,
   input: MatchInput,
   kickoffAt: string,
+  creationKey?: string,
 ) {
-  const result = await client.from("matches").insert({
+  const row: Record<string, unknown> = {
     team_id: teamId,
     season_id: input.seasonId,
     opponent_name: input.opponentName,
@@ -106,7 +121,9 @@ export async function insertScheduledMatch(
     status: "scheduled",
     team_score: null,
     opponent_score: null,
-  });
+  };
+  if (creationKey) row.creation_key = creationKey;
+  const result = await client.from("matches").insert(row);
   if (result.error) throw result.error;
 }
 
@@ -180,14 +197,24 @@ export async function createMatchAction(
         fieldErrors: { seasonId: t("ineligibleSeason") },
       };
     }
+    const creationKey = formData.get("creationKey")?.toString() ?? "";
     await insertScheduledMatch(
       client,
       context.team.id,
       parsed.input,
       parsed.kickoffAt,
+      /^[0-9a-f-]{36}$/i.test(creationKey) ? creationKey : undefined,
     );
-  } catch {
-    return unexpectedFormError(locale);
+  } catch (error) {
+    const mapped = mapBackendError(error, "match");
+    if (mapped.code === "MATCH_DUPLICATE_SUBMISSION") {
+      // The first request may have committed while its response was lost.
+      // The unique key makes this retry safe, so do not ask the user to submit
+      // again or create another fixture.
+      refreshMatchViews(locale);
+      redirect(`/${locale}/matches?notice=created`);
+    }
+    return unexpectedFormError(locale, error);
   }
 
   refreshMatchViews(locale);
@@ -229,10 +256,19 @@ export async function updateMatchAction(
       .eq("team_id", context.team.id)
       .eq("id", matchId)
       .maybeSingle();
-    if (lookup.error) return { status: "error", message: t("unexpected") };
-    if (!lookup.data) return { status: "error", message: t("notFound") };
+    if (lookup.error) return unexpectedFormError(locale, lookup.error);
+    if (!lookup.data)
+      return {
+        status: "error",
+        message: t("notFound"),
+        errorCode: "MATCH_NOT_FOUND",
+      };
     if (lookup.data.status !== "scheduled") {
-      return { status: "error", message: t("historyProtected") };
+      return {
+        status: "error",
+        message: t("historyProtected"),
+        errorCode: "MATCH_HAS_HISTORY",
+      };
     }
 
     const update = await context.supabase
@@ -243,10 +279,15 @@ export async function updateMatchAction(
       .eq("status", "scheduled")
       .select("id")
       .maybeSingle();
-    if (update.error) return { status: "error", message: t("unexpected") };
-    if (!update.data) return { status: "error", message: t("notFound") };
-  } catch {
-    return { status: "error", message: t("unexpected") };
+    if (update.error) return unexpectedFormError(locale, update.error);
+    if (!update.data)
+      return {
+        status: "error",
+        message: t("notFound"),
+        errorCode: "MATCH_NOT_FOUND",
+      };
+  } catch (error) {
+    return unexpectedFormError(locale, error);
   }
 
   refreshMatchViews(locale, matchId);
@@ -275,8 +316,13 @@ export async function cancelMatchAction(
     .select("id")
     .maybeSingle();
 
-  if (result.error) return { status: "error", message: t("unexpected") };
-  if (!result.data) return { status: "error", message: t("notFound") };
+  if (result.error) return unexpectedFormError(locale, result.error);
+  if (!result.data)
+    return {
+      status: "error",
+      message: t("notFound"),
+      errorCode: "MATCH_NOT_FOUND",
+    };
   refreshMatchViews(locale, matchId);
   redirect(`/${locale}/matches/${matchId}?notice=cancelled`);
 }
@@ -308,9 +354,17 @@ export async function deleteMatchAction(
       .eq("match_id", matchId),
   ]);
   if (match.error || callups.error || events.error) {
-    return { status: "error", message: t("unexpected") };
+    return unexpectedFormError(
+      locale,
+      match.error ?? callups.error ?? events.error,
+    );
   }
-  if (!match.data) return { status: "error", message: t("notFound") };
+  if (!match.data)
+    return {
+      status: "error",
+      message: t("notFound"),
+      errorCode: "MATCH_NOT_FOUND",
+    };
   if (
     match.data.status === "completed" ||
     (callups.count ?? 0) > 0 ||
@@ -327,8 +381,13 @@ export async function deleteMatchAction(
     .in("status", ["scheduled", "cancelled"])
     .select("id")
     .maybeSingle();
-  if (result.error) return { status: "error", message: t("deleteRestricted") };
-  if (!result.data) return { status: "error", message: t("notFound") };
+  if (result.error) return unexpectedFormError(locale, result.error);
+  if (!result.data)
+    return {
+      status: "error",
+      message: t("notFound"),
+      errorCode: "MATCH_NOT_FOUND",
+    };
 
   refreshMatchViews(locale, matchId);
   redirect(`/${locale}/matches?notice=deleted`);

@@ -3,6 +3,7 @@ import {
   readStatisticsSnapshot,
 } from "@/features/statistics/data";
 import type { Tables } from "@/types/database";
+import { mapBackendError } from "@/lib/errors/map-backend-error";
 import {
   type SocialBranding,
   type SocialCallup,
@@ -128,8 +129,8 @@ export async function getSocialGeneratorData(
       context.seasonId,
     ),
   ]);
-  if (matchesResult.error) throw matchesResult.error;
-  if (playersResult.error) throw playersResult.error;
+  if (matchesResult.error) throw mapBackendError(matchesResult.error, "match");
+  if (playersResult.error) throw mapBackendError(playersResult.error, "player");
 
   const matches = hydrateMatches(matchesResult.data, context.seasons);
   const players = playersResult.data as SocialPlayer[];
@@ -158,8 +159,9 @@ export async function getSocialGeneratorData(
         .order("id", { ascending: true })
         .limit(SOCIAL_DETAIL_LIMIT),
     ]);
-    if (callupsResult.error) throw callupsResult.error;
-    if (eventsResult.error) throw eventsResult.error;
+    if (callupsResult.error)
+      throw mapBackendError(callupsResult.error, "callup");
+    if (eventsResult.error) throw mapBackendError(eventsResult.error, "result");
     selectedDetail = {
       callups: callupsResult.data as SocialCallup[],
       events: eventsResult.data as SocialEvent[],

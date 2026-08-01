@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
+import { useOnlineStatus } from "@/components/feedback/use-online-status";
 import type { LucideIcon } from "lucide-react";
 import {
   initialSeasonLifecycleState,
@@ -22,11 +23,13 @@ function ActionButton({
   primary?: boolean;
 }) {
   const { pending } = useFormStatus();
+  const online = useOnlineStatus();
 
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={pending || !online}
+      aria-busy={pending}
       className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-3 text-sm font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch disabled:cursor-wait disabled:opacity-60 ${
         primary
           ? "bg-pitch text-white hover:bg-[#008f2b]"

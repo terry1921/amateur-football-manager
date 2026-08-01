@@ -1,4 +1,5 @@
 import { getTeamAccess } from "@/features/teams/access";
+import { mapBackendError } from "@/lib/errors/map-backend-error";
 import { sortPlayers, type Player } from "./model";
 
 async function requirePlayerTeam() {
@@ -18,7 +19,7 @@ export async function getPlayersData() {
     .select(playerColumns)
     .eq("team_id", team.id);
 
-  if (result.error) throw result.error;
+  if (result.error) throw mapBackendError(result.error, "player");
   return { team, players: sortPlayers(result.data as Player[]) };
 }
 
@@ -31,6 +32,6 @@ export async function getPlayerDetails(playerId: string) {
     .eq("id", playerId)
     .maybeSingle();
 
-  if (result.error) throw result.error;
+  if (result.error) throw mapBackendError(result.error, "player");
   return result.data as Player | null;
 }

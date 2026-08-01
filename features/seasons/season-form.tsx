@@ -4,6 +4,8 @@ import { useActionState, useId } from "react";
 import { useFormStatus } from "react-dom";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { FormErrorSummary } from "@/components/feedback/form-error-summary";
+import { useOnlineStatus } from "@/components/feedback/use-online-status";
 import { MAX_SEASON_NAME_LENGTH } from "./schemas";
 import { initialSeasonFormState, type SeasonFormActionState } from "./state";
 
@@ -20,12 +22,14 @@ type SeasonFormValues = {
 
 function SubmitButton({ editing }: { editing: boolean }) {
   const { pending } = useFormStatus();
+  const online = useOnlineStatus();
   const t = useTranslations("Seasons.form");
 
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={pending || !online}
+      aria-busy={pending}
       className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-pitch px-6 text-sm font-bold text-white shadow-[0_10px_24px_rgba(0,163,49,0.16)] transition hover:bg-[#008f2b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch disabled:cursor-wait disabled:opacity-65 sm:w-auto"
     >
       {pending ? t("saving") : editing ? t("save") : t("create")}
@@ -60,14 +64,7 @@ export function SeasonForm({
 
   return (
     <form action={formAction} className="space-y-5" noValidate>
-      {state.message ? (
-        <div
-          role="alert"
-          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-800"
-        >
-          {state.message}
-        </div>
-      ) : null}
+      <FormErrorSummary message={state.message} />
 
       <div>
         <label

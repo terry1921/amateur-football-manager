@@ -7,6 +7,7 @@ import type { z } from "zod";
 import { isMatchId, type MatchLocation } from "@/features/matches/model";
 import { getTeamAccess } from "@/features/teams/access";
 import type { AppLocale } from "@/i18n/routing";
+import { mapBackendError } from "@/lib/errors/map-backend-error";
 import {
   orientResultScore,
   type ResultEventInput,
@@ -124,9 +125,11 @@ async function resultError(
     | "invalidEvents"
     | "migrationMissing"
     | "unexpected",
+  errorCode?: ResultActionState["errorCode"],
+  retryable?: boolean,
 ): Promise<ResultActionState> {
   const t = await getTranslations({ locale, namespace: "Results.errors" });
-  return { status: "error", message: t(key) };
+  return { status: "error", message: t(key), errorCode, retryable };
 }
 
 function refreshResultViews(locale: AppLocale, matchId: string) {
@@ -138,29 +141,15 @@ function refreshResultViews(locale: AppLocale, matchId: string) {
 }
 
 function mutationErrorKey(error: DatabaseError) {
-  if (error.code === "PGRST202" || error.code === "42883") {
+  const mapped = mapBackendError(error, "result");
+  if (mapped.code === "MIGRATION_MISSING") {
     return "migrationMissing" as const;
   }
-  if (error.code === "23503") return "notInCallup" as const;
-  if (error.code === "55000") return "completed" as const;
-  if (error.code === "22023") {
-    if (error.message?.includes("goal_count_mismatch")) {
-      return "goalMismatch" as const;
-    }
-    if (
-      error.message?.includes("event_player") ||
-      error.message?.includes("callup")
-    ) {
-      return "notInCallup" as const;
-    }
-    return "invalidEvents" as const;
-  }
-  if (["22P02", "23502", "23514", "22001"].includes(error.code ?? "")) {
-    return "invalidEvents" as const;
-  }
-  if (error.code === "P0002" || error.code === "42501") {
-    return "notFound" as const;
-  }
+  if (mapped.code === "PLAYER_NOT_IN_CALLUP") return "notInCallup" as const;
+  if (mapped.code === "MATCH_ALREADY_COMPLETED") return "completed" as const;
+  if (mapped.code === "GOAL_COUNT_MISMATCH") return "goalMismatch" as const;
+  if (mapped.code === "MATCH_NOT_FOUND") return "notFound" as const;
+  if (mapped.category === "validation") return "invalidEvents" as const;
   return "unexpected" as const;
 }
 
@@ -190,13 +179,17 @@ export async function completeMatchAction(
     .eq("id", matchId)
     .maybeSingle();
 
-  if (lookup.error) return resultError(locale, "unexpected");
-  if (!lookup.data) return resultError(locale, "notFound");
+  if (lookup.error) {
+    const mapped = mapBackendError(lookup.error, "result");
+    return resultError(locale, "unexpected", mapped.code, mapped.retryable);
+  }
+  if (!lookup.data)
+    return resultError(locale, "notFound", "MATCH_NOT_FOUND", false);
   if (lookup.data.status === "cancelled") {
-    return resultError(locale, "cancelled");
+    return resultError(locale, "cancelled", "MATCH_CANCELLED", false);
   }
   if (lookup.data.status === "completed") {
-    return resultError(locale, "completed");
+    return resultError(locale, "completed", "MATCH_ALREADY_COMPLETED", false);
   }
 
   const score = orientResultScore(
@@ -211,9 +204,16 @@ export async function completeMatchAction(
       score,
       parsed.data.events as ResultSubmission["events"],
     );
-    if (!completion) return resultError(locale, "completed");
+    if (!completion)
+      return resultError(locale, "completed", "MATCH_ALREADY_COMPLETED", false);
   } catch (error) {
-    return resultError(locale, mutationErrorKey(error as DatabaseError));
+    const mapped = mapBackendError(error, "result");
+    return resultError(
+      locale,
+      mutationErrorKey(error as DatabaseError),
+      mapped.code,
+      mapped.retryable,
+    );
   }
 
   refreshResultViews(locale, matchId);

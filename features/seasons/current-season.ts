@@ -1,4 +1,5 @@
 import type { Tables } from "@/types/database";
+import { mapBackendError } from "@/lib/errors/map-backend-error";
 
 export type CurrentSeason = Pick<
   Tables<"seasons">,
@@ -37,6 +38,6 @@ export async function resolveCurrentSeason({
     .limit(1)
     .maybeSingle();
 
-  if (error) throw error;
+  if (error) throw mapBackendError(error, "season");
   return data;
 }

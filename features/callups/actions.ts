@@ -6,6 +6,7 @@ import { getTranslations } from "next-intl/server";
 import { isMatchId } from "@/features/matches/model";
 import { getTeamAccess } from "@/features/teams/access";
 import type { AppLocale } from "@/i18n/routing";
+import { mapBackendError } from "@/lib/errors/map-backend-error";
 import { isValidCallupSelection } from "./model";
 import { callupInputFromFormData, callupSelectionSchema } from "./schemas";
 import type { CallupActionState } from "./state";
@@ -49,9 +50,11 @@ async function errorState(
     | "notFound"
     | "readOnly"
     | "unexpected",
+  errorCode?: CallupActionState["errorCode"],
+  retryable?: boolean,
 ): Promise<CallupActionState> {
   const t = await getTranslations({ locale, namespace: "Callups.errors" });
-  return { status: "error", message: t(key) };
+  return { status: "error", message: t(key), errorCode, retryable };
 }
 
 export async function saveCallupAction(
@@ -119,13 +122,22 @@ export async function saveCallupAction(
       parsed.data.playerIds,
     );
   } catch (error) {
-    const code = (error as DatabaseError).code;
-    if (code === "P0002") return errorState(locale, "notFound");
-    if (code === "55000") return errorState(locale, "readOnly");
-    if (code === "22023" || code === "23503") {
-      return errorState(locale, "invalidSelection");
+    const mapped = mapBackendError(error, "callup");
+    if (mapped.code === "MATCH_NOT_FOUND") {
+      return errorState(locale, "notFound", mapped.code, mapped.retryable);
     }
-    return errorState(locale, "unexpected");
+    if (mapped.code === "CALLUP_READ_ONLY") {
+      return errorState(locale, "readOnly", mapped.code, mapped.retryable);
+    }
+    if (mapped.code === "PLAYER_NOT_IN_CALLUP") {
+      return errorState(
+        locale,
+        "invalidSelection",
+        mapped.code,
+        mapped.retryable,
+      );
+    }
+    return errorState(locale, "unexpected", mapped.code, mapped.retryable);
   }
 
   refreshCallupViews(locale, matchId);

@@ -4,6 +4,8 @@ import { useActionState, useId } from "react";
 import { useFormStatus } from "react-dom";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { FormErrorSummary } from "@/components/feedback/form-error-summary";
+import { useOnlineStatus } from "@/components/feedback/use-online-status";
 import { playerPositions, playerStatuses } from "./model";
 import type { PlayerFormActionState } from "./state";
 import { initialPlayerFormState } from "./state";
@@ -24,11 +26,13 @@ export type PlayerFormValues = {
 
 function SubmitButton({ editing }: { editing: boolean }) {
   const { pending } = useFormStatus();
+  const online = useOnlineStatus();
   const t = useTranslations("Players.form");
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={pending || !online}
+      aria-busy={pending}
       className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-pitch px-6 text-sm font-bold text-white shadow-[0_10px_24px_rgba(0,163,49,0.16)] transition hover:bg-[#008f2b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch disabled:cursor-wait disabled:opacity-65 sm:w-auto"
     >
       {pending ? t("saving") : editing ? t("save") : t("create")}
@@ -60,14 +64,7 @@ export function PlayerForm({
 
   return (
     <form action={formAction} className="space-y-5" noValidate>
-      {state.message ? (
-        <div
-          role="alert"
-          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
-        >
-          {state.message}
-        </div>
-      ) : null}
+      <FormErrorSummary message={state.message} />
       <div className="grid gap-5 sm:grid-cols-2">
         {textFields.map(([name, label, placeholder, required]) => (
           <div
@@ -89,10 +86,18 @@ export function PlayerForm({
               defaultValue={defaultValues?.[name]}
               placeholder={placeholder}
               aria-invalid={Boolean(state.fieldErrors?.[name])}
+              aria-describedby={
+                state.fieldErrors?.[name]
+                  ? `${formId}-${name}-error`
+                  : undefined
+              }
               className={fieldClass}
             />
             {state.fieldErrors?.[name] ? (
-              <p className="mt-1.5 text-sm text-red-700">
+              <p
+                id={`${formId}-${name}-error`}
+                className="mt-1.5 text-sm text-red-700"
+              >
                 {state.fieldErrors[name]}
               </p>
             ) : null}
@@ -114,10 +119,18 @@ export function PlayerForm({
             defaultValue={defaultValues?.shirtNumber}
             placeholder={t("shirtNumberPlaceholder")}
             aria-invalid={Boolean(state.fieldErrors?.shirtNumber)}
+            aria-describedby={
+              state.fieldErrors?.shirtNumber
+                ? `${formId}-shirtNumber-error`
+                : undefined
+            }
             className={fieldClass}
           />
           {state.fieldErrors?.shirtNumber ? (
-            <p className="mt-1.5 text-sm text-red-700">
+            <p
+              id={`${formId}-shirtNumber-error`}
+              className="mt-1.5 text-sm text-red-700"
+            >
               {state.fieldErrors.shirtNumber}
             </p>
           ) : null}
@@ -138,6 +151,11 @@ export function PlayerForm({
             required
             defaultValue={defaultValues?.position ?? ""}
             aria-invalid={Boolean(state.fieldErrors?.position)}
+            aria-describedby={
+              state.fieldErrors?.position
+                ? `${formId}-position-error`
+                : undefined
+            }
             className={fieldClass}
           >
             <option value="" disabled>
@@ -150,7 +168,10 @@ export function PlayerForm({
             ))}
           </select>
           {state.fieldErrors?.position ? (
-            <p className="mt-1.5 text-sm text-red-700">
+            <p
+              id={`${formId}-position-error`}
+              className="mt-1.5 text-sm text-red-700"
+            >
               {state.fieldErrors.position}
             </p>
           ) : null}
@@ -167,6 +188,10 @@ export function PlayerForm({
             name="status"
             required
             defaultValue={defaultValues?.status ?? "active"}
+            aria-invalid={Boolean(state.fieldErrors?.status)}
+            aria-describedby={
+              state.fieldErrors?.status ? `${formId}-status-error` : undefined
+            }
             className={fieldClass}
           >
             {playerStatuses.map((status) => (
@@ -175,6 +200,14 @@ export function PlayerForm({
               </option>
             ))}
           </select>
+          {state.fieldErrors?.status ? (
+            <p
+              id={`${formId}-status-error`}
+              className="mt-1.5 text-sm text-red-700"
+            >
+              {state.fieldErrors.status}
+            </p>
+          ) : null}
           <p className="mt-1.5 text-xs leading-5 text-muted">
             {t("statusHelp")}
           </p>
