@@ -57,6 +57,8 @@ values
   ('13000000-0000-0000-0000-000000000001', '43000000-0000-0000-0000-000000000002', '33000000-0000-0000-0000-000000000001'),
   ('13000000-0000-0000-0000-000000000001', '43000000-0000-0000-0000-000000000003', '33000000-0000-0000-0000-000000000002');
 
+set local role service_role;
+
 update public.matches
 set status = 'completed', team_score = 2, opponent_score = 1
 where id = '43000000-0000-0000-0000-000000000002';
@@ -69,6 +71,7 @@ update public.players
 set status = 'injured'
 where id = '33000000-0000-0000-0000-000000000001';
 
+reset role;
 set constraints all immediate;
 select set_config('request.jwt.claim.sub', '03000000-0000-0000-0000-000000000001', true);
 select set_config('request.jwt.claim.role', 'authenticated', true);

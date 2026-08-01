@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(61);
+select plan(62);
 
 select results_eq(
   $$
@@ -177,7 +177,8 @@ select results_eq(
 insert into auth.users (id, email)
 values
   ('00000000-0000-0000-0000-000000000011', 'rls-owner-a@example.test'),
-  ('00000000-0000-0000-0000-000000000012', 'rls-owner-b@example.test');
+  ('00000000-0000-0000-0000-000000000012', 'rls-owner-b@example.test'),
+  ('00000000-0000-0000-0000-000000000013', 'rls-owner-c@example.test');
 
 insert into public.teams (id, owner_id, name, slug)
 values
@@ -454,33 +455,40 @@ select throws_ok(
   'an owner cannot move an event to another owner''s match'
 );
 
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000013', true);
+
 select lives_ok(
-  $$insert into public.teams (id, owner_id, name, slug) values ('50000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000011', 'Owned Insert Team', 'owned-insert-team')$$,
+  $$insert into public.teams (id, owner_id, name, slug) values ('50000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000013', 'Owned Insert Team', 'owned-insert-team')$$,
   'an owner can insert their own team'
 );
 
 select lives_ok(
-  $$insert into public.seasons (id, team_id, name) values ('60000000-0000-0000-0000-000000000003', '50000000-0000-0000-0000-000000000001', 'Owned Insert Season')$$,
+  $$insert into public.seasons (id, team_id, name) values ('60000000-0000-0000-0000-000000000003', '50000000-0000-0000-0000-000000000003', 'Owned Insert Season')$$,
   'an owner can insert their own season'
 );
 
 select lives_ok(
-  $$insert into public.players (id, team_id, first_name, position) values ('70000000-0000-0000-0000-000000000003', '50000000-0000-0000-0000-000000000001', 'Owned Insert Player', 'DEF')$$,
+  $$insert into public.seasons (id, team_id, name) values ('60000000-0000-0000-0000-000000000004', '50000000-0000-0000-0000-000000000003', 'Owned Update Season')$$,
+  'an owner can insert an additional own season for update coverage'
+);
+
+select lives_ok(
+  $$insert into public.players (id, team_id, first_name, position) values ('70000000-0000-0000-0000-000000000003', '50000000-0000-0000-0000-000000000003', 'Owned Insert Player', 'DEF')$$,
   'an owner can insert their own player'
 );
 
 select lives_ok(
-  $$insert into public.matches (id, team_id, season_id, opponent_name, kickoff_at, home_away) values ('80000000-0000-0000-0000-000000000003', '50000000-0000-0000-0000-000000000001', '60000000-0000-0000-0000-000000000001', 'Owned Insert Match', '2026-08-12 18:00:00+00', 'neutral')$$,
+  $$insert into public.matches (id, team_id, season_id, opponent_name, kickoff_at, home_away) values ('80000000-0000-0000-0000-000000000003', '50000000-0000-0000-0000-000000000003', '60000000-0000-0000-0000-000000000003', 'Owned Insert Match', '2026-08-12 18:00:00+00', 'neutral')$$,
   'an owner can insert their own match'
 );
 
 select lives_ok(
-  $$insert into public.callups (id, team_id, match_id, player_id) values ('90000000-0000-0000-0000-000000000003', '50000000-0000-0000-0000-000000000001', '80000000-0000-0000-0000-000000000003', '70000000-0000-0000-0000-000000000003')$$,
+  $$insert into public.callups (id, team_id, match_id, player_id) values ('90000000-0000-0000-0000-000000000003', '50000000-0000-0000-0000-000000000003', '80000000-0000-0000-0000-000000000003', '70000000-0000-0000-0000-000000000003')$$,
   'an owner can insert a call-up for their own match'
 );
 
 select lives_ok(
-  $$insert into public.match_events (id, team_id, match_id, player_id, type, minute) values ('a0000000-0000-0000-0000-000000000003', '50000000-0000-0000-0000-000000000001', '80000000-0000-0000-0000-000000000003', '70000000-0000-0000-0000-000000000003', 'goal', 30)$$,
+  $$insert into public.match_events (id, team_id, match_id, player_id, type, minute) values ('a0000000-0000-0000-0000-000000000003', '50000000-0000-0000-0000-000000000003', '80000000-0000-0000-0000-000000000003', '70000000-0000-0000-0000-000000000003', 'goal', 30)$$,
   'an owner can insert an event for their own match'
 );
 
@@ -491,8 +499,8 @@ select results_eq(
 );
 
 select results_eq(
-  $$update public.seasons set name = 'Owned Updated Season' where id = '60000000-0000-0000-0000-000000000003' returning id$$,
-  $$values ('60000000-0000-0000-0000-000000000003'::uuid)$$,
+  $$update public.seasons set name = 'Owned Updated Season' where id = '60000000-0000-0000-0000-000000000004' returning id$$,
+  $$values ('60000000-0000-0000-0000-000000000004'::uuid)$$,
   'an owner can update their own season'
 );
 
@@ -546,7 +554,7 @@ select throws_ok(
 );
 
 select throws_ok(
-  $$delete from public.seasons where id = '60000000-0000-0000-0000-000000000003'$$,
+  $$delete from public.seasons where id = '60000000-0000-0000-0000-000000000004'$$,
   '42501',
   null,
   'an owner cannot delete season history'

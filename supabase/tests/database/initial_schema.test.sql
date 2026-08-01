@@ -251,9 +251,9 @@ select throws_ok(
 
 select throws_ok(
   $$insert into public.matches (team_id, season_id, opponent_name, kickoff_at, home_away, status) values ('10000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001', 'Opponent', now(), 'away', 'completed')$$,
-  '23514',
+  '55000',
   null,
-  'completed matches require both scores'
+  'completed matches can only be created by the result transaction'
 );
 
 select throws_ok(

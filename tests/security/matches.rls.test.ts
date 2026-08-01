@@ -260,23 +260,43 @@ describe("matches RLS through Supabase JS", () => {
     });
     expect(insert.error).toBeNull();
 
-    const completion = await context.userAClient
+    const bypass = await context.userAClient
       .from("matches")
       .update({
         status: "completed",
-        team_score: 3,
-        opponent_score: 2,
+        team_score: 1,
+        opponent_score: 0,
       })
       .eq("id", matchId)
       .eq("status", "scheduled")
-      .select("id, status, team_score, opponent_score")
-      .single();
+      .select("id");
+    expect(bypass.data).toBeNull();
+    expect(bypass.error?.code).toBe("55000");
+
+    const callup = await context.userAClient.from("callups").insert({
+      team_id: context.ids.teamA,
+      match_id: matchId,
+      player_id: context.ids.playerA,
+    });
+    expect(callup.error).toBeNull();
+
+    const completion = await context.userAClient.rpc(
+      "complete_match_with_events",
+      {
+        target_match_id: matchId,
+        final_team_score: 1,
+        final_opponent_score: 0,
+        event_rows: [
+          { type: "goal", player_id: context.ids.playerA, minute: 30 },
+        ],
+      },
+    );
     expect(completion.error).toBeNull();
-    expect(completion.data).toEqual({
-      id: matchId,
+    expect(completion.data).toMatchObject({
+      match_id: matchId,
       status: "completed",
-      team_score: 3,
-      opponent_score: 2,
+      team_score: 1,
+      opponent_score: 0,
     });
 
     const foreignCompletion = await context.userAClient

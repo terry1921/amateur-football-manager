@@ -100,4 +100,20 @@ describe("completeOwnedMatch", () => {
       ),
     ).resolves.toBeNull();
   });
+
+  it("propagates transaction failures instead of treating them as success", async () => {
+    const failure = { code: "55000", message: "match already completed" };
+    const client: ResultMutationClient = {
+      rpc: async () => ({ data: null, error: failure }),
+    };
+
+    await expect(
+      completeOwnedMatch(
+        client,
+        "match-a",
+        { teamScore: 1, opponentScore: 0 },
+        [{ type: "goal", playerId: "player-a", minute: 12 }],
+      ),
+    ).rejects.toEqual(failure);
+  });
 });

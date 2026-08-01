@@ -38,4 +38,37 @@ describe("application error mapping", () => {
       retryable: false,
     });
   });
+
+  it("keeps uncertain match creation retryable without hiding duplicate intent", () => {
+    expect(
+      mapBackendError(
+        {
+          code: "23505",
+          message: "matches_team_creation_key_unique_idx",
+        },
+        "match",
+      ),
+    ).toMatchObject({
+      code: "MATCH_DUPLICATE_SUBMISSION",
+      category: "conflict",
+      retryable: false,
+    });
+  });
+
+  it("maps result integrity and call-up lifecycle conflicts separately", () => {
+    expect(
+      mapBackendError(
+        { code: "22023", message: "goal_count_mismatch" },
+        "result",
+      ),
+    ).toMatchObject({ code: "GOAL_COUNT_MISMATCH", category: "validation" });
+    expect(mapBackendError({ code: "23503" }, "callup")).toMatchObject({
+      code: "PLAYER_NOT_IN_CALLUP",
+      category: "validation",
+    });
+    expect(mapBackendError({ code: "55000" }, "callup")).toMatchObject({
+      code: "CALLUP_READ_ONLY",
+      category: "conflict",
+    });
+  });
 });

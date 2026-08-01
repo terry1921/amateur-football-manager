@@ -35,6 +35,7 @@ function fixtureIds(namespace: string): SecurityFixtureIds {
   return {
     userA: securityUuid(namespace, "user-a"),
     userB: securityUuid(namespace, "user-b"),
+    userC: securityUuid(namespace, "user-c"),
     teamA: securityUuid(namespace, "team-a"),
     teamB: securityUuid(namespace, "team-b"),
     seasonA: securityUuid(namespace, "season-a"),
@@ -68,9 +69,10 @@ async function removeFixtureData(
   await adminSetupClient
     .from("teams")
     .delete()
-    .in("owner_id", [ids.userA, ids.userB]);
+    .in("owner_id", [ids.userA, ids.userB, ids.userC]);
   await adminSetupClient.auth.admin.deleteUser(ids.userA);
   await adminSetupClient.auth.admin.deleteUser(ids.userB);
+  await adminSetupClient.auth.admin.deleteUser(ids.userC);
 }
 
 async function seedTenantGraphs(
@@ -229,6 +231,15 @@ export async function createSecurityTestContext(
 
   if (userBResult.error) throw userBResult.error;
 
+  const userCResult = await adminSetupClient.auth.admin.createUser({
+    id: ids.userC,
+    email: `security-${namespace}-c@example.test`,
+    password,
+    email_confirm: true,
+  });
+
+  if (userCResult.error) throw userCResult.error;
+
   await seedTenantGraphs(adminSetupClient, namespace, ids);
 
   const userAClient = createClient<Database>(
@@ -237,6 +248,11 @@ export async function createSecurityTestContext(
     clientOptions,
   );
   const userBClient = createClient<Database>(
+    environment.url,
+    environment.publishableKey,
+    clientOptions,
+  );
+  const userCClient = createClient<Database>(
     environment.url,
     environment.publishableKey,
     clientOptions,
@@ -255,9 +271,14 @@ export async function createSecurityTestContext(
     email: `security-${namespace}-b@example.test`,
     password,
   });
+  const userCSignIn = await userCClient.auth.signInWithPassword({
+    email: `security-${namespace}-c@example.test`,
+    password,
+  });
 
   if (userASignIn.error) throw userASignIn.error;
   if (userBSignIn.error) throw userBSignIn.error;
+  if (userCSignIn.error) throw userCSignIn.error;
 
   return {
     namespace,
@@ -265,10 +286,12 @@ export async function createSecurityTestContext(
     adminSetupClient,
     userAClient,
     userBClient,
+    userCClient,
     anonymousClient,
     cleanup: async () => {
       await userAClient.auth.signOut();
       await userBClient.auth.signOut();
+      await userCClient.auth.signOut();
       await removeFixtureData(adminSetupClient, ids);
     },
   };

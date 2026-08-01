@@ -34,71 +34,44 @@ describe("teams RLS through Supabase JS", () => {
     ]);
   });
 
-  it("allows both users to insert, update, and delete their own eligible team", async () => {
-    const teamAId = securityUuid(context.namespace, "owned-team-a");
-    const teamBId = securityUuid(context.namespace, "owned-team-b");
+  it("allows a new owner to insert, update, and delete their own eligible team", async () => {
+    const teamCId = securityUuid(context.namespace, "owned-team-c");
 
-    const insertA = await context.userAClient
+    const insertC = await context.userCClient
       .from("teams")
       .insert({
-        id: teamAId,
-        owner_id: context.ids.userA,
-        name: "User A Added Team",
-        slug: "security-teams-owned-a",
-      })
-      .select("id, owner_id, name")
-      .single();
-    const insertB = await context.userBClient
-      .from("teams")
-      .insert({
-        id: teamBId,
-        owner_id: context.ids.userB,
-        name: "User B Added Team",
-        slug: "security-teams-owned-b",
+        id: teamCId,
+        owner_id: context.ids.userC,
+        name: "User C Added Team",
+        slug: "security-teams-owned-c",
       })
       .select("id, owner_id, name")
       .single();
 
-    expect(insertA.error).toBeNull();
-    expect(insertA.data).toEqual({
-      id: teamAId,
-      owner_id: context.ids.userA,
-      name: "User A Added Team",
+    expect(insertC.error).toBeNull();
+    expect(insertC.data).toEqual({
+      id: teamCId,
+      owner_id: context.ids.userC,
+      name: "User C Added Team",
     });
-    expect(insertB.error).toBeNull();
-    expect(insertB.data?.owner_id).toBe(context.ids.userB);
 
-    const updateA = await context.userAClient
+    const updateC = await context.userCClient
       .from("teams")
-      .update({ name: "User A Updated Team" })
-      .eq("id", teamAId)
-      .select("id, name")
-      .single();
-    const updateB = await context.userBClient
-      .from("teams")
-      .update({ name: "User B Updated Team" })
-      .eq("id", teamBId)
+      .update({ name: "User C Updated Team" })
+      .eq("id", teamCId)
       .select("id, name")
       .single();
 
-    expect(updateA.data).toEqual({ id: teamAId, name: "User A Updated Team" });
-    expect(updateB.data).toEqual({ id: teamBId, name: "User B Updated Team" });
+    expect(updateC.data).toEqual({ id: teamCId, name: "User C Updated Team" });
 
-    const deleteA = await context.userAClient
+    const deleteC = await context.userCClient
       .from("teams")
       .delete()
-      .eq("id", teamAId)
-      .select("id");
-    const deleteB = await context.userBClient
-      .from("teams")
-      .delete()
-      .eq("id", teamBId)
+      .eq("id", teamCId)
       .select("id");
 
-    expect(deleteA.error).toBeNull();
-    expect(deleteA.data).toEqual([{ id: teamAId }]);
-    expect(deleteB.error).toBeNull();
-    expect(deleteB.data).toEqual([{ id: teamBId }]);
+    expect(deleteC.error).toBeNull();
+    expect(deleteC.data).toEqual([{ id: teamCId }]);
   });
 
   it("rejects owner spoofing on insert for both users", async () => {

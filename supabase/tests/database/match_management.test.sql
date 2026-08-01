@@ -26,13 +26,14 @@ select is(
 insert into auth.users (id, email)
 values
   ('02000000-0000-0000-0000-000000000001', 'match-owner@example.test'),
-  ('02000000-0000-0000-0000-000000000002', 'foreign-match-owner@example.test');
+  ('02000000-0000-0000-0000-000000000002', 'foreign-match-owner@example.test'),
+  ('02000000-0000-0000-0000-000000000003', 'other-match-owner@example.test');
 
 insert into public.teams (id, owner_id, name, slug)
 values
   ('12000000-0000-0000-0000-000000000001', '02000000-0000-0000-0000-000000000001', 'Match Team A', 'match-team-a'),
-  ('12000000-0000-0000-0000-000000000002', '02000000-0000-0000-0000-000000000001', 'Match Team B', 'match-team-b'),
-  ('12000000-0000-0000-0000-000000000003', '02000000-0000-0000-0000-000000000002', 'Foreign Match Team', 'foreign-match-team');
+  ('12000000-0000-0000-0000-000000000002', '02000000-0000-0000-0000-000000000002', 'Match Team B', 'match-team-b'),
+  ('12000000-0000-0000-0000-000000000003', '02000000-0000-0000-0000-000000000003', 'Foreign Match Team', 'foreign-match-team');
 
 insert into public.seasons (id, team_id, name, status)
 values
@@ -42,6 +43,8 @@ values
 
 insert into public.players (id, team_id, first_name, position)
 values ('32000000-0000-0000-0000-000000000001', '12000000-0000-0000-0000-000000000001', 'Match Player', 'MID');
+
+set local role service_role;
 
 insert into public.matches (
   id,
@@ -139,6 +142,7 @@ values (
 );
 
 set constraints all immediate;
+reset role;
 
 select throws_ok(
   $$insert into public.matches (team_id, season_id, opponent_name, kickoff_at, home_away, team_score, opponent_score) values ('12000000-0000-0000-0000-000000000001', '22000000-0000-0000-0000-000000000001', 'Scored schedule', now(), 'home', 0, 0)$$,
@@ -154,6 +158,8 @@ select throws_ok(
   'cancelled matches cannot carry scores'
 );
 
+set local role service_role;
+
 select throws_ok(
   $$insert into public.matches (team_id, season_id, opponent_name, kickoff_at, home_away, status) values ('12000000-0000-0000-0000-000000000001', '22000000-0000-0000-0000-000000000001', 'Missing result', now(), 'away', 'completed')$$,
   '23514',
@@ -167,6 +173,8 @@ select throws_ok(
   null,
   'completed scores cannot be negative'
 );
+
+reset role;
 
 select throws_ok(
   $$insert into public.matches (team_id, season_id, opponent_name, kickoff_at, home_away) values ('12000000-0000-0000-0000-000000000001', '22000000-0000-0000-0000-000000000001', 'Invalid location', now(), 'somewhere')$$,

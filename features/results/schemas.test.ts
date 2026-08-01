@@ -55,4 +55,43 @@ describe("resultSchema", () => {
       }).success,
     ).toBe(false);
   });
+
+  it.each([
+    "not-json",
+    JSON.stringify([
+      {
+        type: "goal",
+        playerId: "10000000-0000-4000-8000-000000000001",
+        minute: 12,
+        unexpected: true,
+      },
+    ]),
+  ])("rejects malformed event payloads (%s)", (events) => {
+    const result = resultSubmissionSchema.safeParse({
+      homeScore: "1",
+      awayScore: "0",
+      events,
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("rejects an event payload larger than the database transaction limit", () => {
+    const events = Array.from({ length: 251 }, (_, index) => ({
+      type: "yellow_card",
+      playerId: "10000000-0000-4000-8000-000000000001",
+      minute: index,
+    }));
+
+    expect(
+      resultSubmissionSchema.safeParse({
+        homeScore: "0",
+        awayScore: "0",
+        events: JSON.stringify(events),
+      }).success,
+    ).toBe(false);
+  });
 });

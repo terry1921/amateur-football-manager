@@ -166,10 +166,17 @@ describe("call-ups RLS through Supabase JS", () => {
   });
 
   it("makes completed match call-ups read-only", async () => {
-    const complete = await context.userAClient
-      .from("matches")
-      .update({ status: "completed", team_score: 2, opponent_score: 1 })
-      .eq("id", context.ids.matchA);
+    const complete = await context.userAClient.rpc(
+      "complete_match_with_events",
+      {
+        target_match_id: context.ids.matchA,
+        final_team_score: 1,
+        final_opponent_score: 0,
+        event_rows: [
+          { type: "goal", player_id: context.ids.playerA, minute: 10 },
+        ],
+      },
+    );
     expect(complete.error).toBeNull();
 
     const update = await context.userAClient

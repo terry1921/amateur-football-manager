@@ -58,10 +58,17 @@ describe("dashboard progress tenant isolation", () => {
 
   beforeAll(async () => {
     context = await createSecurityTestContext("dashboard-progress");
-    const completedByA = await context.userAClient
-      .from("matches")
-      .update({ status: "completed", team_score: 3, opponent_score: 1 })
-      .eq("id", context.ids.matchA);
+    const completedByA = await context.userAClient.rpc(
+      "complete_match_with_events",
+      {
+        target_match_id: context.ids.matchA,
+        final_team_score: 1,
+        final_opponent_score: 0,
+        event_rows: [
+          { type: "goal", player_id: context.ids.playerA, minute: 10 },
+        ],
+      },
+    );
 
     if (completedByA.error) throw completedByA.error;
   });

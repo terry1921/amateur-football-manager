@@ -6,6 +6,7 @@ export type SecurityClient = SupabaseClient<Database>;
 export type SecurityFixtureIds = {
   userA: string;
   userB: string;
+  userC: string;
   teamA: string;
   teamB: string;
   seasonA: string;
@@ -28,6 +29,7 @@ export type SecurityTestContext = {
   adminSetupClient: SecurityClient;
   userAClient: SecurityClient;
   userBClient: SecurityClient;
+  userCClient: SecurityClient;
   anonymousClient: SecurityClient;
   cleanup: () => Promise<void>;
 };

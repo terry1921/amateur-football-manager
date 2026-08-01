@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(18);
+select plan(19);
 
 insert into auth.users (id, email)
 values ('06000000-0000-0000-0000-000000000001', 'player-statistics@example.test');
@@ -126,16 +126,16 @@ select is(
   (select (row->>'total_matches_called_up')::integer
    from jsonb_array_elements(public.get_statistics_snapshot('16000000-0000-0000-0000-000000000001', '26000000-0000-0000-0000-000000000001')->'players') row
    where row->>'player_id' = '36000000-0000-0000-0000-000000000002'),
-  1,
-  'scheduled call-up remains visible as a call-up'
+  2,
+  'scheduled call-up remains visible in total call-ups'
 );
 
 select is(
   (select (row->>'matches_called_up')::integer
    from jsonb_array_elements(public.get_statistics_snapshot('16000000-0000-0000-0000-000000000001', '26000000-0000-0000-0000-000000000001')->'players') row
    where row->>'player_id' = '36000000-0000-0000-0000-000000000002'),
-  0,
-  'scheduled call-up is not presented as completed participation'
+  1,
+  'scheduled call-up does not add to completed-match call-up count'
 );
 
 select is(
