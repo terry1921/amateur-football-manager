@@ -81,6 +81,7 @@
     "players": "Jugadores",
     "matches": "Partidos",
     "statistics": "Estadísticas",
+    "leaderboards": "Rankings",
     "content": "Contenido",
     "logout": "Cerrar sesión"
   },
@@ -297,10 +298,11 @@
         "matchesPlayed": "Partidos jugados",
         "goalsScored": "Goles anotados",
         "topScorer": "Máximo goleador",
-        "yellowCards": "Amarillas",
-        "redCards": "Rojas",
+        "mostCalledUp": "Más convocado",
+        "disciplineLeader": "Líder disciplinario",
         "noData": "Aún no hay partidos completados",
-        "viewAll": "Abrir estadísticas"
+        "viewAll": "Abrir estadísticas",
+        "viewLeaderboards": "Abrir rankings"
       },
       "activity": {
         "title": "Actividad reciente",
@@ -716,6 +718,7 @@
     "teamTitle": "Rendimiento del equipo",
     "playerTitle": "Estadísticas de jugadores",
     "viewAll": "Ver todas las estadísticas",
+    "leaderboardsLink": "Abrir rankings",
     "filters": {
       "label": "Periodo de estadísticas",
       "current": "Temporada actual",
@@ -809,6 +812,92 @@
       "disciplineTitle": "Historial disciplinario",
       "yellow_card": "Tarjeta amarilla",
       "red_card": "Tarjeta roja"
+    }
+  },
+  "Leaderboards": {
+    "title": "Rankings",
+    "description": "Clasificaciones competitivas derivadas de partidos completados y eventos registrados del equipo.",
+    "filters": {
+      "label": "Periodo del ranking",
+      "current": "Temporada actual",
+      "all": "Carrera",
+      "career": "Carrera en el equipo",
+      "search": "Buscar jugadores",
+      "position": "Posición",
+      "status": "Estado",
+      "allPositions": "Todas las posiciones",
+      "allStatuses": "Todos los estados",
+      "currentPlayers": "Plantel actual",
+      "apply": "Aplicar filtros"
+    },
+    "position": {
+      "GK": "Portero",
+      "DEF": "Defensa",
+      "MID": "Mediocampista",
+      "FWD": "Delantero"
+    },
+    "status": {
+      "active": "Activo",
+      "injured": "Lesionado",
+      "suspended": "Suspendido",
+      "inactive": "Inactivo"
+    },
+    "awards": {
+      "title": "Premios de temporada",
+      "goldenBoot": {
+        "eyebrow": "Goles",
+        "title": "Bota de Oro",
+        "value": "{goals} goles"
+      },
+      "bestDiscipline": {
+        "eyebrow": "Disciplina",
+        "title": "Mejor disciplina",
+        "value": "{matches} partidos completados convocado"
+      },
+      "ironPlayer": {
+        "eyebrow": "Disponibilidad",
+        "title": "Jugador de hierro",
+        "value": "{matches} partidos completados convocado"
+      }
+    },
+    "table": {
+      "rank": "Lugar",
+      "rankLabel": "Lugar {rank}: {name}",
+      "player": "Jugador",
+      "goals": "Goles",
+      "yellow_cards": "Amarillas",
+      "red_cards": "Rojas",
+      "matches_called_up": "Convocado en completados",
+      "calledUp": "Convocatorias",
+      "record": "Balance cuando fue convocado"
+    },
+    "tables": {
+      "topScorers": {
+        "title": "Máximos goleadores",
+        "description": "Goles registrados en partidos completados."
+      },
+      "yellowCards": {
+        "title": "Líderes en amarillas",
+        "description": "Tarjetas amarillas en partidos completados."
+      },
+      "redCards": {
+        "title": "Líderes en rojas",
+        "description": "Tarjetas rojas en partidos completados."
+      },
+      "calledUp": {
+        "title": "Más convocados",
+        "description": "Partidos completados en los que el jugador fue convocado; no es un conteo de apariciones."
+      }
+    },
+    "empty": {
+      "title": "Aún no hay partidos completados",
+      "description": "Completa un partido con su marcador y los eventos del equipo para empezar a construir los rankings.",
+      "topScorers": "No hay goles registrados.",
+      "yellowCards": "No hay amarillas registradas en este periodo.",
+      "redCards": "No hay rojas registradas en este periodo.",
+      "calledUp": "No hay convocatorias en partidos completados para este periodo.",
+      "filteredTitle": "Ningún jugador coincide con estos filtros",
+      "filtered": "Cambia la búsqueda, posición o estado para ver otro grupo de jugadores."
     }
   },
   "Results": {

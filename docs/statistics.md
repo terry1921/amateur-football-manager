@@ -55,6 +55,9 @@ history. This keeps the API reusable while preserving a small query surface.
 Leaderboards are deterministic: goals, yellow cards, and red cards are ranked
 separately with stable name and UUID tie-breakers. Zero-goal players are omitted
 from top scorers; inactive players remain eligible for historical results.
+Task 016 presents these projections at `/leaderboards`; the statistics page
+keeps the team summary and player breakdown while linking to that dedicated
+ranking surface.
 
 ## Security and freshness
 

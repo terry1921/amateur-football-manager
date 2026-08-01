@@ -28,11 +28,11 @@ import {
 } from "./model";
 import { DashboardEmptyState } from "./dashboard-empty-state";
 import {
-  getPlayerDisplayNameFromStatistics,
-  getRedCardLeaders,
-  getTopScorers,
-  getYellowCardLeaders,
-} from "@/features/statistics/model";
+  getDisciplineLeader,
+  getMostCalledUpPlayer,
+  getTopScorer,
+} from "@/features/leaderboards/model";
+import { getPlayerDisplayNameFromStatistics } from "@/features/statistics/model";
 
 function SetupStepItem({ step, index }: { step: SetupStep; index: number }) {
   const t = useTranslations("FirstTimeDashboard");
@@ -543,12 +543,12 @@ function UpcomingFixtures({ data }: { data: DashboardSuccessData }) {
 function StatisticsModule({ data }: { data: DashboardSuccessData }) {
   const t = useTranslations("FirstTimeDashboard");
   const statistics = data.dashboardStatistics;
-  const topScorer = statistics ? getTopScorers(statistics.players)[0] : null;
-  const yellowCardLeader = statistics
-    ? getYellowCardLeaders(statistics.players)[0]
+  const topScorer = statistics ? getTopScorer(statistics.players) : null;
+  const mostCalledUp = statistics
+    ? getMostCalledUpPlayer(statistics.players)
     : null;
-  const redCardLeader = statistics
-    ? getRedCardLeaders(statistics.players)[0]
+  const disciplineLeader = statistics
+    ? getDisciplineLeader(statistics.players)
     : null;
 
   return (
@@ -596,40 +596,41 @@ function StatisticsModule({ data }: { data: DashboardSuccessData }) {
                 </Link>
               </p>
             ) : null}
-            {yellowCardLeader ? (
+            {mostCalledUp ? (
               <p className="flex items-center justify-between gap-3">
                 <span className="text-muted">
-                  {t("modules.statistics.yellowCards")}
+                  {t("modules.statistics.mostCalledUp")}
                 </span>
                 <Link
-                  href={`/players/${yellowCardLeader.player_id}`}
+                  href={`/players/${mostCalledUp.player_id}`}
                   className="font-black text-ink hover:text-pitch"
                 >
-                  {getPlayerDisplayNameFromStatistics(yellowCardLeader)} (
-                  {yellowCardLeader.yellow_cards})
+                  {getPlayerDisplayNameFromStatistics(mostCalledUp)} (
+                  {mostCalledUp.matches_called_up})
                 </Link>
               </p>
             ) : null}
-            {redCardLeader ? (
+            {disciplineLeader ? (
               <p className="flex items-center justify-between gap-3">
                 <span className="text-muted">
-                  {t("modules.statistics.redCards")}
+                  {t("modules.statistics.disciplineLeader")}
                 </span>
                 <Link
-                  href={`/players/${redCardLeader.player_id}`}
+                  href={`/players/${disciplineLeader.player_id}`}
                   className="font-black text-ink hover:text-pitch"
                 >
-                  {getPlayerDisplayNameFromStatistics(redCardLeader)} (
-                  {redCardLeader.red_cards})
+                  {getPlayerDisplayNameFromStatistics(disciplineLeader)} (
+                  {disciplineLeader.yellow_cards}Y ·{" "}
+                  {disciplineLeader.red_cards}R)
                 </Link>
               </p>
             ) : null}
           </div>
           <Link
-            href="/statistics"
+            href="/leaderboards"
             className="mt-5 inline-flex min-h-10 items-center gap-2 text-sm font-bold text-pitch"
           >
-            {t("modules.statistics.viewAll")}
+            {t("modules.statistics.viewLeaderboards")}
             <ArrowRight aria-hidden="true" className="size-4" />
           </Link>
         </div>

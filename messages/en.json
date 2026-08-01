@@ -81,6 +81,7 @@
     "players": "Players",
     "matches": "Matches",
     "statistics": "Statistics",
+    "leaderboards": "Leaderboards",
     "content": "Content",
     "logout": "Sign out"
   },
@@ -297,10 +298,11 @@
         "matchesPlayed": "Matches played",
         "goalsScored": "Goals scored",
         "topScorer": "Top scorer",
-        "yellowCards": "Yellow cards",
-        "redCards": "Red cards",
+        "mostCalledUp": "Most called-up",
+        "disciplineLeader": "Discipline leader",
         "noData": "No completed matches yet",
-        "viewAll": "Open statistics"
+        "viewAll": "Open statistics",
+        "viewLeaderboards": "Open leaderboards"
       },
       "activity": {
         "title": "Recent activity",
@@ -716,6 +718,7 @@
     "teamTitle": "Team performance",
     "playerTitle": "Player statistics",
     "viewAll": "View all statistics",
+    "leaderboardsLink": "Open leaderboards",
     "filters": {
       "label": "Statistics period",
       "current": "Current season",
@@ -809,6 +812,92 @@
       "disciplineTitle": "Discipline history",
       "yellow_card": "Yellow card",
       "red_card": "Red card"
+    }
+  },
+  "Leaderboards": {
+    "title": "Leaderboards",
+    "description": "Competitive rankings derived from completed matches and recorded team events.",
+    "filters": {
+      "label": "Leaderboard period",
+      "current": "Current season",
+      "all": "Career",
+      "career": "Team career",
+      "search": "Search players",
+      "position": "Position",
+      "status": "Status",
+      "allPositions": "All positions",
+      "allStatuses": "All statuses",
+      "currentPlayers": "Current squad",
+      "apply": "Apply filters"
+    },
+    "position": {
+      "GK": "Goalkeeper",
+      "DEF": "Defender",
+      "MID": "Midfielder",
+      "FWD": "Forward"
+    },
+    "status": {
+      "active": "Active",
+      "injured": "Injured",
+      "suspended": "Suspended",
+      "inactive": "Inactive"
+    },
+    "awards": {
+      "title": "Season awards",
+      "goldenBoot": {
+        "eyebrow": "Goals",
+        "title": "Golden Boot",
+        "value": "{goals} goals"
+      },
+      "bestDiscipline": {
+        "eyebrow": "Discipline",
+        "title": "Best Discipline",
+        "value": "{matches} completed matches called up"
+      },
+      "ironPlayer": {
+        "eyebrow": "Availability",
+        "title": "Iron Player",
+        "value": "{matches} completed matches called up"
+      }
+    },
+    "table": {
+      "rank": "Rank",
+      "rankLabel": "Rank {rank}: {name}",
+      "player": "Player",
+      "goals": "Goals",
+      "yellow_cards": "Yellow cards",
+      "red_cards": "Red cards",
+      "matches_called_up": "Completed called up",
+      "calledUp": "Called up",
+      "record": "Record while called up"
+    },
+    "tables": {
+      "topScorers": {
+        "title": "Top scorers",
+        "description": "Goals recorded in completed matches."
+      },
+      "yellowCards": {
+        "title": "Yellow-card leaders",
+        "description": "Yellow cards recorded in completed matches."
+      },
+      "redCards": {
+        "title": "Red-card leaders",
+        "description": "Red cards recorded in completed matches."
+      },
+      "calledUp": {
+        "title": "Most called-up players",
+        "description": "Completed matches in which the player was called up; this is not an appearance count."
+      }
+    },
+    "empty": {
+      "title": "No completed matches yet",
+      "description": "Complete a match with its score and team events to start building the rankings.",
+      "topScorers": "No goals recorded.",
+      "yellowCards": "No yellow cards recorded for this scope.",
+      "redCards": "No red cards recorded for this scope.",
+      "calledUp": "No completed call-ups recorded for this scope.",
+      "filteredTitle": "No players match these filters",
+      "filtered": "Change the search, position, or status filters to see another player set."
     }
   },
   "Results": {

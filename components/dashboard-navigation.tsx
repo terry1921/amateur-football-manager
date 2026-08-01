@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   Shield,
   Trophy,
+  Medal,
   UsersRound,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -19,6 +20,7 @@ const navigation = [
   { key: "players", href: "/players", icon: UsersRound },
   { key: "matches", href: "/matches", icon: Trophy },
   { key: "statistics", href: "/statistics", icon: BarChart3 },
+  { key: "leaderboards", href: "/leaderboards", icon: Medal },
   { key: "content", href: "/content", icon: FileText },
 ] as const;
 

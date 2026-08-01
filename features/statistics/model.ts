@@ -160,7 +160,7 @@ export function getDisciplineTable(players: PlayerStatistics[]) {
 export function getCompetitionRank(
   players: PlayerStatistics[],
   index: number,
-  metric: "goals" | "yellow_cards" | "red_cards",
+  metric: "goals" | "yellow_cards" | "red_cards" | "matches_called_up",
 ) {
   const value = players[index]?.[metric] ?? 0;
   return (

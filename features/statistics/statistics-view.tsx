@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ArrowRight,
   BarChart3,
   Search,
   ShieldAlert,
@@ -11,11 +12,7 @@ import {
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import {
-  getCompetitionRank,
   getPlayerDisplayNameFromStatistics,
-  getRedCardLeaders,
-  getTopScorers,
-  getYellowCardLeaders,
   type PlayerStatistics,
   type PlayerStatisticsFilters,
   type StatisticsSeason,
@@ -133,69 +130,6 @@ function PlayerRow({ player }: { player: PlayerStatistics }) {
         </p>
       </div>
     </li>
-  );
-}
-
-function RankingCard({
-  title,
-  description,
-  players,
-  empty,
-  icon: Icon,
-  metric,
-}: {
-  title: string;
-  description: string;
-  players: PlayerStatistics[];
-  empty: string;
-  icon: typeof Trophy;
-  metric: "goals" | "yellow_cards" | "red_cards";
-}) {
-  const t = useTranslations("Statistics");
-  return (
-    <section className="overflow-hidden rounded-2xl border border-line bg-white shadow-[0_14px_44px_rgba(7,26,54,0.035)]">
-      <header className="border-b border-line px-5 py-4 sm:px-6">
-        <div className="flex items-center gap-3">
-          <Icon aria-hidden="true" className="size-5 text-pitch" />
-          <h2 className="text-lg font-black tracking-[-0.025em] text-ink">
-            {title}
-          </h2>
-        </div>
-        <p className="mt-1 text-sm text-muted">{description}</p>
-      </header>
-      {players.length > 0 ? (
-        <ol aria-label={title}>
-          {players.slice(0, 5).map((player, index) => (
-            <li
-              key={player.player_id}
-              className="flex items-center gap-3 border-t border-line px-5 py-4 first:border-t-0 sm:px-6"
-            >
-              <span className="w-5 shrink-0 text-center text-sm font-black text-muted">
-                {getCompetitionRank(players, index, metric)}
-              </span>
-              <div className="min-w-0 flex-1">
-                <Link
-                  href={`/players/${player.player_id}`}
-                  className="font-black text-ink hover:text-pitch"
-                >
-                  {getPlayerDisplayNameFromStatistics(player)}
-                </Link>
-                <p className="mt-1 text-xs text-muted">
-                  {t("rankingCalledUp", {
-                    count: player.matches_called_up,
-                  })}
-                </p>
-              </div>
-              <span className="text-right text-sm font-black text-ink">
-                {player[metric]}
-              </span>
-            </li>
-          ))}
-        </ol>
-      ) : (
-        <p className="p-5 text-sm text-muted sm:p-6">{empty}</p>
-      )}
-    </section>
   );
 }
 
@@ -333,9 +267,6 @@ function PlayerTable({ players }: { players: PlayerStatistics[] }) {
 
 export function StatisticsView({ data }: { data: StatisticsViewData }) {
   const t = useTranslations("Statistics");
-  const topScorers = getTopScorers(data.players);
-  const yellowCardLeaders = getYellowCardLeaders(data.players);
-  const redCardLeaders = getRedCardLeaders(data.players);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -389,32 +320,13 @@ export function StatisticsView({ data }: { data: StatisticsViewData }) {
             <TeamSummary team={data.snapshot.team} />
             <RecordLine team={data.snapshot.team} />
           </section>
-          <div className="grid gap-5 lg:grid-cols-3">
-            <RankingCard
-              title={t("tables.topScorers.title")}
-              description={t("tables.topScorers.description")}
-              players={topScorers}
-              empty={t("empty.topScorers")}
-              icon={Trophy}
-              metric="goals"
-            />
-            <RankingCard
-              title={t("tables.yellowCards.title")}
-              description={t("tables.yellowCards.description")}
-              players={yellowCardLeaders}
-              empty={t("empty.yellowCards")}
-              icon={ShieldAlert}
-              metric="yellow_cards"
-            />
-            <RankingCard
-              title={t("tables.redCards.title")}
-              description={t("tables.redCards.description")}
-              players={redCardLeaders}
-              empty={t("empty.redCards")}
-              icon={ShieldAlert}
-              metric="red_cards"
-            />
-          </div>
+          <Link
+            href={`/leaderboards?season=${data.selectedFilter}`}
+            className="flex items-center justify-between gap-4 rounded-2xl border border-pitch/25 bg-pitch/[0.035] px-5 py-4 text-sm font-bold text-pitch transition hover:border-pitch focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch sm:px-6"
+          >
+            <span>{t("leaderboardsLink")}</span>
+            <ArrowRight aria-hidden="true" className="size-4 shrink-0" />
+          </Link>
           <PlayerTable players={data.players} />
         </>
       )}

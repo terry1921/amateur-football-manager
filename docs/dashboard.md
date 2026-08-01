@@ -45,8 +45,9 @@ dependent read and prevents one call-up query per card.
 The fixture reads remain bounded and use the existing tenant/season/status
 indexes. Statistics use one security-invoker RPC because the team and player
 projections share the same completed-match/event source and must not become one
-query per card. The authenticated server client and RLS protect both records
-and the projection.
+query per card. The dashboard's top scorer, most-called-up player, and
+discipline leader are selected from that same player projection; the
+authenticated server client and RLS protect both records and the projection.
 
 ## Composition rules
 

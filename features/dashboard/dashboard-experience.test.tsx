@@ -224,7 +224,7 @@ describe("DashboardExperience", () => {
               goals: 2,
               scoring_matches: 1,
               multi_goal_matches: 1,
-              yellow_cards: 0,
+              yellow_cards: 1,
               red_cards: 0,
             },
           ],
@@ -242,6 +242,11 @@ describe("DashboardExperience", () => {
     expect(screen.getByText("Loros FC 3–1 Halcones")).toBeInTheDocument();
     expect(screen.getByText("Season statistics")).toBeInTheDocument();
     expect(screen.getByText("Marco Guerrero (2)")).toBeInTheDocument();
+    expect(screen.getByText("Most called-up")).toBeInTheDocument();
+    expect(screen.getByText("Discipline leader")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Open leaderboards" }),
+    ).toHaveAttribute("href", "/en/leaderboards");
     expect(screen.getByRole("link", { name: "Verona FC" })).toHaveAttribute(
       "href",
       "/en/matches/upcoming-match",
