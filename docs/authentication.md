@@ -13,8 +13,7 @@ All user-facing routes are locale-prefixed (`en` or `es`):
   `/{locale}/forgot-password`, and `/{locale}/reset-password`.
 - Callback: `/{locale}/auth/callback`.
 - Protected: `/{locale}/dashboard`, `/{locale}/team`,
-  `/{locale}/players`, `/{locale}/matches`, `/{locale}/statistics`, and
-  `/{locale}/content`.
+  `/{locale}/players`, `/{locale}/matches`, and `/{locale}/statistics`.
 
 ## Local configuration
 

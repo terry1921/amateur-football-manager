@@ -83,7 +83,6 @@
     "statistics": "Statistics",
     "leaderboards": "Leaderboards",
     "social": "Social media",
-    "content": "Content",
     "logout": "Sign out",
     "logoutShort": "Exit",
     "install": "Install app",
@@ -1222,10 +1221,6 @@
     "statistics": {
       "title": "Statistics",
       "description": "Team and player statistics remain part of later MVP tasks."
-    },
-    "content": {
-      "title": "Content",
-      "description": "Social content templates remain part of Task 017."
     }
   },
   "LocaleSwitcher": {

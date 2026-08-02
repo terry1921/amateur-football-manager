@@ -13,7 +13,7 @@ queries remain the source of truth.
   `lg` and above.
 - At smaller widths the shell uses four primary destinations—Dashboard,
   Matches, Players, and Statistics—plus a More bottom sheet for Team, Seasons,
-  Leaderboards, Social media, and Content.
+  Leaderboards, and Social media.
 - The main content reserves space for the fixed navigation and accounts for
   `safe-area-inset-top` and `safe-area-inset-bottom`.
 - Reusable form action rows use `.mobile-action-bar` below the small breakpoint,

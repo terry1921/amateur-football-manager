@@ -3,7 +3,6 @@
 import {
   BarChart3,
   CalendarRange,
-  FileText,
   LayoutDashboard,
   MoreHorizontal,
   Shield,
@@ -26,14 +25,13 @@ const navigation = [
   { key: "statistics", href: "/statistics", icon: BarChart3 },
   { key: "leaderboards", href: "/leaderboards", icon: Medal },
   { key: "social", href: "/social", icon: Share2 },
-  { key: "content", href: "/content", icon: FileText },
 ] as const;
 
 const primaryNavigation = navigation.filter(({ key }) =>
   ["dashboard", "matches", "players", "statistics"].includes(key),
 );
 const moreNavigation = navigation.filter(({ key }) =>
-  ["team", "seasons", "leaderboards", "social", "content"].includes(key),
+  ["team", "seasons", "leaderboards", "social"].includes(key),
 );
 
 function isActive(pathname: string, href: string) {
@@ -45,23 +43,32 @@ function NavigationLink({
   active,
   label,
   onNavigate,
+  variant = "default",
 }: {
   item: (typeof navigation)[number];
   active: boolean;
   label: string;
   onNavigate?: () => void;
+  variant?: "default" | "desktop";
 }) {
   const Icon = item.icon;
+  const desktopState = active
+    ? "border-pitch/30 bg-pitch/[0.08] text-pitch shadow-[0_1px_2px_rgba(7,26,54,0.06)]"
+    : "border-transparent text-muted hover:border-line hover:bg-[#f6f9f7] hover:text-ink";
+
   return (
     <Link
       href={item.href}
       aria-current={active ? "page" : undefined}
       onClick={onNavigate}
       className={
-        "flex min-w-0 items-center justify-center gap-2 font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch " +
-        (active
-          ? "border-pitch bg-pitch/[0.035] text-pitch"
-          : "border-transparent text-muted hover:border-pitch hover:text-ink")
+        variant === "desktop"
+          ? "flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch " +
+            desktopState
+          : "flex min-w-0 items-center justify-center gap-2 font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch " +
+            (active
+              ? "border-pitch bg-pitch/[0.035] text-pitch"
+              : "border-transparent text-muted hover:border-pitch hover:text-ink")
       }
     >
       <Icon aria-hidden="true" className="size-4 shrink-0" />
@@ -89,16 +96,20 @@ export function DashboardNavigation() {
         aria-label={t("navigationLabel")}
         className="hidden border-b border-line bg-white lg:block"
       >
-        <div className="mx-auto flex max-w-6xl gap-1 px-6">
-          {navigation.map((item) => (
-            <NavigationLink
-              key={item.key}
-              item={item}
-              active={isActive(pathname, item.href)}
-              label={t(item.key)}
-              onNavigate={() => setMoreOpen(false)}
-            />
-          ))}
+        <div className="mx-auto flex max-w-6xl items-center px-6 py-2">
+          <ul className="flex min-w-0 flex-1 items-center gap-1.5" role="list">
+            {navigation.map((item) => (
+              <li key={item.key} className="min-w-0 flex-1">
+                <NavigationLink
+                  item={item}
+                  active={isActive(pathname, item.href)}
+                  label={t(item.key)}
+                  onNavigate={() => setMoreOpen(false)}
+                  variant="desktop"
+                />
+              </li>
+            ))}
+          </ul>
         </div>
       </nav>
 

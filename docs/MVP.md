@@ -462,8 +462,6 @@ AI rewriting can be introduced after product validation.
 /matches/:id/result
 
 /statistics
-
-/content
 ```
 
 Mobile-first responsive design is mandatory because administrators are likely to operate the product from their phones on matchday.

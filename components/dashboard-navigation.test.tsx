@@ -33,6 +33,9 @@ describe("DashboardNavigation mobile shell", () => {
     expect(screen.getAllByRole("link", { name: "Matches" })).toHaveLength(2);
     expect(screen.getAllByRole("link", { name: "Players" })).toHaveLength(2);
     expect(screen.getAllByRole("link", { name: "Statistics" })).toHaveLength(2);
+    expect(
+      screen.queryByRole("link", { name: "Content" }),
+    ).not.toBeInTheDocument();
   });
 
   it("opens an accessible More sheet for the secondary destinations", () => {
@@ -44,8 +47,25 @@ describe("DashboardNavigation mobile shell", () => {
     expect(moreButton).toHaveAttribute("aria-expanded", "true");
     expect(document.getElementById("mobile-more-menu")).toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: "Team" })).toHaveLength(2);
+    expect(
+      screen.queryByRole("link", { name: "Content" }),
+    ).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Close menu" }));
     expect(moreButton).toHaveAttribute("aria-expanded", "false");
+  });
+});
+
+describe("DashboardNavigation desktop shell", () => {
+  it("uses the redesigned active desktop link treatment without Content", () => {
+    renderNavigation();
+
+    const dashboardLinks = screen.getAllByRole("link", { name: "Dashboard" });
+
+    expect(dashboardLinks[0]).toHaveAttribute("aria-current", "page");
+    expect(dashboardLinks[0]).toHaveClass("min-h-12", "rounded-xl");
+    expect(
+      screen.queryByRole("link", { name: "Content" }),
+    ).not.toBeInTheDocument();
   });
 });

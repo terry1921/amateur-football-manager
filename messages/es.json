@@ -83,7 +83,6 @@
     "statistics": "Estadísticas",
     "leaderboards": "Rankings",
     "social": "Redes sociales",
-    "content": "Contenido",
     "logout": "Cerrar sesión",
     "logoutShort": "Salir",
     "install": "Instalar app",
@@ -1225,10 +1224,6 @@
     "statistics": {
       "title": "Estadísticas",
       "description": "Las estadísticas del equipo y jugadores pertenecen a tareas posteriores del MVP."
-    },
-    "content": {
-      "title": "Contenido",
-      "description": "Las plantillas de contenido social pertenecen a la Tarea 017."
     }
   },
   "LocaleSwitcher": {

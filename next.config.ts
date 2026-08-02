@@ -1,20 +1,8 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { getContentSecurityPolicy } from "./lib/security/content-security-policy";
 
-const contentSecurityPolicy = [
-  "default-src 'self'",
-  "base-uri 'self'",
-  "frame-ancestors 'none'",
-  "form-action 'self'",
-  "object-src 'none'",
-  "img-src 'self' data: blob: https:",
-  "style-src 'self' 'unsafe-inline'",
-  "script-src 'self' 'unsafe-inline'",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co http://127.0.0.1:54321 ws://127.0.0.1:54321",
-  "font-src 'self' data:",
-  "manifest-src 'self'",
-  "worker-src 'self'",
-].join("; ");
+const contentSecurityPolicy = getContentSecurityPolicy();
 
 const securityHeaders = [
   { key: "Content-Security-Policy", value: contentSecurityPolicy },
