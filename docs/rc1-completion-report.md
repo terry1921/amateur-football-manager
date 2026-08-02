@@ -1,6 +1,6 @@
 # Task 022 — RC1 completion report
 
-Date: 2026-08-01  
+Date: 2026-08-01
 Version: `v1.0.0-rc.1`
 
 ## 1. Executive summary
