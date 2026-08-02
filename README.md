@@ -2,10 +2,12 @@
 
 Matchday is a mobile-first SaaS for managing amateur football teams. The MVP scope and product decisions live in [`MVP.md`](./MVP.md).
 
+Release candidate: `v1.0.0-rc.1`.
+
 ## Local development
 
 ```bash
-npm install
+npm ci
 cp .env.example .env.local
 npm run dev
 ```
@@ -20,6 +22,8 @@ application origin used in authentication emails.
 
 The interface is available in English at `/en` and Spanish at `/es`. Requests to `/` are redirected to the best matching supported locale, falling back to English.
 
+Node.js 22 is the supported runtime (`.node-version`).
+
 ## Quality checks
 
 ```bash
@@ -28,6 +32,23 @@ npm run lint
 npm run typecheck
 npm test
 npm run build
+```
+
+For a clean local database, use the Docker-backed Supabase stack:
+
+```bash
+npm run supabase:start
+npx supabase db reset --local
+npm run db:types
+```
+
+The normal reset keeps the security suite's database deterministic. To load
+synthetic Demo United data after a reset, run the local-only seed file with the
+Supabase CLI. It is for local development only and must never be run against
+the hosted production project.
+
+```bash
+npx supabase db query --local --file supabase/seed.sql
 ```
 
 The permanent tenant-isolation suite uses a real local Supabase stack:
@@ -61,3 +82,8 @@ documented in [`docs/authentication.md`](./docs/authentication.md). Team
 onboarding, seasons, players, matches, and match call-ups are documented in
 `docs/`, including the call-up lifecycle in
 [`docs/callups.md`](./docs/callups.md).
+
+Release operations are documented in [`docs/deployment.md`](./docs/deployment.md),
+[`docs/release-checklist.md`](./docs/release-checklist.md), and
+[`docs/backup-plan.md`](./docs/backup-plan.md). The RC1 decision record is in
+[`RELEASE_NOTES_RC1.md`](./RELEASE_NOTES_RC1.md).
