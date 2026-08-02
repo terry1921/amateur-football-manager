@@ -19,6 +19,7 @@
     "db:types": "supabase gen types --local --lang typescript > types/database.ts && prettier --write types/database.ts"
   },
   "dependencies": {
+    "@swc/helpers": "0.5.23",
     "@supabase/ssr": "0.12.3",
     "@supabase/supabase-js": "2.110.8",
     "lucide-react": "^1.26.0",
