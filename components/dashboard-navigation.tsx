@@ -3,6 +3,7 @@
 import {
   BarChart3,
   CalendarRange,
+  LockKeyhole,
   LayoutDashboard,
   MoreHorizontal,
   Shield,
@@ -17,14 +18,19 @@ import { useEffect, useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 
 const navigation = [
-  { key: "dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { key: "team", href: "/team", icon: Shield },
-  { key: "seasons", href: "/seasons", icon: CalendarRange },
-  { key: "players", href: "/players", icon: UsersRound },
-  { key: "matches", href: "/matches", icon: Trophy },
-  { key: "statistics", href: "/statistics", icon: BarChart3 },
-  { key: "leaderboards", href: "/leaderboards", icon: Medal },
-  { key: "social", href: "/social", icon: Share2 },
+  {
+    key: "dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+    blocked: false,
+  },
+  { key: "team", href: "/team", icon: Shield, blocked: false },
+  { key: "seasons", href: "/seasons", icon: CalendarRange, blocked: false },
+  { key: "players", href: "/players", icon: UsersRound, blocked: false },
+  { key: "matches", href: "/matches", icon: Trophy, blocked: false },
+  { key: "statistics", href: "/statistics", icon: BarChart3, blocked: false },
+  { key: "leaderboards", href: "/leaderboards", icon: Medal, blocked: false },
+  { key: "social", href: "/social", icon: Share2, blocked: true },
 ] as const;
 
 const primaryNavigation = navigation.filter(({ key }) =>
@@ -42,34 +48,51 @@ function NavigationLink({
   item,
   active,
   label,
+  blockedLabel,
   onNavigate,
   variant = "default",
 }: {
   item: (typeof navigation)[number];
   active: boolean;
   label: string;
+  blockedLabel: string;
   onNavigate?: () => void;
   variant?: "default" | "desktop";
 }) {
   const Icon = item.icon;
+  const blockedState =
+    "cursor-not-allowed border-line bg-[#f6f9f7] text-muted";
   const desktopState = active
     ? "border-pitch/30 bg-pitch/[0.08] text-pitch shadow-[0_1px_2px_rgba(7,26,54,0.06)]"
     : "border-transparent text-muted hover:border-line hover:bg-[#f6f9f7] hover:text-ink";
+
+  const className =
+    variant === "desktop"
+      ? "flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch " +
+        (item.blocked ? blockedState : desktopState)
+      : "flex min-w-0 items-center justify-center gap-2 font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch " +
+        (item.blocked
+          ? blockedState
+          : active
+            ? "border-pitch bg-pitch/[0.035] text-pitch"
+            : "border-transparent text-muted hover:border-pitch hover:text-ink");
+
+  if (item.blocked) {
+    return (
+      <button type="button" disabled title={blockedLabel} className={className}>
+        <Icon aria-hidden="true" className="size-4 shrink-0" />
+        <span className="max-w-full truncate">{label}</span>
+        <LockKeyhole aria-hidden="true" className="size-3.5 shrink-0" />
+      </button>
+    );
+  }
 
   return (
     <Link
       href={item.href}
       aria-current={active ? "page" : undefined}
       onClick={onNavigate}
-      className={
-        variant === "desktop"
-          ? "flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch " +
-            desktopState
-          : "flex min-w-0 items-center justify-center gap-2 font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch " +
-            (active
-              ? "border-pitch bg-pitch/[0.035] text-pitch"
-              : "border-transparent text-muted hover:border-pitch hover:text-ink")
-      }
+      className={className}
     >
       <Icon aria-hidden="true" className="size-4 shrink-0" />
       <span className="max-w-full truncate">{label}</span>
@@ -104,6 +127,7 @@ export function DashboardNavigation() {
                   item={item}
                   active={isActive(pathname, item.href)}
                   label={t(item.key)}
+                  blockedLabel={t("blocked")}
                   onNavigate={() => setMoreOpen(false)}
                   variant="desktop"
                 />
@@ -124,6 +148,7 @@ export function DashboardNavigation() {
               item={item}
               active={isActive(pathname, item.href)}
               label={t(item.key)}
+              blockedLabel={t("blocked")}
               onNavigate={() => setMoreOpen(false)}
             />
           ))}
@@ -166,6 +191,7 @@ export function DashboardNavigation() {
                 item={item}
                 active={isActive(pathname, item.href)}
                 label={t(item.key)}
+                blockedLabel={t("blocked")}
                 onNavigate={() => setMoreOpen(false)}
               />
             ))}

@@ -34,6 +34,9 @@ describe("DashboardNavigation mobile shell", () => {
     expect(screen.getAllByRole("link", { name: "Players" })).toHaveLength(2);
     expect(screen.getAllByRole("link", { name: "Statistics" })).toHaveLength(2);
     expect(
+      screen.getAllByRole("button", { name: "Social media" }),
+    ).toHaveLength(1);
+    expect(
       screen.queryByRole("link", { name: "Content" }),
     ).not.toBeInTheDocument();
   });
@@ -47,6 +50,12 @@ describe("DashboardNavigation mobile shell", () => {
     expect(moreButton).toHaveAttribute("aria-expanded", "true");
     expect(document.getElementById("mobile-more-menu")).toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: "Team" })).toHaveLength(2);
+    expect(
+      screen.getAllByRole("button", { name: "Social media" }),
+    ).toHaveLength(2);
+    expect(
+      screen.getAllByRole("button", { name: "Social media" })[1],
+    ).toBeDisabled();
     expect(
       screen.queryByRole("link", { name: "Content" }),
     ).not.toBeInTheDocument();
@@ -67,5 +76,16 @@ describe("DashboardNavigation desktop shell", () => {
     expect(
       screen.queryByRole("link", { name: "Content" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("keeps Social media visible but locked", () => {
+    renderNavigation();
+
+    expect(
+      screen.getAllByRole("button", { name: "Social media" })[0],
+    ).toBeDisabled();
+    expect(
+      screen.getAllByRole("button", { name: "Social media" })[0],
+    ).toHaveAttribute("title", "Locked");
   });
 });
