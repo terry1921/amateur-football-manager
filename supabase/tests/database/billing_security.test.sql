@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(12);
+select plan(13);
 
 select ok(
   not exists (
@@ -26,7 +26,7 @@ values
   ('13000000-0000-0000-0000-000000000002', '03000000-0000-0000-0000-000000000002', 'Billing Security Team B', 'billing-security-team-b');
 
 insert into public.subscriptions (
-  id, team_id, plan, status, provider, provider_subscription_id
+  id, team_id, plan, status, provider, provider_subscription_id, current_period_end
 )
 values (
   '23000000-0000-0000-0000-000000000001',
@@ -34,7 +34,8 @@ values (
   'pro',
   'active',
   'security-test-provider',
-  'security-subscription-a'
+  'security-subscription-a',
+  '2026-09-01T00:00:00.000Z'
 );
 
 select set_config('request.jwt.claim.sub', '03000000-0000-0000-0000-000000000001', true);
@@ -89,6 +90,11 @@ select throws_ok(
 select lives_ok(
   $$insert into public.billing_events (provider, provider_event_id, event_type, team_id) values ('security-test-provider', 'provider-event-once', 'customer.subscription.updated', '13000000-0000-0000-0000-000000000001')$$,
   'the trusted processor can record the provider event once'
+);
+select throws_ok(
+  $$insert into public.billing_events (provider, provider_event_id, event_type, payload) values ('security-test-provider', 'provider-event-sensitive-payload', 'customer.subscription.updated', '{"customer_email":"member@example.test"}')$$,
+  '23514', null,
+  'a billing event payload cannot retain customer data'
 );
 select throws_ok(
   $$insert into public.billing_events (provider, provider_event_id, event_type, team_id) values ('security-test-provider', 'provider-event-once', 'customer.subscription.updated', '13000000-0000-0000-0000-000000000001')$$,
