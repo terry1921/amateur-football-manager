@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getBillingConfig } from "@/features/billing/config";
 import { createBillingEventStore } from "@/features/billing/server-store";
 import { processBillingEvent } from "@/features/billing/webhooks";
+import { createNoopServerMonetizationAnalytics } from "@/lib/analytics/monetization";
 
 export const runtime = "nodejs";
 
@@ -27,7 +28,11 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    await processBillingEvent(createBillingEventStore(), event);
+    await processBillingEvent(
+      createBillingEventStore(),
+      event,
+      createNoopServerMonetizationAnalytics(),
+    );
     logWebhook("processed", event.type);
     return NextResponse.json({ received: true });
   } catch {

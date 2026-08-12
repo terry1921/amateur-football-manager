@@ -177,3 +177,9 @@ export function createServerMonetizationAnalytics(
 ): ServerMonetizationAnalytics {
   return createMonetizationAnalytics(sink, serverEventNames, now);
 }
+
+export function createNoopServerMonetizationAnalytics(): ServerMonetizationAnalytics {
+  return {
+    track() {},
+  };
+}

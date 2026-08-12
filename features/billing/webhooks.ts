@@ -1,4 +1,5 @@
 import type { BillingProviderEvent, ProviderSubscription } from "./provider";
+import type { ServerMonetizationAnalytics } from "@/lib/analytics/monetization";
 
 export type StoredSubscription = {
   id: string;
@@ -61,6 +62,7 @@ function isOlderEvent(existing: StoredSubscription, createdAt: string) {
 export async function processBillingEvent(
   store: BillingEventStore,
   event: BillingProviderEvent,
+  analytics?: ServerMonetizationAnalytics,
 ) {
   const teamId = "subscription" in event ? event.subscription.teamId : null;
   if (
@@ -86,6 +88,12 @@ export async function processBillingEvent(
       );
       await store.markProcessed(event.id, saved.id);
       await store.invalidateTeam(saved.teamId);
+      if (!existing && ["active", "trialing"].includes(saved.status)) {
+        await analytics?.track({
+          name: "pro_activated",
+          properties: { plan: "pro" },
+        });
+      }
       return { kind: "processed" as const };
     }
 
@@ -108,6 +116,12 @@ export async function processBillingEvent(
     }
 
     await store.markProcessed(event.id);
+    if (event.type === "checkout.session.completed") {
+      await analytics?.track({
+        name: "checkout_completed",
+        properties: { plan: "pro" },
+      });
+    }
     return { kind: "processed" as const };
   } catch (error) {
     const errorCode =

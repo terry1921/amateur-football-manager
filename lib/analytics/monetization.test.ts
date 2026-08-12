@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   createClientMonetizationAnalytics,
+  createNoopServerMonetizationAnalytics,
   createServerMonetizationAnalytics,
   normalizeMonetizationEvent,
 } from "./monetization";
@@ -87,5 +88,22 @@ describe("monetization analytics", () => {
         properties: { plan: "pro" },
       },
     ]);
+  });
+
+  it("provides a server-side no-op adapter when no analytics persistence is configured", () => {
+    const analytics = createNoopServerMonetizationAnalytics();
+
+    expect(() => {
+      analytics.track({
+        name: "checkout_completed",
+        properties: {
+          plan: "pro",
+          interval: "annual",
+          customerId: "cus_123",
+          subscriptionId: "sub_123",
+          email: "owner@example.com",
+        } as never,
+      });
+    }).not.toThrow();
   });
 });

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { createCheckoutForAuthenticatedTeam } from "@/features/billing/checkout";
 import { getBillingConfig } from "@/features/billing/config";
+import { createNoopServerMonetizationAnalytics } from "@/lib/analytics/monetization";
 import { createClient } from "@/lib/supabase/server";
 
 const checkoutRequestSchema = z.object({ teamId: z.string().uuid() });
@@ -41,6 +42,7 @@ export async function POST(request: NextRequest) {
           return Boolean(data);
         },
       },
+      analytics: createNoopServerMonetizationAnalytics(),
       ...config,
     });
     if (result.kind === "forbidden") {

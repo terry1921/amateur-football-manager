@@ -36,6 +36,11 @@ export type BillingProviderEvent =
     }
   | {
       id: string;
+      type: "checkout.session.completed";
+      createdAt: string;
+    }
+  | {
+      id: string;
       type: "invoice.payment_failed";
       createdAt: string;
       subscriptionId: string | null;

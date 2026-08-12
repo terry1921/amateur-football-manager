@@ -1,4 +1,5 @@
 import type { BillingProvider } from "./provider";
+import type { ServerMonetizationAnalytics } from "@/lib/analytics/monetization";
 
 export type CheckoutStore = {
   isTeamOwnedByUser(teamId: string, userId: string): Promise<boolean>;
@@ -12,6 +13,7 @@ export async function createCheckoutForAuthenticatedTeam({
   priceId,
   successUrl,
   cancelUrl,
+  analytics,
 }: {
   teamId: string;
   userId: string;
@@ -20,6 +22,7 @@ export async function createCheckoutForAuthenticatedTeam({
   priceId: string;
   successUrl: string;
   cancelUrl: string;
+  analytics?: ServerMonetizationAnalytics;
 }) {
   if (!(await store.isTeamOwnedByUser(teamId, userId))) {
     return { kind: "forbidden" as const };
@@ -30,6 +33,10 @@ export async function createCheckoutForAuthenticatedTeam({
     priceId,
     successUrl,
     cancelUrl,
+  });
+  await analytics?.track({
+    name: "checkout_started",
+    properties: { plan: "pro" },
   });
 
   return { kind: "redirect" as const, url: checkout.url };

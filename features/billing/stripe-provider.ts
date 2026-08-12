@@ -116,6 +116,10 @@ function parseStripeEvent(rawBody: string): BillingProviderEvent {
     };
   }
 
+  if (type === "checkout.session.completed") {
+    return { id, type, createdAt };
+  }
+
   return { id, type, createdAt };
 }
 

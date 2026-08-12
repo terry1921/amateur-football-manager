@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getBillingConfig } from "@/features/billing/config";
 import { createBillingManagementStore } from "@/features/billing/server-store";
 import { getTeamAccess } from "@/features/teams/access";
+import { createNoopServerMonetizationAnalytics } from "@/lib/analytics/monetization";
 
 const requestSchema = z.object({
   action: z.enum(["portal", "cancel", "resume"]),
@@ -67,6 +68,10 @@ export async function POST(request: NextRequest) {
       }
       await config.provider.cancelSubscriptionAtPeriodEnd({
         subscriptionId: subscription.providerSubscriptionId,
+      });
+      await createNoopServerMonetizationAnalytics().track({
+        name: "cancellation",
+        properties: { timing: "period_end" },
       });
     } else {
       if (!subscription.cancelAtPeriodEnd) {
