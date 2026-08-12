@@ -60,8 +60,7 @@ function NavigationLink({
   variant?: "default" | "desktop";
 }) {
   const Icon = item.icon;
-  const blockedState =
-    "cursor-not-allowed border-line bg-[#f6f9f7] text-muted";
+  const blockedState = "cursor-not-allowed border-line bg-[#f6f9f7] text-muted";
   const desktopState = active
     ? "border-pitch/30 bg-pitch/[0.08] text-pitch shadow-[0_1px_2px_rgba(7,26,54,0.06)]"
     : "border-transparent text-muted hover:border-line hover:bg-[#f6f9f7] hover:text-ink";
