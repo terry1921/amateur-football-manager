@@ -38,6 +38,32 @@ describe("billing model", () => {
     ).toBe(false);
   });
 
+  it("fails closed when an active or trialing Pro subscription has no period end", () => {
+    expect(subscriptionHasAccess("active", null, now)).toBe(false);
+    expect(subscriptionHasAccess("trialing", null, now)).toBe(false);
+  });
+
+  it("fails closed for active or trialing Pro without a period end", () => {
+    expect(subscriptionHasAccess("active", null, now)).toBe(false);
+    expect(subscriptionHasAccess("trialing", null, now)).toBe(false);
+
+    const subscription = resolveTeamSubscription(
+      "team-a",
+      {
+        id: "sub-a",
+        plan: "pro",
+        status: "active",
+        cancel_at_period_end: false,
+        current_period_start: "2026-08-01T00:00:00.000Z",
+        current_period_end: null,
+      },
+      now,
+    );
+
+    expect(subscription.plan).toBe("free");
+    expect(hasEntitlement(subscription, "advanced_statistics")).toBe(false);
+  });
+
   it("resolves the default Free plan without a stored subscription", () => {
     const subscription = resolveTeamSubscription("team-a", null, now);
 

@@ -44,32 +44,30 @@ tested before such routes are introduced.
 
 ## Findings
 
-### Medium — Active Pro rows without a period end are granted indefinitely
+### Resolved medium — Active or trialing Pro requires a future period end
 
-`subscriptionHasAccess` treats `active` and `trialing` subscriptions with a
-null `current_period_end` as active. An authenticated client cannot create or
-update this row, and no webhook/service-role writer exists in the current
-source, so there is no demonstrated public attack path today. Once a trusted
-provider synchronizer is added, a partial or malformed write could retain Pro
-access beyond the paid period.
+`subscriptionHasAccess` now fails closed when an `active` or `trialing`
+subscription has a missing, malformed, or expired `current_period_end`.
+Consequently, a partial provider write resolves to Free without Pro
+entitlements. The default no-row Free subscription remains available, and a
+`canceled` subscription remains active through its valid paid period. The
+model regression covers both active and trialing rows without a period end.
 
-Recommended remediation before enabling paid subscriptions: require a valid,
-future `current_period_end` for `pro` access (and ideally constrain provider
-writes so active/trialing Pro rows always include it). Add a regression case
-for a null period end. This was not changed because the requested write scope
-excludes entitlements and the existing domain deliberately defines the current
-behavior.
+### Resolved low — Billing event minimization, redaction, and retention
 
-### Low — Billing event payload retention and redaction are not yet specified
+`billing_events.payload` is always persisted as an empty object. Reconciliation
+uses only typed columns: provider, provider event ID, event type, optional team
+and subscription references, receipt/processing timestamps, and a bounded
+processing error code. Raw provider bodies, signature headers, customer data,
+payment data, and arbitrary provider metadata must never be stored in
+`billing_events` or application logs. Service-role logs may contain only the
+provider, provider event ID, event type, and stable error code.
 
-`billing_events.payload` stores arbitrary provider JSON. There is no webhook
-implementation or application logging path yet, but future handlers could
-persist unnecessary PII or secret-adjacent fields and then expose them through
-operational logs.
-
-Recommended remediation before webhook launch: store only the fields required
-for reconciliation, redact sensitive metadata, restrict service-role logs to
-event/provider identifiers, and define a retention period.
+Billing event records are retained for 30 days from `received_at`, then purged
+by the operational retention job. The job must delete only records older than
+that threshold and must not export payloads before deletion. Any future change
+that needs more data requires a security review and an explicit schema-level
+allowlist rather than reusing `payload` for raw provider JSON.
 
 ## Required security gates for future payment endpoints
 

@@ -45,8 +45,9 @@ export function createBillingEventStore(): BillingEventStore {
         provider_event_id: event.id,
         event_type: event.type,
         team_id: event.teamId,
-        // Never retain raw provider payloads or signature headers.
-        payload: { created_at: event.createdAt },
+        // Reconciliation metadata belongs in typed columns; never retain raw
+        // provider payloads, signature headers, or sensitive customer data.
+        payload: {},
       });
       if (!error) return true;
       if (error.code === "23505") return false;

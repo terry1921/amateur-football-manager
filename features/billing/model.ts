@@ -111,7 +111,7 @@ export function subscriptionHasAccess(
   now = new Date(),
 ) {
   if (status === "active" || status === "trialing") {
-    if (!currentPeriodEnd) return true;
+    if (!currentPeriodEnd) return false;
 
     const periodEnd = Date.parse(currentPeriodEnd);
     return Number.isFinite(periodEnd) && periodEnd > now.getTime();
