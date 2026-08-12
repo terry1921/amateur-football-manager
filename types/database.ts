@@ -378,6 +378,7 @@ export type Database = {
           provider: string | null;
           provider_customer_id: string | null;
           provider_subscription_id: string | null;
+          provider_updated_at: string | null;
           status: string;
           team_id: string;
           updated_at: string;
@@ -392,6 +393,7 @@ export type Database = {
           provider?: string | null;
           provider_customer_id?: string | null;
           provider_subscription_id?: string | null;
+          provider_updated_at?: string | null;
           status?: string;
           team_id: string;
           updated_at?: string;
@@ -406,6 +408,7 @@ export type Database = {
           provider?: string | null;
           provider_customer_id?: string | null;
           provider_subscription_id?: string | null;
+          provider_updated_at?: string | null;
           status?: string;
           team_id?: string;
           updated_at?: string;
