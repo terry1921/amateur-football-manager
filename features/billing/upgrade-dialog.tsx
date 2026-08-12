@@ -3,31 +3,47 @@
 import { Check, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import type { BillingAction } from "./ui-model";
 
 export function UpgradeDialog({
-  checkout,
+  teamId,
+  checkoutAvailable = false,
   triggerLabel,
 }: {
-  checkout?: BillingAction;
+  teamId?: string;
+  checkoutAvailable?: boolean;
   triggerLabel?: string;
 }) {
   const t = useTranslations("Billing");
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const canCheckout = Boolean(teamId) && checkoutAvailable;
 
   async function startCheckout() {
-    if (!checkout) return;
+    if (!canCheckout || !teamId) return;
     setPending(true);
     setError(null);
-    const result = await checkout();
-    setPending(false);
-    if (result.kind === "error") {
-      setError(result.message);
-      return;
+
+    try {
+      const response = await fetch("/api/billing/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ teamId }),
+      });
+      const result = (await response.json().catch(() => null)) as {
+        url?: unknown;
+      } | null;
+
+      if (!response.ok || typeof result?.url !== "string") {
+        throw new Error("checkout_unavailable");
+      }
+
+      window.location.assign(result.url);
+    } catch {
+      setError(t("upgrade.unavailable"));
+    } finally {
+      setPending(false);
     }
-    if (result.redirectUrl) window.location.assign(result.redirectUrl);
   }
 
   return (
@@ -85,6 +101,11 @@ export function UpgradeDialog({
             <p className="mt-5 rounded-xl bg-[#f6f9f7] p-3 text-sm font-medium text-ink">
               {t("upgrade.confirmation")}
             </p>
+            {!canCheckout ? (
+              <p role="status" className="mt-3 text-sm text-muted">
+                {t("upgrade.unavailable")}
+              </p>
+            ) : null}
             {error ? (
               <p role="alert" className="mt-3 text-sm text-red-700">
                 {error}
@@ -92,13 +113,13 @@ export function UpgradeDialog({
             ) : null}
             <button
               type="button"
-              disabled={!checkout || pending}
+              disabled={!canCheckout || pending}
               onClick={startCheckout}
               className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-pitch px-5 text-sm font-bold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch disabled:cursor-not-allowed disabled:opacity-55"
             >
               {pending
                 ? t("actions.loading")
-                : checkout
+                : canCheckout
                   ? t("upgrade.checkout")
                   : t("upgrade.unavailable")}
             </button>

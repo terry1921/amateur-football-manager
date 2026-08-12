@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { describe, expect, it, vi } from "vitest";
 import messages from "@/messages/en.json";
@@ -70,6 +70,46 @@ describe("PricingPage", () => {
     expect(
       screen.getByRole("button", { name: "Checkout is unavailable" }),
     ).toBeDisabled();
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Checkout is unavailable",
+    );
+  });
+
+  it("sends only the server-provided team id when checkout starts", async () => {
+    const teamId = "11111111-1111-4111-8111-111111111111";
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ error: "checkout_unavailable" }), {
+        status: 503,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    renderUi(
+      <PricingPage
+        checkoutStatus="idle"
+        teamId={teamId}
+        checkoutAvailable
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Choose Pro" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Continue to secure checkout" }),
+    );
+
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith("/api/billing/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ teamId }),
+      }),
+    );
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Checkout is unavailable",
+    );
+    vi.unstubAllGlobals();
   });
 });
 

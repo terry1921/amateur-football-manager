@@ -8,8 +8,12 @@ export type CheckoutStatus = "idle" | "success" | "canceled";
 
 export function PricingPage({
   checkoutStatus,
+  teamId,
+  checkoutAvailable,
 }: {
   checkoutStatus: CheckoutStatus;
+  teamId?: string;
+  checkoutAvailable?: boolean;
 }) {
   const t = useTranslations("Billing");
   return (
@@ -90,7 +94,10 @@ export function PricingPage({
             ))}
           </ul>
           <div className="mt-8">
-            <UpgradeDialog />
+            <UpgradeDialog
+              teamId={teamId}
+              checkoutAvailable={checkoutAvailable}
+            />
           </div>
         </section>
       </div>

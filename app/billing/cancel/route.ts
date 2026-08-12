@@ -4,6 +4,6 @@ import { getAppUrl } from "@/lib/auth/urls";
 
 export function GET() {
   return NextResponse.redirect(
-    getAppUrl(`/${routing.defaultLocale}/dashboard?billing=cancelled`),
+    getAppUrl(`/${routing.defaultLocale}/pricing?checkout=canceled`),
   );
 }
