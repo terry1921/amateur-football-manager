@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import type { z } from "zod";
 import { getTeamAccess } from "@/features/teams/access";
+import { assertCanCreatePlayer } from "@/features/billing/entitlements";
+import { isAppError } from "@/lib/errors/error-codes";
 import { mapBackendError } from "@/lib/errors/map-backend-error";
 import type { AppLocale } from "@/i18n/routing";
 import type { PlayerStatus } from "./model";
@@ -89,6 +91,21 @@ export async function createPlayerAction(
   if (!parsed.success) return validationState(locale, parsed.error);
   const context = await playerActionContext(locale);
   if ("error" in context) return { status: "error", message: context.error };
+
+  const { count, error: countError } = await context.supabase
+    .from("players")
+    .select("id", { count: "exact", head: true })
+    .eq("team_id", context.team.id);
+  if (countError) return unexpectedFormError(locale, countError);
+
+  try {
+    await assertCanCreatePlayer(context.team.id, count ?? 0);
+  } catch (error) {
+    if (isAppError(error) && error.code === "PLAN_LIMIT_REACHED") {
+      return { status: "error", errorCode: error.code, retryable: false };
+    }
+    return unexpectedFormError(locale, error);
+  }
 
   const { error } = await context.supabase.from("players").insert({
     team_id: context.team.id,

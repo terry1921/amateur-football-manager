@@ -156,3 +156,61 @@ export function hasEntitlement(
 ) {
   return subscription.entitlements.includes(entitlement);
 }
+
+export function hasPremiumFeature(
+  subscription: ResolvedTeamSubscription,
+  feature: Entitlement,
+) {
+  return hasEntitlement(subscription, feature);
+}
+
+export function canCreateWithinLimit(
+  subscription: ResolvedTeamSubscription,
+  limit: keyof PlanLimits,
+  currentCount: number,
+) {
+  const maximum = subscription.limits[limit];
+  return (
+    maximum === null ||
+    (Number.isInteger(currentCount) &&
+      currentCount >= 0 &&
+      currentCount < maximum)
+  );
+}
+
+export function canAccessHistoricalSeason(
+  subscription: ResolvedTeamSubscription,
+  historicalSeasonIndex: number,
+) {
+  const maximum = subscription.limits.maxHistoricalSeasons;
+  return (
+    maximum === null ||
+    (Number.isInteger(historicalSeasonIndex) &&
+      historicalSeasonIndex >= 0 &&
+      historicalSeasonIndex < maximum)
+  );
+}
+
+export function canUseSocialTemplate(
+  subscription: ResolvedTeamSubscription,
+  templateIndex: number,
+) {
+  const maximum = subscription.limits.maxSocialTemplates;
+  return (
+    maximum === null ||
+    (Number.isInteger(templateIndex) &&
+      templateIndex >= 0 &&
+      templateIndex < maximum)
+  );
+}
+
+export function limitLeaderboardRows<T>(
+  subscription: ResolvedTeamSubscription,
+  rows: readonly T[],
+) {
+  const maximum = subscription.limits.maxLeaderboardRows;
+  return {
+    rows: maximum === null ? [...rows] : rows.slice(0, maximum),
+    isPreview: maximum !== null,
+  };
+}
