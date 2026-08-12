@@ -74,6 +74,10 @@ describe("monetization analytics", () => {
       properties: { surface: "in_app" },
     });
     server.track({ name: "pro_activated", properties: { plan: "pro" } });
+    server.track({
+      name: "checkout_started",
+      properties: { plan: "pro", interval: "annual" },
+    });
     client.track({ name: "pro_activated" } as never);
 
     expect(captured).toEqual([
@@ -86,6 +90,11 @@ describe("monetization analytics", () => {
         name: "pro_activated",
         occurredAt: "2026-08-12T12:00:00.000Z",
         properties: { plan: "pro" },
+      },
+      {
+        name: "checkout_started",
+        occurredAt: "2026-08-12T12:00:00.000Z",
+        properties: { plan: "pro", interval: "annual" },
       },
     ]);
   });

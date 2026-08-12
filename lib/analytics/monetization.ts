@@ -51,6 +51,7 @@ export type ClientMonetizationEvent =
   | { name: "checkout_completed"; properties?: CheckoutProperties };
 
 export type ServerMonetizationEvent =
+  | { name: "checkout_started"; properties?: CheckoutProperties }
   | { name: "checkout_completed"; properties?: CheckoutProperties }
   | { name: "pro_activated"; properties?: ProActivationProperties }
   | { name: "cancellation"; properties?: CancellationProperties };
@@ -78,6 +79,7 @@ const clientEventNames = new Set<MonetizationEventName>([
 ]);
 
 const serverEventNames = new Set<MonetizationEventName>([
+  "checkout_started",
   "checkout_completed",
   "pro_activated",
   "cancellation",
