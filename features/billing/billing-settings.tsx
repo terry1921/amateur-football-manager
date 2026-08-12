@@ -26,12 +26,36 @@ export function BillingSettings({
 }: BillingSettingsProps) {
   const t = useTranslations("Billing");
   const [message, setMessage] = useState<string | null>(null);
+  const [pendingAction, setPendingAction] = useState<string | null>(null);
   const renewal = overview.renewalAt
     ? formatBillingDate(overview.renewalAt, locale)
     : null;
-  const run = async (action?: BillingAction) => {
-    if (!action) return;
-    const result = await action();
+  const run = async (
+    actionName: "portal" | "cancel" | "resume",
+    action?: BillingAction,
+  ) => {
+    setPendingAction(actionName);
+    setMessage(null);
+    const result = action
+      ? await action()
+      : await fetch("/api/billing/subscription", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: actionName }),
+        })
+          .then(async (response) => {
+            const data = (await response.json().catch(() => null)) as {
+              url?: string;
+            } | null;
+            return response.ok
+              ? { kind: "success" as const, redirectUrl: data?.url }
+              : { kind: "error" as const, message: t("status.unavailable") };
+          })
+          .catch(() => ({
+            kind: "error" as const,
+            message: t("status.unavailable"),
+          }));
+    setPendingAction(null);
     if (result.kind === "error") return setMessage(result.message);
     if (result.redirectUrl) window.location.assign(result.redirectUrl);
     else setMessage(t("actions.completed"));
@@ -44,9 +68,9 @@ export function BillingSettings({
         : overview.status === "active" && renewal
           ? t("status.renews", { date: renewal })
           : t(`status.${overview.status}`);
-  const portalEnabled = overview.actions.portal && Boolean(onPortal);
-  const cancelEnabled = overview.actions.cancel && Boolean(onCancel);
-  const resumeEnabled = overview.actions.resume && Boolean(onResume);
+  const portalEnabled = overview.actions.portal && !pendingAction;
+  const cancelEnabled = overview.actions.cancel && !pendingAction;
+  const resumeEnabled = overview.actions.resume && !pendingAction;
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 pb-20">
@@ -86,7 +110,7 @@ export function BillingSettings({
           <button
             type="button"
             disabled={!portalEnabled}
-            onClick={() => run(onPortal)}
+            onClick={() => run("portal", onPortal)}
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-line px-4 text-sm font-bold text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch disabled:cursor-not-allowed disabled:opacity-55"
           >
             <ExternalLink aria-hidden="true" className="size-4" />
@@ -96,7 +120,7 @@ export function BillingSettings({
             <button
               type="button"
               disabled={!resumeEnabled}
-              onClick={() => run(onResume)}
+              onClick={() => run("resume", onResume)}
               className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-pitch px-4 text-sm font-bold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch disabled:cursor-not-allowed disabled:opacity-55"
             >
               <RotateCcw aria-hidden="true" className="size-4" />
@@ -106,7 +130,7 @@ export function BillingSettings({
             <button
               type="button"
               disabled={!cancelEnabled}
-              onClick={() => run(onCancel)}
+              onClick={() => run("cancel", onCancel)}
               className="inline-flex min-h-12 items-center justify-center rounded-xl border border-red-200 px-4 text-sm font-bold text-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch disabled:cursor-not-allowed disabled:opacity-55"
             >
               {t("actions.cancel")}

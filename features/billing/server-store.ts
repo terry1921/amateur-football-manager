@@ -4,6 +4,12 @@ import type { BillingEventStore, StoredSubscription } from "./webhooks";
 
 const provider = "stripe";
 
+export type BillingManagementSubscription = {
+  providerCustomerId: string | null;
+  providerSubscriptionId: string | null;
+  cancelAtPeriodEnd: boolean;
+};
+
 function billingCacheTag(teamId: string) {
   return `billing:team:${teamId}`;
 }
@@ -129,6 +135,41 @@ export function createBillingEventStore(): BillingEventStore {
     async invalidateTeam(teamId) {
       revalidateTag(billingCacheTag(teamId), "max");
       revalidatePath("/", "layout");
+    },
+  };
+}
+
+export function createBillingManagementStore() {
+  const supabase = createAdminClient();
+  return {
+    async findSubscriptionForOwnedTeam(
+      teamId: string,
+      userId: string,
+    ): Promise<BillingManagementSubscription | null> {
+      const { data: team, error: teamError } = await supabase
+        .from("teams")
+        .select("id")
+        .eq("id", teamId)
+        .eq("owner_id", userId)
+        .maybeSingle();
+      if (teamError) throw teamError;
+      if (!team) return null;
+
+      const { data, error } = await supabase
+        .from("subscriptions")
+        .select(
+          "provider_customer_id, provider_subscription_id, cancel_at_period_end",
+        )
+        .eq("team_id", teamId)
+        .eq("provider", provider)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return null;
+      return {
+        providerCustomerId: data.provider_customer_id,
+        providerSubscriptionId: data.provider_subscription_id,
+        cancelAtPeriodEnd: data.cancel_at_period_end,
+      };
     },
   };
 }

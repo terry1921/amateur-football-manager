@@ -2,7 +2,9 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import type {
   BillingProvider,
   BillingProviderEvent,
+  CustomerPortalInput,
   ProviderSubscription,
+  SubscriptionManagementInput,
   SubscriptionCheckoutInput,
 } from "./provider";
 
@@ -152,6 +154,57 @@ async function createStripeCheckout(
   return { url };
 }
 
+async function createStripeCustomerPortalSession(
+  input: CustomerPortalInput,
+  secretKey: string,
+  request: typeof fetch,
+) {
+  const form = new URLSearchParams({
+    customer: input.customerId,
+    return_url: input.returnUrl,
+  });
+  const response = await request(
+    "https://api.stripe.com/v1/billing_portal/sessions",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${secretKey}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: form,
+    },
+  );
+  if (!response.ok) throw new Error("Stripe customer portal creation failed");
+  const data = (await response.json()) as { url?: unknown };
+  const url = stringValue(data.url);
+  if (!url || new URL(url).protocol !== "https:") {
+    throw new Error("Stripe customer portal returned an invalid URL");
+  }
+  return { url };
+}
+
+async function updateStripeSubscriptionCancellation(
+  input: SubscriptionManagementInput,
+  cancelAtPeriodEnd: boolean,
+  secretKey: string,
+  request: typeof fetch,
+) {
+  const response = await request(
+    `https://api.stripe.com/v1/subscriptions/${encodeURIComponent(input.subscriptionId)}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${secretKey}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        cancel_at_period_end: String(cancelAtPeriodEnd),
+      }),
+    },
+  );
+  if (!response.ok) throw new Error("Stripe subscription update failed");
+}
+
 export function createStripeBillingProvider(
   config: StripeProviderConfig,
 ): BillingProvider {
@@ -159,6 +212,22 @@ export function createStripeBillingProvider(
   return {
     createSubscriptionCheckout: (input) =>
       createStripeCheckout(input, config.secretKey, request),
+    createCustomerPortalSession: (input) =>
+      createStripeCustomerPortalSession(input, config.secretKey, request),
+    cancelSubscriptionAtPeriodEnd: (input) =>
+      updateStripeSubscriptionCancellation(
+        input,
+        true,
+        config.secretKey,
+        request,
+      ),
+    resumeSubscription: (input) =>
+      updateStripeSubscriptionCancellation(
+        input,
+        false,
+        config.secretKey,
+        request,
+      ),
     async verifyWebhook(rawBody, signature) {
       if (!hasValidSignature(rawBody, signature, config.webhookSecret)) {
         throw new Error("Invalid Stripe webhook signature");

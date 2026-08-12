@@ -43,5 +43,6 @@ export function getBillingConfig(
     priceId: environment.BILLING_STRIPE_PRO_PRICE_ID!,
     successUrl: getAppUrl("/billing/success?session_id={CHECKOUT_SESSION_ID}"),
     cancelUrl: getAppUrl("/billing/cancel"),
+    portalReturnUrl: getAppUrl("/settings/billing"),
   };
 }

@@ -5,6 +5,15 @@ export type SubscriptionCheckoutInput = {
   cancelUrl: string;
 };
 
+export type CustomerPortalInput = {
+  customerId: string;
+  returnUrl: string;
+};
+
+export type SubscriptionManagementInput = {
+  subscriptionId: string;
+};
+
 export type ProviderSubscription = {
   id: string;
   customerId: string | null;
@@ -37,6 +46,13 @@ export type BillingProvider = {
   createSubscriptionCheckout(
     input: SubscriptionCheckoutInput,
   ): Promise<{ url: string }>;
+  createCustomerPortalSession(
+    input: CustomerPortalInput,
+  ): Promise<{ url: string }>;
+  cancelSubscriptionAtPeriodEnd(
+    input: SubscriptionManagementInput,
+  ): Promise<void>;
+  resumeSubscription(input: SubscriptionManagementInput): Promise<void>;
   verifyWebhook(
     rawBody: string,
     signature: string | null,

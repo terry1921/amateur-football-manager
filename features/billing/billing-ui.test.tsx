@@ -164,6 +164,29 @@ describe("BillingSettings", () => {
     ).toBeEnabled();
   });
 
+  it("calls the authenticated subscription endpoint without sending subscription identifiers", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        new Response(JSON.stringify({ ok: true }), { status: 200 }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+    renderUi(<BillingSettings overview={activeSubscription} locale="en" />);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Cancel at period end" }),
+    );
+
+    await vi.waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith("/api/billing/subscription", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "cancel" }),
+      });
+    });
+    vi.unstubAllGlobals();
+  });
+
   it("keeps unavailable backend actions visibly unavailable", () => {
     renderUi(
       <BillingSettings
