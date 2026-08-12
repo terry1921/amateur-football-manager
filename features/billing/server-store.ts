@@ -56,7 +56,19 @@ export function createBillingEventStore(): BillingEventStore {
         payload: {},
       });
       if (!error) return true;
-      if (error.code === "23505") return false;
+      if (error.code === "23505") {
+        const { data, error: retryError } = await supabase
+          .from("billing_events")
+          .update({ processing_error: null })
+          .eq("provider", provider)
+          .eq("provider_event_id", event.id)
+          .is("processed_at", null)
+          .not("processing_error", "is", null)
+          .select("id")
+          .maybeSingle();
+        if (retryError) throw retryError;
+        return Boolean(data);
+      }
       throw error;
     },
     async findSubscription(providerSubscriptionId) {

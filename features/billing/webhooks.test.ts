@@ -1,16 +1,27 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { createBillingEventStore } from "./server-store";
 import {
   processBillingEvent,
   type BillingEventStore,
   type StoredSubscription,
 } from "./webhooks";
 
+const createAdminClientMock = vi.hoisted(() => vi.fn());
+
+vi.mock("@/lib/supabase/admin", () => ({
+  createAdminClient: createAdminClientMock,
+}));
+
 const teamId = "11111111-1111-4111-8111-111111111111";
 
 class MemoryStore implements BillingEventStore {
-  readonly eventIds = new Set<string>();
+  readonly eventStates = new Map<
+    string,
+    "processing" | "processed" | "failed"
+  >();
   readonly subscriptions = new Map<string, StoredSubscription>();
   invalidatedTeamIds: string[] = [];
+  failNextSubscriptionSave = false;
 
   async recordReceived(event: {
     id: string;
@@ -18,8 +29,9 @@ class MemoryStore implements BillingEventStore {
     createdAt: string;
     teamId: string | null;
   }) {
-    if (this.eventIds.has(event.id)) return false;
-    this.eventIds.add(event.id);
+    const state = this.eventStates.get(event.id);
+    if (state === "processed" || state === "processing") return false;
+    this.eventStates.set(event.id, "processing");
     return true;
   }
 
@@ -28,12 +40,21 @@ class MemoryStore implements BillingEventStore {
   }
 
   async saveSubscription(subscription: StoredSubscription) {
+    if (this.failNextSubscriptionSave) {
+      this.failNextSubscriptionSave = false;
+      throw new Error("temporary_subscription_write_failure");
+    }
     this.subscriptions.set(subscription.providerSubscriptionId, subscription);
     return subscription;
   }
 
-  async markProcessed() {}
-  async markFailed() {}
+  async markProcessed(eventId: string) {
+    this.eventStates.set(eventId, "processed");
+  }
+
+  async markFailed(eventId: string) {
+    this.eventStates.set(eventId, "failed");
+  }
 
   async invalidateTeam(team: string) {
     this.invalidatedTeamIds.push(team);
@@ -56,7 +77,7 @@ const activeSubscription = {
 };
 
 describe("billing webhook processing", () => {
-  it("records a duplicate event once and does not repeat its subscription side effect", async () => {
+  it("does not repeat the subscription side effect for an already processed event", async () => {
     const store = new MemoryStore();
 
     await expect(
@@ -75,6 +96,21 @@ describe("billing webhook processing", () => {
       status: "active",
       teamId,
     });
+    expect(store.invalidatedTeamIds).toEqual([teamId]);
+  });
+
+  it("reprocesses an event after its first processing attempt fails", async () => {
+    const store = new MemoryStore();
+    store.failNextSubscriptionSave = true;
+
+    await expect(
+      processBillingEvent(store, activeSubscription),
+    ).rejects.toThrow("temporary_subscription_write_failure");
+    await expect(
+      processBillingEvent(store, activeSubscription),
+    ).resolves.toEqual({ kind: "processed" });
+
+    expect(store.subscriptions.get("sub_provider_1")?.status).toBe("active");
     expect(store.invalidatedTeamIds).toEqual([teamId]);
   });
 
@@ -131,5 +167,57 @@ describe("billing webhook processing", () => {
 
     expect(store.subscriptions.get("sub_provider_1")?.status).toBe("past_due");
     expect(store.invalidatedTeamIds).toEqual([teamId]);
+  });
+});
+
+describe("billing webhook event storage", () => {
+  it("reclaims a failed event id for a retry", async () => {
+    const retryQuery = {
+      eq: () => retryQuery,
+      is: () => retryQuery,
+      not: () => retryQuery,
+      select: () => retryQuery,
+      maybeSingle: async () => ({ data: { id: "event-row" }, error: null }),
+    };
+    createAdminClientMock.mockReturnValue({
+      from: () => ({
+        insert: async () => ({ error: { code: "23505" } }),
+        update: () => retryQuery,
+      }),
+    });
+
+    await expect(
+      createBillingEventStore().recordReceived({
+        id: activeSubscription.id,
+        type: activeSubscription.type,
+        createdAt: activeSubscription.createdAt,
+        teamId,
+      }),
+    ).resolves.toBe(true);
+  });
+
+  it("keeps an already processed event id as a duplicate", async () => {
+    const retryQuery = {
+      eq: () => retryQuery,
+      is: () => retryQuery,
+      not: () => retryQuery,
+      select: () => retryQuery,
+      maybeSingle: async () => ({ data: null, error: null }),
+    };
+    createAdminClientMock.mockReturnValue({
+      from: () => ({
+        insert: async () => ({ error: { code: "23505" } }),
+        update: () => retryQuery,
+      }),
+    });
+
+    await expect(
+      createBillingEventStore().recordReceived({
+        id: activeSubscription.id,
+        type: activeSubscription.type,
+        createdAt: activeSubscription.createdAt,
+        teamId,
+      }),
+    ).resolves.toBe(false);
   });
 });
