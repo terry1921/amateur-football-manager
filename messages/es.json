@@ -1227,6 +1227,73 @@
       "description": "Las estadísticas del equipo y jugadores pertenecen a tareas posteriores del MVP."
     }
   },
+  "Billing": {
+    "eyebrow": "Planes y facturación",
+    "plan": { "free": "Gratis", "pro": "Pro" },
+    "pricing": {
+      "title": "Elige tu plan",
+      "description": "Empieza con lo esencial o agrega Pro cuando necesites más historial y herramientas para compartir.",
+      "month": "mes",
+      "freeInterval": "Uso gratuito",
+      "proInterval": "Cobro mensual. Cancela desde facturación cuando esté disponible.",
+      "freeCurrent": "Plan Gratis",
+      "choosePro": "Elegir Pro",
+      "proBadge": "Más herramientas",
+      "billingNote": "Tu plan cambia solo cuando el proveedor de pagos lo confirma. No activamos Pro desde esta pantalla."
+    },
+    "features": {
+      "team": "Equipo, jugadores, partidos y estadísticas",
+      "matches": "Gestión del día de partido",
+      "statistics": "Estadísticas de temporada",
+      "history": "Historial ampliado de partidos",
+      "templates": "Plantillas premium para redes",
+      "support": "Soporte prioritario de producto"
+    },
+    "upgrade": {
+      "title": "Mejorar a Pro",
+      "description": "Pro ofrece más espacio para el historial y el flujo para compartir de tu equipo.",
+      "confirmation": "Pro se activa después de confirmar el pago.",
+      "checkout": "Continuar al checkout seguro",
+      "unavailable": "El checkout no está disponible",
+      "noCharge": "Revisarás los datos de pago con el proveedor antes de realizar cualquier cobro."
+    },
+    "checkout": {
+      "success": "Pago recibido. Estamos confirmando tu suscripción.",
+      "canceled": "El checkout se canceló. Tu plan no cambió."
+    },
+    "close": "Cerrar",
+    "preview": { "learn": "Conocer Pro" },
+    "settings": {
+      "title": "Facturación",
+      "description": "Revisa tu plan y los controles de suscripción disponibles.",
+      "currentPlan": "Plan actual",
+      "management": "Gestión de suscripción",
+      "managementDescription": "Usa el portal de pagos para actualizar los datos de pago cuando esté conectado."
+    },
+    "status": {
+      "unavailable": "Los detalles de suscripción aún no están disponibles.",
+      "active": "Tu suscripción está activa.",
+      "canceling": "Tu suscripción está programada para terminar.",
+      "canceled": "Tu suscripción terminó.",
+      "past_due": "Tu pago necesita atención.",
+      "renews": "Se renueva el {date}",
+      "ends": "Tu acceso Pro termina el {date}.",
+      "label": {
+        "unavailable": "No disponible",
+        "active": "Activa",
+        "canceling": "Cancelación",
+        "canceled": "Cancelada",
+        "past_due": "Pago pendiente"
+      }
+    },
+    "actions": {
+      "portal": "Administrar datos de pago",
+      "cancel": "Cancelar al final del periodo",
+      "resume": "Reanudar suscripción",
+      "loading": "Abriendo…",
+      "completed": "Tu solicitud se completó."
+    }
+  },
   "LocaleSwitcher": {
     "label": "Cambiar idioma",
     "english": "Inglés",

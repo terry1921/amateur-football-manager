@@ -1224,6 +1224,73 @@
       "description": "Team and player statistics remain part of later MVP tasks."
     }
   },
+  "Billing": {
+    "eyebrow": "Plans & billing",
+    "plan": { "free": "Free", "pro": "Pro" },
+    "pricing": {
+      "title": "Choose your plan",
+      "description": "Start with the essentials or add Pro when you need more history and sharing tools.",
+      "month": "month",
+      "freeInterval": "Free to use",
+      "proInterval": "Billed monthly. Cancel from billing when available.",
+      "freeCurrent": "Free plan",
+      "choosePro": "Choose Pro",
+      "proBadge": "More tools",
+      "billingNote": "Your plan changes only after the payment provider confirms them. We do not activate Pro from this screen."
+    },
+    "features": {
+      "team": "Team, players, matches, and statistics",
+      "matches": "Matchday management",
+      "statistics": "Season statistics",
+      "history": "Extended match history",
+      "templates": "Premium social templates",
+      "support": "Priority product support"
+    },
+    "upgrade": {
+      "title": "Upgrade to Pro",
+      "description": "Pro adds more room for your team’s history and sharing workflow.",
+      "confirmation": "Pro is activated after payment confirmation.",
+      "checkout": "Continue to secure checkout",
+      "unavailable": "Checkout is unavailable",
+      "noCharge": "You will review payment details with the payment provider before any charge."
+    },
+    "checkout": {
+      "success": "Payment received. We’re confirming your subscription now.",
+      "canceled": "Checkout was canceled. Your plan has not changed."
+    },
+    "close": "Close",
+    "preview": { "learn": "Learn about Pro" },
+    "settings": {
+      "title": "Billing",
+      "description": "Review your plan and available subscription controls.",
+      "currentPlan": "Current plan",
+      "management": "Subscription management",
+      "managementDescription": "Use the payment portal to update payment details when it is connected."
+    },
+    "status": {
+      "unavailable": "Subscription details are not available yet.",
+      "active": "Your subscription is active.",
+      "canceling": "Your subscription is scheduled to end.",
+      "canceled": "Your subscription has ended.",
+      "past_due": "Your payment needs attention.",
+      "renews": "Renews {date}",
+      "ends": "Your Pro access ends {date}.",
+      "label": {
+        "unavailable": "Unavailable",
+        "active": "Active",
+        "canceling": "Cancels",
+        "canceled": "Canceled",
+        "past_due": "Payment due"
+      }
+    },
+    "actions": {
+      "portal": "Manage payment details",
+      "cancel": "Cancel at period end",
+      "resume": "Resume subscription",
+      "loading": "Opening…",
+      "completed": "Your request was completed."
+    }
+  },
   "LocaleSwitcher": {
     "label": "Change language",
     "english": "English",
