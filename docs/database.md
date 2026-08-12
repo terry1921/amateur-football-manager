@@ -15,9 +15,12 @@ auth.users
           |           |-- callups
           |           `-- match_events
           |
-          `-- players
-                |-- callups
-                `-- match_events
+          |-- players
+          |     |-- callups
+          |     `-- match_events
+          |
+          |-- subscriptions
+          `-- billing_events (optional team reference)
 ```
 
 Supabase Auth's `auth.users` table is the identity source. `profiles` is not
@@ -29,6 +32,12 @@ guarantee that their match and players belong to the same team. `matches` uses
 the same approach to guarantee that its season belongs to its team. These
 slightly redundant identifiers turn important tenant invariants into simple,
 declarative constraints instead of privileged triggers.
+
+Billing state is kept locally in `subscriptions`, with one row per team when a
+provider-backed subscription exists. Teams without a row resolve to the Free
+plan in application code. `billing_events` stores provider event ids and
+payloads for later signed-webhook processing; it is not part of the user-facing
+application data graph.
 
 ## Tables and constraints
 
@@ -53,6 +62,13 @@ declarative constraints instead of privileged triggers.
   selected in the same match call-up through a composite foreign key. The
   legacy `related_player_id` column remains for schema compatibility, but Task
   012.5 does not create or edit assists.
+- `subscriptions`: the provider-independent plan/status cache for a team.
+  `team_id` is unique, and plan/status values are constrained to the billing
+  domain model. Provider identifiers are nullable until checkout/webhook work
+  is enabled.
+- `billing_events`: an append-oriented provider event log with a unique
+  `(provider, provider_event_id)` key for idempotency. Only trusted server-side
+  processing can access it.
 
 All primary keys are database-generated UUIDs. Required display names are
 checked after trimming whitespace. Tables with mutable records have
@@ -138,6 +154,10 @@ change, and status transitions are restricted to future-compatible
 Event writes are allowed only while a match is scheduled; the atomic
 `complete_match_with_events` invoker function replaces draft events, enforces
 goal reconciliation, and completes the match in one transaction.
+
+Billing tables use the same tenant boundary. Authenticated owners may select
+their own `subscriptions` row but cannot write it. `billing_events` has no
+authenticated grants or policies; service-side processing retains its grants.
 
 ## Deferred work
 

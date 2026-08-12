@@ -16,6 +16,7 @@ export type BackendErrorContext =
   | "callup"
   | "result"
   | "statistics"
+  | "billing"
   | "export";
 
 function errorParts(error: unknown): BackendErrorLike {
@@ -124,7 +125,7 @@ export function mapBackendError(
     return appError({ code: "RESULT_CONFLICT", category: "validation" });
   }
 
-  if (code === "PGRST202" || code === "42883") {
+  if (code === "PGRST202" || code === "PGRST205" || code === "42883") {
     return appError({
       code: "MIGRATION_MISSING",
       category: "database",

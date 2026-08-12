@@ -34,6 +34,60 @@ export type Database = {
   };
   public: {
     Tables: {
+      billing_events: {
+        Row: {
+          event_type: string;
+          id: string;
+          payload: Json;
+          processed_at: string | null;
+          processing_error: string | null;
+          provider: string;
+          provider_event_id: string;
+          received_at: string;
+          subscription_id: string | null;
+          team_id: string | null;
+        };
+        Insert: {
+          event_type: string;
+          id?: string;
+          payload?: Json;
+          processed_at?: string | null;
+          processing_error?: string | null;
+          provider: string;
+          provider_event_id: string;
+          received_at?: string;
+          subscription_id?: string | null;
+          team_id?: string | null;
+        };
+        Update: {
+          event_type?: string;
+          id?: string;
+          payload?: Json;
+          processed_at?: string | null;
+          processing_error?: string | null;
+          provider?: string;
+          provider_event_id?: string;
+          received_at?: string;
+          subscription_id?: string | null;
+          team_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "billing_events_subscription_id_fkey";
+            columns: ["subscription_id"];
+            isOneToOne: false;
+            referencedRelation: "subscriptions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "billing_events_team_id_fkey";
+            columns: ["team_id"];
+            isOneToOne: false;
+            referencedRelation: "teams";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       callups: {
         Row: {
           created_at: string;
@@ -308,6 +362,59 @@ export type Database = {
             foreignKeyName: "seasons_team_id_fkey";
             columns: ["team_id"];
             isOneToOne: false;
+            referencedRelation: "teams";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean;
+          created_at: string;
+          current_period_end: string | null;
+          current_period_start: string | null;
+          id: string;
+          plan: string;
+          provider: string | null;
+          provider_customer_id: string | null;
+          provider_subscription_id: string | null;
+          status: string;
+          team_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          cancel_at_period_end?: boolean;
+          created_at?: string;
+          current_period_end?: string | null;
+          current_period_start?: string | null;
+          id?: string;
+          plan?: string;
+          provider?: string | null;
+          provider_customer_id?: string | null;
+          provider_subscription_id?: string | null;
+          status?: string;
+          team_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          cancel_at_period_end?: boolean;
+          created_at?: string;
+          current_period_end?: string | null;
+          current_period_start?: string | null;
+          id?: string;
+          plan?: string;
+          provider?: string | null;
+          provider_customer_id?: string | null;
+          provider_subscription_id?: string | null;
+          status?: string;
+          team_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_team_id_fkey";
+            columns: ["team_id"];
+            isOneToOne: true;
             referencedRelation: "teams";
             referencedColumns: ["id"];
           },
