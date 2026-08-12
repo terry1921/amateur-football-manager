@@ -1,5 +1,9 @@
 import { getTeamAccess } from "@/features/teams/access";
 import {
+  assertEntitlement,
+  assertHistoricalSeasonAccess,
+} from "@/features/billing/entitlements";
+import {
   playerPositions,
   playerStatuses,
   type PlayerPosition,
@@ -279,8 +283,34 @@ export async function getStatisticsContext(requestedFilter?: string) {
   };
 }
 
-export async function getStatisticsData(requestedFilter?: string) {
+export async function getStatisticsData(
+  requestedFilter?: string,
+  options: { requireAdvancedStatistics?: boolean } = {},
+) {
   const context = await getStatisticsContext(requestedFilter);
+  if (options.requireAdvancedStatistics) {
+    await assertEntitlement(context.team.id, "advanced_statistics");
+  }
+
+  if (context.selectedFilter === "all") {
+    const historicalSeasons = context.seasons.filter(
+      ({ status }) => status !== "active",
+    );
+    if (historicalSeasons.length > 1) {
+      await assertEntitlement(context.team.id, "full_historical_access");
+    }
+  } else if (context.selectedSeason?.status !== "active") {
+    const historicalSeasonIndex = context.seasons
+      .filter(({ status }) => status !== "active")
+      .findIndex(({ id }) => id === context.selectedSeason?.id);
+    if (historicalSeasonIndex >= 0) {
+      await assertHistoricalSeasonAccess(
+        context.team.id,
+        historicalSeasonIndex,
+      );
+    }
+  }
+
   const snapshot = await readStatisticsSnapshot(
     context.supabase as unknown as Parameters<typeof readStatisticsSnapshot>[0],
     context.team.id,

@@ -20,7 +20,9 @@ export default async function StatisticsPage({
 }) {
   await params;
   const { season, q, position, status } = await searchParams;
-  const data = await getStatisticsData(season);
+  const data = await getStatisticsData(season, {
+    requireAdvancedStatistics: true,
+  });
   const filters = resolvePlayerStatisticsFilters(q, position, status);
   return (
     <StatisticsView

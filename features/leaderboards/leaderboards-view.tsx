@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { PremiumPreview } from "@/features/billing/premium-preview";
 import {
   getLeaderboardPlayers,
   getLeaderboardRank,
@@ -33,6 +34,9 @@ export type LeaderboardsViewData = {
   selectedSeason: StatisticsSeason | null;
   snapshot: StatisticsSnapshot;
   players: PlayerStatistics[];
+  leaderboards?: Record<LeaderboardId, PlayerStatistics[]>;
+  awards?: ReturnType<typeof getPlayerAwards>;
+  isPreview?: boolean;
   filters: PlayerStatisticsFilters;
 };
 
@@ -180,9 +184,15 @@ function AwardCard({
   );
 }
 
-function Awards({ players }: { players: PlayerStatistics[] }) {
+function Awards({
+  players,
+  awards: awardsOverride,
+}: {
+  players: PlayerStatistics[];
+  awards?: ReturnType<typeof getPlayerAwards>;
+}) {
   const t = useTranslations("Leaderboards");
-  const awards = getPlayerAwards(players);
+  const awards = awardsOverride ?? getPlayerAwards(players);
   if (awards.length === 0) return null;
   const icons = {
     goldenBoot: Trophy,
@@ -224,15 +234,14 @@ function Record({ player }: { player: PlayerStatistics }) {
 
 function LeaderboardTable({
   id,
-  players,
+  rows,
   metric,
 }: {
   id: LeaderboardId;
-  players: PlayerStatistics[];
+  rows: PlayerStatistics[];
   metric: LeaderboardMetric;
 }) {
   const t = useTranslations("Leaderboards");
-  const rows = getLeaderboardPlayers(players, id);
   const title = t(`tables.${id}.title`);
   return (
     <section className="overflow-hidden rounded-2xl border border-line bg-white shadow-[0_14px_44px_rgba(7,26,54,0.035)]">
@@ -355,6 +364,17 @@ function LeaderboardTable({
 
 export function LeaderboardsView({ data }: { data: LeaderboardsViewData }) {
   const t = useTranslations("Leaderboards");
+  const leaderboards =
+    data.leaderboards ??
+    ({
+      topScorers: getLeaderboardPlayers(data.players, "topScorers"),
+      yellowCards: getLeaderboardPlayers(data.players, "yellowCards"),
+      redCards: getLeaderboardPlayers(data.players, "redCards"),
+      calledUp: getLeaderboardPlayers(data.players, "calledUp"),
+    } satisfies Record<LeaderboardId, PlayerStatistics[]>);
+  const hasLeaderboardRows = Object.values(leaderboards).some(
+    (rows) => rows.length > 0,
+  );
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <header className="rounded-2xl border border-line bg-white p-5 shadow-[0_14px_44px_rgba(7,26,54,0.04)] sm:p-7">
@@ -385,7 +405,7 @@ export function LeaderboardsView({ data }: { data: LeaderboardsViewData }) {
             {t("empty.description")}
           </p>
         </section>
-      ) : data.players.length === 0 ? (
+      ) : !hasLeaderboardRows ? (
         <section className="rounded-2xl border border-dashed border-line bg-white p-7 text-center sm:p-10">
           <UsersRound
             aria-hidden="true"
@@ -400,31 +420,34 @@ export function LeaderboardsView({ data }: { data: LeaderboardsViewData }) {
         </section>
       ) : (
         <>
-          <Awards players={data.players} />
+          <Awards players={data.players} awards={data.awards} />
           <div className="space-y-5">
             <LeaderboardTable
               id="topScorers"
-              players={data.players}
+              rows={leaderboards.topScorers}
               metric="goals"
             />
             <div className="grid gap-5 lg:grid-cols-2">
               <LeaderboardTable
                 id="yellowCards"
-                players={data.players}
+                rows={leaderboards.yellowCards}
                 metric="yellow_cards"
               />
               <LeaderboardTable
                 id="redCards"
-                players={data.players}
+                rows={leaderboards.redCards}
                 metric="red_cards"
               />
             </div>
             <LeaderboardTable
               id="calledUp"
-              players={data.players}
+              rows={leaderboards.calledUp}
               metric="matches_called_up"
             />
           </div>
+          {data.isPreview ? (
+            <PremiumPreview title={t("title")} description={t("description")} />
+          ) : null}
         </>
       )}
     </div>

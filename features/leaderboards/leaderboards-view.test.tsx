@@ -159,4 +159,12 @@ describe("LeaderboardsView", () => {
     expect(screen.getByText("No completed matches yet")).toBeInTheDocument();
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
+
+  it("shows the upgrade CTA when rankings are a Free preview", () => {
+    renderView({ isPreview: true } as Partial<LeaderboardsViewData>);
+
+    expect(
+      screen.getByRole("button", { name: "Learn about Pro" }),
+    ).toBeInTheDocument();
+  });
 });

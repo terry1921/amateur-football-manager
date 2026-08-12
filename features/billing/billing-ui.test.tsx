@@ -86,11 +86,7 @@ describe("PricingPage", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     renderUi(
-      <PricingPage
-        checkoutStatus="idle"
-        teamId={teamId}
-        checkoutAvailable
-      />,
+      <PricingPage checkoutStatus="idle" teamId={teamId} checkoutAvailable />,
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Choose Pro" }));
