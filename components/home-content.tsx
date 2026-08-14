@@ -1,13 +1,16 @@
 import {
   ArrowRight,
   BarChart3,
+  Check,
   ClipboardCheck,
   Flag,
+  LockKeyhole,
   Shield,
   UsersRound,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { planDefinitions } from "@/features/billing/model";
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 
@@ -17,6 +20,21 @@ const workflow = [
   { key: "callup", icon: ClipboardCheck },
   { key: "result", icon: Flag },
   { key: "stats", icon: BarChart3 },
+] as const;
+
+const freePlanItems = [
+  "players",
+  "history",
+  "templates",
+  "leaderboards",
+] as const;
+
+const proPlanItems = [
+  "players",
+  "history",
+  "templates",
+  "statistics",
+  "exports",
 ] as const;
 
 export function HomeContent({ locale }: { locale: AppLocale }) {
@@ -85,6 +103,118 @@ export function HomeContent({ locale }: { locale: AppLocale }) {
             </li>
           ))}
         </ol>
+
+        <section
+          aria-labelledby="home-pricing-title"
+          className="mt-20 w-full max-w-5xl text-left sm:mt-24"
+        >
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-xs font-black uppercase tracking-[0.14em] text-pitch">
+              {t("pricing.eyebrow")}
+            </p>
+            <h2
+              id="home-pricing-title"
+              className="mt-3 text-3xl font-black tracking-[-0.04em] text-ink sm:text-4xl"
+            >
+              {t("pricing.title")}
+            </h2>
+            <p className="mt-3 text-base leading-7 text-muted">
+              {t("pricing.description")}
+            </p>
+          </div>
+
+          <div className="mt-8 grid gap-5 lg:grid-cols-2">
+            <article className="rounded-2xl border border-line bg-white p-6 shadow-[0_14px_44px_rgba(7,26,54,0.04)] sm:p-8">
+              <h3 className="text-sm font-black text-muted">
+                {t("pricing.free.name")}
+              </h3>
+              <p className="mt-3 text-4xl font-black tracking-[-0.04em] text-ink">
+                {t("pricing.free.price")}
+                <span className="text-base font-bold text-muted">
+                  {t("pricing.free.interval")}
+                </span>
+              </p>
+              <p className="mt-2 text-sm text-muted">
+                {t("pricing.free.description")}
+              </p>
+              <ul className="mt-7 space-y-3 text-sm text-ink" role="list">
+                {freePlanItems.map((item) => (
+                  <li key={item} className="flex gap-2">
+                    <Check
+                      aria-hidden="true"
+                      className="mt-0.5 size-4 shrink-0 text-pitch"
+                    />
+                    {t(`pricing.free.items.${item}`, {
+                      count:
+                        item === "players"
+                          ? (planDefinitions.free.limits.maxPlayers ?? 0)
+                          : item === "history"
+                            ? (planDefinitions.free.limits
+                                .maxHistoricalSeasons ?? 0)
+                            : item === "templates"
+                              ? (planDefinitions.free.limits
+                                  .maxSocialTemplates ?? 0)
+                              : (planDefinitions.free.limits
+                                  .maxLeaderboardRows ?? 0),
+                    })}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/register"
+                className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-line px-5 text-sm font-bold text-ink transition hover:border-pitch hover:text-pitch focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch"
+              >
+                {t("pricing.free.cta")}
+              </Link>
+            </article>
+
+            <article className="rounded-2xl border-2 border-pitch bg-white p-6 shadow-[0_18px_52px_rgba(0,163,49,0.12)] sm:p-8">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-sm font-black text-pitch">
+                  {t("pricing.pro.name")}
+                </h3>
+                <span className="rounded-full bg-pitch/10 px-3 py-1 text-xs font-black text-pitch">
+                  {t("pricing.pro.badge")}
+                </span>
+              </div>
+              <p className="mt-3 text-4xl font-black tracking-[-0.04em] text-ink">
+                {t("pricing.pro.price")}
+                <span className="text-base font-bold text-muted">
+                  {t("pricing.pro.interval")}
+                </span>
+              </p>
+              <p className="mt-2 text-sm text-muted">
+                {t("pricing.pro.description")}
+              </p>
+              <ul className="mt-7 space-y-3 text-sm text-ink" role="list">
+                {proPlanItems.map((item) => (
+                  <li key={item} className="flex gap-2">
+                    <Check
+                      aria-hidden="true"
+                      className="mt-0.5 size-4 shrink-0 text-pitch"
+                    />
+                    {t(`pricing.pro.items.${item}`)}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/pricing"
+                className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-pitch px-5 text-sm font-bold text-white shadow-[0_12px_28px_rgba(0,163,49,0.18)] transition hover:bg-[#008f2b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch"
+              >
+                {t("pricing.pro.cta")}
+                <ArrowRight aria-hidden="true" className="ml-2 size-4" />
+              </Link>
+            </article>
+          </div>
+
+          <p className="mx-auto mt-5 flex max-w-2xl items-start gap-2 text-center text-xs leading-5 text-muted sm:justify-center">
+            <LockKeyhole
+              aria-hidden="true"
+              className="mt-0.5 size-3.5 shrink-0"
+            />
+            {t("pricing.note")}
+          </p>
+        </section>
 
         <div className="pitch-outline" aria-hidden="true">
           <span />

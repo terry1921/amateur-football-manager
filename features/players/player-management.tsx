@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import type { AppLocale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
+import { UpgradeDialog } from "@/features/billing/upgrade-dialog";
 import { changePlayerStatusAction } from "./actions";
 import {
   filterPlayers,
@@ -106,9 +107,15 @@ function EmptySquad() {
 export function PlayerManagement({
   players,
   notice,
+  playerLimit,
+  teamId,
+  checkoutAvailable,
 }: {
   players: Player[];
   notice?: "created" | "updated" | "deactivated" | "reactivated";
+  playerLimit: number | null;
+  teamId?: string;
+  checkoutAvailable?: boolean;
 }) {
   const t = useTranslations("Players");
   const [search, setSearch] = useState("");
@@ -121,6 +128,8 @@ export function PlayerManagement({
   );
   const hasFilters =
     Boolean(search) || position !== "all" || status !== "current";
+  const playerLimitReached =
+    playerLimit !== null && players.length >= playerLimit;
   const clear = () => {
     setSearch("");
     setPosition("all");
@@ -138,13 +147,24 @@ export function PlayerManagement({
             {t("description")}
           </p>
         </div>
-        <Link
-          href="/players/new"
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-pitch px-5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(0,163,49,0.16)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch"
-        >
-          <Plus aria-hidden="true" className="size-4" />
-          {t("create")}
-        </Link>
+        {playerLimitReached ? (
+          <UpgradeDialog
+            teamId={teamId}
+            checkoutAvailable={checkoutAvailable}
+            triggerLabel={t("create")}
+            title={t("limit.title")}
+            description={t("limit.description")}
+            triggerClassName="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-pitch px-5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(0,163,49,0.16)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch"
+          />
+        ) : (
+          <Link
+            href="/players/new"
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-pitch px-5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(0,163,49,0.16)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch"
+          >
+            <Plus aria-hidden="true" className="size-4" />
+            {t("create")}
+          </Link>
+        )}
       </header>
       {notice ? (
         <p

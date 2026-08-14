@@ -8,10 +8,16 @@ export function UpgradeDialog({
   teamId,
   checkoutAvailable = false,
   triggerLabel,
+  title,
+  description,
+  triggerClassName,
 }: {
   teamId?: string;
   checkoutAvailable?: boolean;
   triggerLabel?: string;
+  title?: string;
+  description?: string;
+  triggerClassName?: string;
 }) {
   const t = useTranslations("Billing");
   const [open, setOpen] = useState(false);
@@ -51,7 +57,10 @@ export function UpgradeDialog({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-pitch px-5 text-sm font-bold text-white shadow-[0_12px_28px_rgba(0,163,49,0.18)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch"
+        className={
+          triggerClassName ??
+          "inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-pitch px-5 text-sm font-bold text-white shadow-[0_12px_28px_rgba(0,163,49,0.18)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pitch"
+        }
       >
         {triggerLabel ?? t("pricing.choosePro")}
       </button>
@@ -72,7 +81,7 @@ export function UpgradeDialog({
                   id="upgrade-title"
                   className="mt-1 text-2xl font-black tracking-[-0.03em] text-ink"
                 >
-                  {t("upgrade.title")}
+                  {title ?? t("upgrade.title")}
                 </h2>
               </div>
               <button
@@ -85,7 +94,7 @@ export function UpgradeDialog({
               </button>
             </div>
             <p className="mt-3 leading-6 text-muted">
-              {t("upgrade.description")}
+              {description ?? t("upgrade.description")}
             </p>
             <ul className="mt-5 space-y-2 text-sm text-ink" role="list">
               {["history", "templates", "support"].map((feature) => (

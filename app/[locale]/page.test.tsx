@@ -48,7 +48,12 @@ describe("HomeContent", () => {
       expect(
         screen.getByRole("heading", { name: heading }),
       ).toBeInTheDocument();
-      expect(screen.getByRole("list")).toHaveTextContent(workflow);
+      expect(
+        screen.getByRole("list", {
+          name:
+            locale === "en" ? "Matchday workflow" : "Flujo del día de partido",
+        }),
+      ).toHaveTextContent(workflow);
       expect(screen.getByRole("link", { name: action })).toHaveAttribute(
         "href",
         "/register",

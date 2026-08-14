@@ -18,6 +18,40 @@
       "callup": "Call-up",
       "result": "Result",
       "stats": "Stats"
+    },
+    "pricing": {
+      "eyebrow": "Plans for every team",
+      "title": "Start free. Grow with Pro.",
+      "description": "Choose the tools your team needs today and upgrade when you need more room to grow.",
+      "note": "Your plan changes only after payment confirmation. No charge is made from this page.",
+      "free": {
+        "name": "Free",
+        "price": "$0",
+        "interval": " / forever",
+        "description": "Everything you need to organize your next matchday.",
+        "cta": "Start for free",
+        "items": {
+          "players": "Up to {count} players",
+          "history": "{count} historical season",
+          "templates": "{count} social template",
+          "leaderboards": "Top {count} leaderboard rows"
+        }
+      },
+      "pro": {
+        "name": "Pro",
+        "badge": "More room to grow",
+        "price": "$99",
+        "interval": " MXN / month",
+        "description": "Unlock the complete history and performance picture for your team.",
+        "cta": "Compare plans",
+        "items": {
+          "players": "Unlimited players",
+          "history": "Full historical access",
+          "templates": "Premium social templates",
+          "statistics": "Advanced statistics and full leaderboards",
+          "exports": "High-resolution exports and watermark removal"
+        }
+      }
     }
   },
   "Auth": {
@@ -452,6 +486,10 @@
     "title": "Players",
     "description": "Manage availability without losing team history.",
     "create": "Add player",
+    "limit": {
+      "title": "Free plan limit reached",
+      "description": "The Free plan includes up to 30 players. Upgrade to Pro to add more."
+    },
     "summary": {
       "label": "Squad summary",
       "total": "Total",
@@ -723,6 +761,11 @@
   "Statistics": {
     "title": "Statistics",
     "description": "Derived from completed matches and recorded team events.",
+    "locked": {
+      "eyebrow": "Pro feature",
+      "title": "Unlock advanced statistics",
+      "description": "Upgrade to Pro to explore detailed season statistics, player performance, and historical trends."
+    },
     "teamLabel": "Team",
     "teamTitle": "Team performance",
     "playerTitle": "Player statistics",

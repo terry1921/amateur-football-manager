@@ -1,4 +1,5 @@
 import { getTeamAccess } from "@/features/teams/access";
+import { getTeamSubscription } from "@/features/billing/data";
 import { mapBackendError } from "@/lib/errors/map-backend-error";
 import { sortPlayers, type Player } from "./model";
 
@@ -14,13 +15,17 @@ const playerColumns =
 
 export async function getPlayersData() {
   const { supabase, team } = await requirePlayerTeam();
-  const result = await supabase
-    .from("players")
-    .select(playerColumns)
-    .eq("team_id", team.id);
+  const [result, subscription] = await Promise.all([
+    supabase.from("players").select(playerColumns).eq("team_id", team.id),
+    getTeamSubscription(team.id),
+  ]);
 
   if (result.error) throw mapBackendError(result.error, "player");
-  return { team, players: sortPlayers(result.data as Player[]) };
+  return {
+    team,
+    players: sortPlayers(result.data as Player[]),
+    playerLimit: subscription.limits.maxPlayers,
+  };
 }
 
 export async function getPlayerDetails(playerId: string) {

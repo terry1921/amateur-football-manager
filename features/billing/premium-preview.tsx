@@ -8,9 +8,13 @@ import { UpgradeDialog } from "./upgrade-dialog";
 export function PremiumPreview({
   title,
   description,
+  teamId,
+  checkoutAvailable,
 }: {
   title: string;
   description: string;
+  teamId?: string;
+  checkoutAvailable?: boolean;
 }) {
   const t = useTranslations("Billing");
   return (
@@ -25,7 +29,11 @@ export function PremiumPreview({
         <h2 className="text-lg font-black text-ink">{title}</h2>
         <p className="mt-2 leading-6 text-muted">{description}</p>
         <div className="mt-5 max-w-xs">
-          <UpgradeDialog triggerLabel={t("preview.learn")} />
+          <UpgradeDialog
+            teamId={teamId}
+            checkoutAvailable={checkoutAvailable}
+            triggerLabel={t("preview.learn")}
+          />
         </div>
       </div>
     </section>

@@ -18,6 +18,40 @@
       "callup": "Convocatoria",
       "result": "Resultado",
       "stats": "Estadísticas"
+    },
+    "pricing": {
+      "eyebrow": "Planes para cada equipo",
+      "title": "Empieza gratis. Crece con Pro.",
+      "description": "Elige las herramientas que tu equipo necesita hoy y actualiza cuando necesites más espacio para crecer.",
+      "note": "Tu plan cambia solo después de confirmar el pago. Esta página no realiza ningún cobro.",
+      "free": {
+        "name": "Gratis",
+        "price": "$0",
+        "interval": " / para siempre",
+        "description": "Todo lo necesario para organizar tu próximo día de partido.",
+        "cta": "Empezar gratis",
+        "items": {
+          "players": "Hasta {count} jugadores",
+          "history": "{count} temporada histórica",
+          "templates": "{count} plantilla para redes",
+          "leaderboards": "Top {count} filas en rankings"
+        }
+      },
+      "pro": {
+        "name": "Pro",
+        "badge": "Más espacio para crecer",
+        "price": "$99",
+        "interval": " MXN / mes",
+        "description": "Desbloquea el historial y el rendimiento completo de tu equipo.",
+        "cta": "Comparar planes",
+        "items": {
+          "players": "Jugadores ilimitados",
+          "history": "Acceso al historial completo",
+          "templates": "Plantillas premium para redes",
+          "statistics": "Estadísticas avanzadas y rankings completos",
+          "exports": "Exportaciones en alta resolución y sin marca de agua"
+        }
+      }
     }
   },
   "Auth": {
@@ -452,6 +486,10 @@
     "title": "Jugadores",
     "description": "Gestiona la disponibilidad sin perder la historia del equipo.",
     "create": "Agregar jugador",
+    "limit": {
+      "title": "Límite del plan Gratis alcanzado",
+      "description": "El plan Gratis permite hasta 30 jugadores. Actualiza a Pro para agregar más."
+    },
     "summary": {
       "label": "Resumen del plantel",
       "total": "Total",
@@ -723,6 +761,11 @@
   "Statistics": {
     "title": "Estadísticas",
     "description": "Derivadas de partidos completados y eventos registrados del equipo.",
+    "locked": {
+      "eyebrow": "Función Pro",
+      "title": "Desbloquea las estadísticas avanzadas",
+      "description": "Actualiza a Pro para explorar estadísticas detalladas de temporada, rendimiento de jugadores e historial."
+    },
     "teamLabel": "Equipo",
     "teamTitle": "Rendimiento del equipo",
     "playerTitle": "Estadísticas de jugadores",
